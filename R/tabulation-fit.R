@@ -134,14 +134,16 @@ fitted_quantile <- function(p, xk, yk, sk, ak,
     return(exp(x - y)*dydx)
 }
 
-#' @title Quantile function
+#' @title Density function
 #'
 #' @author Thomas Blanchet
 #'
-#' @description Full quantile function, combining the quintic spline
-#' at the bottom and the generalized Pareto distribution at the top.
+#' @description Full density function, combining the quintic spline
+#' in the middle and the generalized Pareto distribution at the extremes.
 #'
-#' @param p The function evaluation point.
+#' @param q The function evaluation point.
+#' @param pk The probabilities of the tabulation.
+#' @param qk The associated thresholds of the tabulation.
 #' @param xk A vector of interpolation points.
 #' @param yk A vector of values at each interpolation point.
 #' @param sk A vector of slopes at each interpolation point.
@@ -159,7 +161,9 @@ fitted_quantile <- function(p, xk, yk, sk, ak,
 #' @param xi_bottom The shape parameter for the generalized Pareto distribution at
 #' the bottom of the distribution.
 #'
-#' @return The value of the quantile at \code{p} from below.
+#' @return The value of the density at \code{q}.
+#'
+#' @importFrom stats uniroot
 
 fitted_density <- function(q, pk, qk, xk, yk, sk, ak,
                            mu_top, sigma_top, xi_top,
@@ -270,8 +274,6 @@ fitted_top_share <- function(p, xk, yk, sk, ak, average,
 #' at the bottom and the generalized Pareto distribution at the top.
 #'
 #' @param p The function evaluation point.
-#' @param pk The probabilities of the tabulation.
-#' @param qk The associated thresholds of the tabulation.
 #' @param xk A vector of interpolation points.
 #' @param yk A vector of values at each interpolation point.
 #' @param sk A vector of slopes at each interpolation point.

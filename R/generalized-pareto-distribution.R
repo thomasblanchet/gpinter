@@ -58,14 +58,14 @@ gpd_top_quantile <- function(p, pn, mu, sigma, xi) {
 #' generalized Pareto distribution, but with some rescaling to model the top
 #' of the distribution only.
 #'
-#' @param p A value in [pn, 1]. The point at which to evaluate the function.
+#' @param q Real number. The point at which to evaluate the density.
 #' @param pn A value in [0, 1]. The point of the distribution at which the
 #' GDP model starts
 #' @param mu The location parameter.
 #' @param sigma The scale parameter.
 #' @param xi The shape parameter.
 #'
-#' @return The value of the quantile at \code{p}.
+#' @return The value of the density at \code{q}.
 
 gpd_top_density <- function(q, pn, mu, sigma, xi) {
     return((1 - pn)/sigma*(1 + xi*(q - mu)/sigma)^(-(1 + 1/xi)))
@@ -80,14 +80,14 @@ gpd_top_density <- function(q, pn, mu, sigma, xi) {
 #' generalized Pareto distribution, but with some rescaling to model the top
 #' of the distribution only.
 #'
-#' @param p A value in [pn, 1]. The point at which to evaluate the function.
+#' @param q Real number. The point at which to evaluate the CDF.
 #' @param pn A value in [0, 1]. The point of the distribution at which the
 #' GDP model starts
 #' @param mu The location parameter.
 #' @param sigma The scale parameter.
 #' @param xi The shape parameter.
 #'
-#' @return The value of the CDF at \code{p}.
+#' @return The value of the CDF at \code{q}.
 
 gpd_top_cdf <- function(q, pn, mu, sigma, xi) {
     return(pn + (1 - pn)*(1 - (1 + xi*(q - mu)/sigma)^(-1/xi)))
@@ -221,7 +221,7 @@ gpd_bottom_quantile <- function(p, p1, mu, sigma, xi) {
 #' generalized Pareto distribution, but with some rescaling to model the bottom
 #' of the distribution only.
 #'
-#' @param p A value in [0, p1]. The point at which to evaluate the function.
+#' @param q Real number. The point at which to evaluate the density.
 #' @param p1 A value in [0, 1]. The point of the distribution at which the
 #' GDP model ends
 #' @param mu The location parameter.
@@ -243,7 +243,7 @@ gpd_bottom_density <- function(q, p1, mu, sigma, xi) {
 #' generalized Pareto distribution, but with some rescaling to model the bottom
 #' of the distribution only.
 #'
-#' @param p A value in [0, p1]. The point at which to evaluate the function.
+#' @param q A value in [0, p1]. The point at which to evaluate the function.
 #' @param p1 A value in [0, 1]. The point of the distribution at which the
 #' GDP model ends
 #' @param mu The location parameter.
