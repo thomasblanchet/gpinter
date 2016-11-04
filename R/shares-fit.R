@@ -1,4 +1,4 @@
-#' @title Fit a nonparametric distribution on tabulated data
+#' @title Fit a nonparametric distribution on fractile shares
 #'
 #' @author Thomas Blanchet
 #'
@@ -6,42 +6,37 @@
 #' of a distribution which include:
 #' \itemize{
 #'     \item fractiles of the data,
-#'     \item the corresponding brackets,
-#'     \item the share of each bracket.
+#'     \item the share of each bracket
 #' }
 #'
 #' @param p A vector of values in [0, 1].
-#' @param threshold The quantiles corresponding to \code{p}.
 #' @param average The average over the entire distribution.
 #' @param bracketshare The corresponding bracket share.
 #' @param topshare The corresponding top share.
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
-#' @param ci Should confidence interval (identification region) be computed ?
-#' Default is \code{TRUE}
+#' @param ci Should confidence interval (identification region) be computed?
+#' Default is \code{TRUE}.
 #' @param samplesize The size of the underlying sample.
-#' @param deriv4max A functional bound of the fourth derivative of the
+#' @param deriv3max A functional bound of the third derivative of the
 #' interpolation function.
 #'
 #' @importFrom stats integrate
 #'
 #' @export
 
-tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
-                           bracketavg=NULL, topavg=NULL, ci=TRUE,
-                           samplesize=NULL, deriv4max=NULL) {
+shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
+                       bracketavg=NULL, topavg=NULL, ci=TRUE,
+                       samplesize=NULL, deriv3max=NULL) {
+
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
         stop("The method requires at least three interpolation points.")
     }
-    if (length(threshold) != n) {
-        stop("'p' and 'threshold' must have the same length.")
-    }
     # Sort the input data
     ord <- order(p)
     p <- p[ord]
-    threshold <- threshold[ord]
 
     # Put the information on average in the right format (truncated average)
     if (!is.null(bracketshare)) {
@@ -73,10 +68,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
 
     # Sanity check of the data
-    # Quantile function is increasing
-    if (any(diff(threshold) <= 0)) {
-        stop("Threshold must be strictly increasing.")
-    }
+    # Truncated mean function is decreasing
     if (any(diff(m) >= 0)) {
         stop("Truncated average must be strictly decreasing.")
     }
@@ -91,36 +83,49 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     if (any(p >= 1) | any(p < 0)) {
         stop("The elements of 'p' must be >=0 and <1.")
     }
-    # The average between each bracket is within the bracket
-    bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
-    if (any(bracketavg < threshold) | any(bracketavg[1:(n - 1)] > threshold[2:n])) {
-        stop("Input data on quantiles and moments is inconsistent.")
-    }
 
     # Log-transform of the data
     xk <- -log(1 - p)
     yk <- -log(m)
-    sk <- (1 - p)*threshold/m
 
-    # Calculate the second derivative
-    ak <- c(
+    # Estimate the first derivative
+    sk <- c(
         right_derivative(
             xk[1], xk[2], xk[3],
-            sk[1], sk[2], sk[3]
+            yk[1], yk[2], yk[3]
         ),
         central_derivative(
             xk[1:(n - 2)], xk[2:(n - 1)], xk[3:n],
-            sk[1:(n - 2)], sk[2:(n - 1)], sk[3:n]
+            yk[1:(n - 2)], yk[2:(n - 1)], yk[3:n]
         ),
         left_derivative(
             xk[n - 2], xk[n - 1], xk[n],
-            sk[n - 2], sk[n - 1], sk[n]
+            yk[n - 2], yk[n - 1], yk[n]
         )
     )
 
+    # Estimate the second derivative
+    ak <- c(
+        second_derivative(
+            xk[1], xk[2], xk[3],
+            yk[1], yk[2], yk[3]
+        ),
+        second_derivative(
+            xk[1:(n - 2)], xk[2:(n - 1)], xk[3:n],
+            yk[1:(n - 2)], yk[2:(n - 1)], yk[3:n]
+        ),
+        second_derivative(
+            xk[n - 2], xk[n - 1], xk[n],
+            yk[n - 2], yk[n - 1], yk[n]
+        )
+    )
+
+    # Estimate the thresholds
+    threshold <- exp(xk - yk)*sk
+
     # Object to return
     result <- list()
-    class(result) <- "fitted_tabulation"
+    class(result) <- "fitted_shares"
     result$pk <- p
     result$xk <- xk
     result$yk <- yk
@@ -192,7 +197,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
 
     # Errors
-    if (is.null(deriv4max)) {
+    if (is.null(deriv3max)) {
         deriv4max <- function(x) {
             return(1 + 99/(1 + 10*x^2))
         }
@@ -201,12 +206,12 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     if (ci) {
         result$ci_phi <- function(x) {
             y <- result$phi(x)
-            e <- spline_error_degree3(x, xk, deriv4max)
+            e <- spline_error_degree2(x, xk, deriv3max)
             return(list(lower=(y - e), upper=(y + e)))
         }
         result$ci_deriv_phi <- function(x) {
             dydx <- result$deriv_phi(x)
-            e <- deriv_spline_error_degree3(x, xk, deriv4max)
+            e <- deriv_spline_error_degree2(x, xk, deriv3max)
             return(list(lower=(dydx - e), upper=(dydx + e)))
         }
         result$ci_quantile <- function(p) {
@@ -214,8 +219,8 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             y <- result$phi(x)
             dydx <- result$deriv_phi(x)
             q <- dydx*exp(x - y)
-            e1 <- spline_error_degree3(x, xk, deriv4max)
-            e2 <- deriv_spline_error_degree3(x, xk, deriv4max)
+            e1 <- spline_error_degree2(x, xk, deriv3max)
+            e2 <- deriv_spline_error_degree2(x, xk, deriv3max)
             y_lower <- y - e1
             y_upper <- y + e1
             dydx_lower <- dydx - e2
@@ -227,7 +232,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         result$ci_top_share <- function(p) {
             x <- -log(1 - p)
             y <- result$phi(x)
-            e <- spline_error_degree3(x, xk, deriv4max)
+            e <- spline_error_degree2(x, xk, deriv3max)
             y_lower <- y - e
             y_upper <- y + e
             lower <- exp(-y_upper)/average
@@ -238,7 +243,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             x <- -log(1 - p)
             dydx <- result$deriv_phi(x)
             invpareto <- 1/dydx
-            e <- spline_error_degree3(x, xk, deriv4max)
+            e <- spline_error_degree2(x, xk, deriv3max)
             dydx_lower <- dydx - e
             dydx_upper <- dydx + e
             lower <- 1/dydx_upper
@@ -267,3 +272,4 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
 
     return(result)
 }
+

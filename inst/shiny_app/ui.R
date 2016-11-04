@@ -3,109 +3,132 @@ library(shinyBS)
 library(shinyjs)
 
 # Define UI for the application
-shinyUI(tagList(useShinyjs(),
-    navbarPage("Generalized Pareto interpolation",
+shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
+    tabPanel("Instructions",
+        fixedPage(
+            fixedRow(
+                column(8,
+                    tags$p(
+                        "This application provides an interface to the function",
+                        tags$code("tabulation_fit"), "of the R package",
+                        tags$code("gpinter"), ". It can estimate nonparametrically
+                        the entire distribution of income or wealth from tabulated
+                        data such as those provided by tax authorities."),
+                    tags$p(
+                        "This application takes an arbitrary number of Excel 2007
+                        or CSV files as input. You can import those files using the",
+                        tags$span("Browse...", style="border: 1px solid #ccc;
+                            border-radius: 3px; padding: 1px 3px 1px 3px;"), "button
+                        in the panel on the right. For the CSV files, you can
+                        adjust the exact format with the", tags$span(icon("cog"), "CSV options",
+                            style="font-weight: bold;"), "menu. For the Excel files, only the
+                        first sheet is read."
+                    ),
+                    tags$p(
+                        "The input files must take the form of tables whose first
+                        row is the name of each column. The following three columns
+                        are mandatory:",
+                        tags$ul(
+                            tags$li(tags$kbd("p"), ": a set of values greater
+                                or equal to 0 and lower than 1,  associated to a
+                                percentile of the distribution."),
+                            tags$li(tags$kbd("threshold"), ": the quantile
+                                associated to each value of", tags$kbd("p"), "."),
+                            tags$li(tags$kbd("average"), "(first row only) :
+                                the average over the entire distribution.")
+                            ),
+                        "At least one of the following columns are required:",
+                        tags$ul(
+                            tags$li(tags$kbd("bracketshare"), ": the income/wealth
+                                share of the bracket."),
+                            tags$li(tags$kbd("topshare"), ": the income/wealth
+                                share of the bracket and the brackets above it."),
+                            tags$li(tags$kbd("bracketavg"), ": the average
+                                income/wealth within the bracket."),
+                            tags$li(tags$kbd("topavg"), ": the average income/wealth
+                                above the bracket."),
+                            tags$li(tags$kbd("invpareto"), ": the inverted Pareto coefficient.")
+                            ),
+                        "The following columns are optional:",
+                        tags$ul(
+                            tags$li(tags$kbd("label"), "(first row only) : a name for the dataset. If not
+                                specified, the file name is used."),
+                            tags$li(tags$kbd("samplesize"), "(first row only) : the size of the sample the
+                                tabulation is based on. Only used is full confidence intervals
+                                are requested.")
+                            )
+                            ),
+                    tags$p("An example of input data is provided below:"),
+                    tags$table(
+                        tags$thead(
+                            tags$tr(
+                                tags$th("label"),
+                                tags$th("average"),
+                                tags$th("p"),
+                                tags$th("threshold"),
+                                tags$th("bracketshare")
+                            )
+                        ),
+                        tags$tbody(
+                            tags$tr(
+                                tags$td("US 2010"),
+                                tags$td("53587"),
+                                tags$td("0.900"),
+                                tags$td("96480"),
+                                tags$td("0.10537")
+                            ),
+                            tags$tr(
+                                tags$td(""),
+                                tags$td(""),
+                                tags$td("0.950"),
+                                tags$td("136910"),
+                                tags$td("0.14840")
+                            ),
+                            tags$tr(
+                                tags$td(""),
+                                tags$td(""),
+                                tags$td("0.990"),
+                                tags$td("351366"),
+                                tags$td("0.04007")
+                            ),
+                            tags$tr(
+                                tags$td(""),
+                                tags$td(""),
+                                tags$td("0.995"),
+                                tags$td("544503"),
+                                tags$td("0.15940")
+                            )
+                        ),
+                        class = "table table-striped table-condensed"
+                    ),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
+                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret.")
+                ),
+                column(4,
+                    tags$div(
+                        tags$ul(
+                            tags$li(a("Presentation", href="#presentation")),
+                            tags$li(a("Functionalities", href="#functionalities")),
+                            tags$li(a("Usage", href="#usage"), tags$ul(
+                                tags$li(a("Input data format", href="#usage-input-format")),
+                                tags$li(a("Example", href="#usage-example"))
+                            ))
+                        ),
+                        class = "nav-doc"
+                    )
+                )
+            )
+        ),
+        icon = icon("question-circle")
+    ),
     tabPanel("Input data",
         fixedPage(
             fixedRow(
                 column(8,
-                    bsCollapse(id="collapsible-instructions", bsCollapsePanel(
-                        tags$span(icon("question-circle"), HTML("&nbsp;"), "Instructions"),
-                        tags$p(
-                            "This application provides an interface to the function",
-                            tags$code("tabulation_fit"), "of the R package",
-                            tags$code("gpinter"), ". It can estimate nonparametrically
-                            the entire distribution of income or wealth from tabulated
-                            data such as those provided by tax authorities."),
-                        tags$p(
-                            "This application takes an arbitrary number of Excel 2007
-                            or CSV files as input. You can import those files using the",
-                            tags$span("Browse...", style="border: 1px solid #ccc;
-                            border-radius: 3px; padding: 1px 3px 1px 3px;"), "button
-                            in the panel on the right. For the CSV files, you can
-                            adjust the exact format with the", tags$span(icon("cog"), "CSV options",
-                            style="font-weight: bold;"), "menu. For the Excel files, only the
-                            first sheet is read."
-                        ),
-                        tags$p(
-                            "The input files must take the form of tables whose first
-                            row is the name of each column. The following three columns
-                            are mandatory:",
-                            tags$ul(
-                                tags$li(tags$kbd("p"), ": a set of values greater
-                                or equal to 0 and lower than 1,  associated to a
-                                percentile of the distribution."),
-                                tags$li(tags$kbd("threshold"), ": the quantile
-                                associated to each value of", tags$kbd("p"), "."),
-                                tags$li(tags$kbd("average"), "(first row only) :
-                                the average over the entire distribution.")
-                            ),
-                            "At least one of the following columns are required:",
-                            tags$ul(
-                                tags$li(tags$kbd("bracketshare"), ": the income/wealth
-                                share of the bracket."),
-                                tags$li(tags$kbd("topshare"), ": the income/wealth
-                                share of the bracket and the brackets above it."),
-                                tags$li(tags$kbd("bracketavg"), ": the average
-                                income/wealth within the bracket."),
-                                tags$li(tags$kbd("topavg"), ": the average income/wealth
-                                above the bracket."),
-                                tags$li(tags$kbd("invpareto"), ": the inverted Pareto coefficient.")
-                            ),
-                            "The following columns are optional:",
-                            tags$ul(
-                                tags$li(tags$kbd("label"), "(first row only) : a name for the dataset. If not
-                                specified, the file name is used."),
-                                tags$li(tags$kbd("samplesize"), "(first row only) : the size of the sample the
-                                tabulation is based on. Only used is full confidence intervals
-                                are requested.")
-                            )
-                        ),
-                        tags$p("An example of input data is provided below:"),
-                        tags$table(
-                            tags$thead(
-                                tags$tr(
-                                    tags$th("label"),
-                                    tags$th("average"),
-                                    tags$th("p"),
-                                    tags$th("threshold"),
-                                    tags$th("bracketshare")
-                                )
-                            ),
-                            tags$tbody(
-                                tags$tr(
-                                    tags$td("US 2010"),
-                                    tags$td("53587"),
-                                    tags$td("0.900"),
-                                    tags$td("96480"),
-                                    tags$td("0.10537")
-                                ),
-                                tags$tr(
-                                    tags$td(""),
-                                    tags$td(""),
-                                    tags$td("0.950"),
-                                    tags$td("136910"),
-                                    tags$td("0.14840")
-                                ),
-                                tags$tr(
-                                    tags$td(""),
-                                    tags$td(""),
-                                    tags$td("0.990"),
-                                    tags$td("351366"),
-                                    tags$td("0.04007")
-                                ),
-                                tags$tr(
-                                    tags$td(""),
-                                    tags$td(""),
-                                    tags$td("0.995"),
-                                    tags$td("544503"),
-                                    tags$td("0.15940")
-                                )
-                            ),
-                            class = "table table-striped table-condensed"
-                        ),
-                        value = "instructions"
-                    ), open="instructions"),
                     uiOutput("input_tabs")
                 ),
                 column(4,
@@ -156,7 +179,7 @@ shinyUI(tagList(useShinyjs(),
                 )
             )
         ),
-        icon=icon("arrow-circle-down")
+        icon=icon("arrow-down")
     ),
     tabPanel("Results",
         fixedPage(
@@ -229,5 +252,6 @@ shinyUI(tagList(useShinyjs(),
         icon=icon("users")
     ),
     inverse = TRUE,
-    position = "static-top"
+    position = "fixed-top",
+    theme = "style.css"
 )))

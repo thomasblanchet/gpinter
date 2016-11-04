@@ -1,0 +1,48 @@
+body {
+    margin-top: 80px;
+}
+
+.nav-doc {
+    position: fixed;
+}
+
+.nav-doc ul {
+    list-style: none;
+}
+
+.nav-doc li {
+    padding: 0;
+    margin: 0;
+}
+
+.nav-doc li > a {
+    display: block;
+    padding: 3px 0px 3px 20px;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-left: solid 3px #CCC;
+    border-top: none;
+    border-bottom: none;
+    color: #000;
+    font-weight: bold;
+}
+
+.nav-doc li > a:hover, .nav-doc li > a:focus {
+    border-left: solid 3px #333;
+    text-decoration: none;
+}
+
+.nav-doc li > ul {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.nav-doc li > ul > li {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.nav-doc li > ul > li > a {
+    padding-left: 40px;
+    font-weight: normal;
+}

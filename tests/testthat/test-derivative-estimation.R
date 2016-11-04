@@ -12,6 +12,9 @@ test_that("Derivative estimation is exact for polynomials of degree 2", {
         fd <- function(x) {
             return(2*a*x + b)
         }
+        fd2 <- function(x) {
+            return(2*a)
+        }
 
         xk <- cumsum(exp(rnorm(3)))
         yk <- f(xk)
@@ -27,6 +30,10 @@ test_that("Derivative estimation is exact for polynomials of degree 2", {
         expect_equal(
             left_derivative(xk[1], xk[2], xk[3], yk[1], yk[2], yk[3]),
             fd(xk[3])
+        )
+        expect_equal(
+            second_derivative(xk[1], xk[2], xk[3], yk[1], yk[2], yk[3]),
+            fd2(xk[2])
         )
     }
 })
