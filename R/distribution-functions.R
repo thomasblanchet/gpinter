@@ -77,7 +77,7 @@ phi.gpinter_dist_orig <- function(dist, x, ...) {
 deriv_phi <- function(dist, x, ...) UseMethod("deriv_phi")
 
 #' @export
-deriv_phi.gpinter_dist_orig <- function(dist, x) {
+deriv_phi.gpinter_dist_orig <- function(dist, x, ...) {
     xn <- tail(dist$xk, n=1)
     x1 <- head(dist$xk, n=1)
     y1 <- head(dist$yk, n=1)

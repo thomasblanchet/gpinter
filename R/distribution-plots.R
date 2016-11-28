@@ -10,7 +10,7 @@
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -62,10 +62,10 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=p, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=p, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
         ggplot2::geom_abline(slope=1, linetype="dotted") +
         ggplot2::xlab("fraction of the population") +
         ggplot2::ylab("cumulative share")
@@ -85,7 +85,7 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -137,10 +137,10 @@ plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=p, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=p, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
         ggplot2::xlab("p") +
         ggplot2::ylab("inverted Pareto coefficient")
 
@@ -159,7 +159,7 @@ plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -175,7 +175,7 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df, ggplot2::aes(x=x, y=y), linetype="solid") +
+        ggplot2::geom_line(data=df, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::xlab("x") +
         ggplot2::ylab("density")
 
@@ -194,7 +194,7 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -241,10 +241,10 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=x, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
         ggplot2::xlab("x") +
         ggplot2::ylab("cumulaitve density")
 
@@ -263,7 +263,7 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -315,117 +315,12 @@ plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=p, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=p, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=p, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="p", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
         ggplot2::xlab("p") +
         ggplot2::ylab("quantile")
-
-    return(plot)
-}
-
-
-#' @title Probability density plot
-#'
-#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
-#'
-#' @description Plots the density of a distribution estimated via
-#' generalized Pareto interpolation.
-#'
-#' @param dist A \code{gpinter_dist_orig} object, as returned by
-#' \code{tabulation_fit} or \code{share_fit}.
-#' @param xlim The range of the curve.
-#' @param ... Ignored.
-#'
-#' @importFrom ggplot2 ggplot aes geom_line
-#'
-#' @export
-
-plot_density <- function(dist, xlim, ...) UseMethod("plot_density")
-
-#' @export
-plot_density.gpinter_dist <- function(dist, xlim, ...) {
-    x <- seq(xlim[1], xlim[2], length.out=200)
-
-    df <- data.frame(
-        x = x,
-        y = fitted_density(dist, x)
-    )
-
-    plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::xlab("x") +
-        ggplot2::ylab("density")
-
-    return(plot)
-}
-
-#' @title Cumulative density plot
-#'
-#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
-#'
-#' @description Plots the density of a distribution estimated via
-#' generalized Pareto interpolation.
-#'
-#' @param dist A \code{gpinter_dist_orig} object, as returned by
-#' \code{tabulation_fit} or \code{share_fit}.
-#' @param xlim The range of the curve.
-#' @param ... Ignored.
-#'
-#' @importFrom ggplot2 ggplot aes geom_line
-#'
-#' @export
-
-plot_cdf <- function(dist, xlim, ...) UseMethod("plot_cdf")
-
-#' @export
-plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
-    q1 <- min(dist$qk_nc)
-    qn <- max(dist$qk_nc)
-    qmin <- xlim[1]
-    qmax <- xlim[2]
-    q_inter <- seq(max(q1, qmin), min(qn, qmax), length.out=100)
-
-    if (qmax >= qn) {
-        q_above <- seq(qn, qmax, length.out=100)
-    } else {
-        q_above <- numeric(0)
-    }
-
-    if (qmin <= q1) {
-        q_below <- seq(qmin, q1, length.out=100)
-    } else {
-        q_below <- numeric(0)
-    }
-
-    q_point <- dist$qk_nc[(dist$qk_nc >= qmin) & (dist$qk_nc <= qmax)]
-
-
-    df_inter <- data.frame(
-        x = q_inter,
-        y = fitted_cdf(dist, q_inter)
-    )
-    df_below <- data.frame(
-        x = q_below,
-        y = fitted_cdf(dist, q_below)
-    )
-    df_above <- data.frame(
-        x = q_above,
-        y = fitted_cdf(dist, q_above)
-    )
-    df_point <- data.frame(
-        x = q_point,
-        y = fitted_cdf(dist, q_point)
-    )
-
-    plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=x, y=y)) +
-        ggplot2::xlab("x") +
-        ggplot2::ylab("cumulaitve density")
 
     return(plot)
 }
@@ -442,7 +337,7 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -488,10 +383,10 @@ plot_tail.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=x, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
         ggplot2::xlab("-log(1 - p)") +
         ggplot2::ylab("log(Q(p))")
 
@@ -510,7 +405,7 @@ plot_tail.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -559,10 +454,10 @@ plot_phi.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=x, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
         ggplot2::xlab("x") +
         ggplot2::ylab("interpolation function")
 
@@ -581,7 +476,7 @@ plot_phi.gpinter_dist <- function(dist, xlim, ...) {
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
 #'
-#' @importFrom ggplot2 ggplot aes geom_line
+#' @importFrom ggplot2 ggplot aes_string geom_line
 #'
 #' @export
 
@@ -630,10 +525,10 @@ plot_deriv_phi.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_inter, ggplot2::aes(x=x, y=y), linetype="solid") +
-        ggplot2::geom_line(data=df_below, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_line(data=df_above, ggplot2::aes(x=x, y=y), linetype="dashed") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes(x=x, y=y)) +
+        ggplot2::geom_line(data=df_inter, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_below, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_line(data=df_above, ggplot2::aes_string(x="x", y="y"), linetype="dashed") +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
         ggplot2::xlab("x") +
         ggplot2::ylab("interpolation function")
 

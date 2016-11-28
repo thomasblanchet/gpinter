@@ -81,7 +81,7 @@ hist_cdf <- function(q, p0, q0, f) {
 #' @param p The values at which to estimate the Lorenz curve.
 #' @param p0 The probability lower bound of the interval with constant density.
 #' @param p1 The probability upper bound of the interval with constant density.
-#' @param q1 The quantile lower bound of the interval with constant density.
+#' @param q0 The quantile lower bound of the interval with constant density.
 #' @param q1 The quantile upper bound of the interval with constant density.
 #' @param m1 The value of the Lorenz curve at \code{p1}.
 #' @param f The value of the constant density.
@@ -100,7 +100,7 @@ hist_lorenz <- function(p, p0, p1, q0, q1, m1, f) {
 #' @param x The values at which to estimate the interpolation function.
 #' @param p0 The probability lower bound of the interval with constant density.
 #' @param p1 The probability upper bound of the interval with constant density.
-#' @param q1 The quantile lower bound of the interval with constant density.
+#' @param q0 The quantile lower bound of the interval with constant density.
 #' @param q1 The quantile upper bound of the interval with constant density.
 #' @param m1 The value of the Lorenz curve at \code{p1}.
 #' @param f The value of the constant density.
@@ -119,7 +119,7 @@ hist_phi <- function(x, p0, p1, q0, q1, m1, f) {
 #' @param x The values at which to estimate the interpolation function.
 #' @param p0 The probability lower bound of the interval with constant density.
 #' @param p1 The probability upper bound of the interval with constant density.
-#' @param q1 The quantile lower bound of the interval with constant density.
+#' @param q0 The quantile lower bound of the interval with constant density.
 #' @param q1 The quantile upper bound of the interval with constant density.
 #' @param m1 The value of the Lorenz curve at \code{p1}.
 #' @param f The value of the constant density.

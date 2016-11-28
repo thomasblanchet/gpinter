@@ -13,13 +13,13 @@ hist_deriv_phi(x, p0, p1, q0, q1, m1, f)
 
 \item{p1}{The probability upper bound of the interval with constant density.}
 
-\item{q1}{The quantile lower bound of the interval with constant density.}
+\item{q0}{The quantile lower bound of the interval with constant density.}
+
+\item{q1}{The quantile upper bound of the interval with constant density.}
 
 \item{m1}{The value of the Lorenz curve at \code{p1}.}
 
 \item{f}{The value of the constant density.}
-
-\item{q1}{The quantile upper bound of the interval with constant density.}
 }
 \description{
 Calculates the derivative of the Pareto interpolation function

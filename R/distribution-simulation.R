@@ -16,7 +16,7 @@
 #'
 #' @export
 
-simulate_gpinter <- function(dist, n, ...) UseMethod("simulate")
+simulate_gpinter <- function(dist, n, ...) UseMethod("simulate_gpinter")
 
 #' @export
 simulate_gpinter.gpinter_dist_orig <- function(dist, n, ...) {

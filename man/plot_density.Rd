@@ -5,17 +5,8 @@
 \title{Probability density plot}
 \usage{
 plot_density(dist, xlim, ...)
-
-plot_density(dist, xlim, ...)
 }
 \arguments{
-\item{dist}{A \code{gpinter_dist_orig} object, as returned by
-\code{tabulation_fit} or \code{share_fit}.}
-
-\item{xlim}{The range of the curve.}
-
-\item{...}{Ignored.}
-
 \item{dist}{A \code{gpinter_dist_orig} object, as returned by
 \code{tabulation_fit} or \code{share_fit}.}
 
@@ -26,13 +17,8 @@ plot_density(dist, xlim, ...)
 \description{
 Plots the density of a distribution estimated via
 generalized Pareto interpolation.
-
-Plots the density of a distribution estimated via
-generalized Pareto interpolation.
 }
 \author{
-Thomas Blanchet, Juliette Fournier, Thomas Piketty
-
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 
