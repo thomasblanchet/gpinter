@@ -30,6 +30,6 @@ generalized Pareto distribution, plus the value of the truncated average
 above.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

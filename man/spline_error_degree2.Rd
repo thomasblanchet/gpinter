@@ -22,6 +22,6 @@ Gives the bound on the spline interpolation error
 for any point of the interpolation domain.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

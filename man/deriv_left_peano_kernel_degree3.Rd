@@ -29,6 +29,6 @@ kernel for the interpolation of the left interval, where the first second
 derivative is estimated from the three points to the right.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

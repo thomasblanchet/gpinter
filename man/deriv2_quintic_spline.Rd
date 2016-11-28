@@ -19,7 +19,7 @@ at which the function is evaluated.}
 \item{ak}{A vector of second derivatives at each interpolation point.}
 }
 \value{
-The values of the first derivative of the interpolation function at
+The values of the second derivative of the interpolation function at
 each point \code{x}.
 }
 \description{
@@ -27,6 +27,6 @@ Second derivative of the quintic spline interpolation function
 over several intervals.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

@@ -28,6 +28,6 @@ are chosen so as to ensure the continuity and derivability of the quantile
 function, and to match the average.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

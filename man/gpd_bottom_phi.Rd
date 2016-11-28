@@ -29,6 +29,6 @@ Interpolation function based on the generalized Pareto
 distribution used in the last bracket of the data.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

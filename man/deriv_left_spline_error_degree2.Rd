@@ -26,6 +26,6 @@ Gives the bound on the interpolation error of the
 derivative for the left interval.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

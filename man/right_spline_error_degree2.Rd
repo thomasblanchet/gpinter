@@ -24,6 +24,6 @@ The value of the bound at x.
 Gives the bound on the spline error for the right interval.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

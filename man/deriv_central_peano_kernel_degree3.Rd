@@ -31,6 +31,6 @@ kernel, which is used to get the interpolation error bound on the derivative
 of the interpolation function.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

@@ -26,6 +26,6 @@ The value of the bound (up to a multiplicative constant) at x.
 Gives the bound on the spline error for central intervals.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

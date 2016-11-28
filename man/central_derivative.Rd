@@ -29,6 +29,6 @@ three irregularly-spaced points. The method is based on a second-order
 Taylor expansion of the function around \code{x1}.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

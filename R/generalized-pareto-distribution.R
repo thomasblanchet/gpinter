@@ -1,7 +1,7 @@
 #' @title Estimate parameters of the parameters of the generalized Pareto
 #' distribution for the top of the distribution
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Above the last threshold, we extrapolate the curve using a
 #' generalized Pareto distribution. The three parameters of the distribution
@@ -30,7 +30,7 @@ gpd_top_parameters <- function(xn, yn, sn, an) {
 #' @title Quantile function of the generalized Pareto distribution in the top
 #' of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the quantile function of the
 #' generalized Pareto distribution, but with some rescaling to model the top
@@ -52,7 +52,7 @@ gpd_top_quantile <- function(p, pn, mu, sigma, xi) {
 #' @title Density function of the generalized Pareto distribution in the top
 #' of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the density function of the
 #' generalized Pareto distribution, but with some rescaling to model the top
@@ -74,7 +74,7 @@ gpd_top_density <- function(q, pn, mu, sigma, xi) {
 #' @title Cumulative density function of the generalized Pareto distribution
 #' in the top of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the density function of the
 #' generalized Pareto distribution, but with some rescaling to model the top
@@ -96,7 +96,7 @@ gpd_top_cdf <- function(q, pn, mu, sigma, xi) {
 #' @title Truncated average function of the generalized Pareto distribution in
 #' the top of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the truncated average of the
 #' generalized Pareto distribution, but with some rescaling to model the
@@ -117,7 +117,7 @@ gpd_top_mean <- function(p, pn, mu, sigma, xi) {
 
 #' @title Interpolation function in the last bracket
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Interpolation function based on the generalized Pareto
 #' distribution used in the last bracket of the data.
@@ -139,7 +139,7 @@ gpd_top_phi <- function(x, pn, mu, sigma, xi) {
 
 #' @title Derivative of the interpolation function in the last bracket
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Interpolation function based on the generalized Pareto
 #' distribution used in the last bracket of the data.
@@ -163,7 +163,7 @@ gpd_top_deriv_phi <- function(x, pn, mu, sigma, xi) {
 #' @title Estimate parameters of the parameters of the generalized Pareto
 #' distribution for the bottom of the distribution
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Below the first threshold, we extrapolate the curve using a
 #' generalized Pareto distribution. The three parameters of the distribution
@@ -193,7 +193,7 @@ gpd_bottom_parameters <- function(x1, y1, s1, a1, average) {
 #' @title Quantile function of the generalized Pareto distribution in the bottom
 #' of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the quantile function of the
 #' generalized Pareto distribution, but with some rescaling to model the bottom
@@ -215,7 +215,7 @@ gpd_bottom_quantile <- function(p, p1, mu, sigma, xi) {
 #' @title Density function of the generalized Pareto distribution in the bottom
 #' of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the density function of the
 #' generalized Pareto distribution, but with some rescaling to model the bottom
@@ -237,7 +237,7 @@ gpd_bottom_density <- function(q, p1, mu, sigma, xi) {
 #' @title Cumulative density function of the generalized Pareto distribution
 #' in the bottom of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the density function of the
 #' generalized Pareto distribution, but with some rescaling to model the bottom
@@ -259,7 +259,7 @@ gpd_bottom_cdf <- function(q, p1, mu, sigma, xi) {
 #' @title Truncated average function of the generalized Pareto distribution in
 #' the bottom of the distribution.
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description This function correspond to the truncated average of the
 #' generalized Pareto distribution, plus the value of the truncated average
@@ -281,7 +281,7 @@ gpd_bottom_mean <- function(p, p1, y1, mu, sigma, xi) {
 
 #' @title Interpolation function below the first bracket
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Interpolation function based on the generalized Pareto
 #' distribution used in the last bracket of the data.
@@ -304,7 +304,7 @@ gpd_bottom_phi <- function(x, p1, y1, mu, sigma, xi) {
 
 #' @title Derivative of the interpolation function below the first bracket
 #'
-#' @author Thomas Blanchet
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
 #' @description Interpolation function based on the generalized Pareto
 #' distribution used in the last bracket of the data.

@@ -29,6 +29,6 @@ the function \eqn{max{(x - t)^3, 0}}, which is the term inside the integral
 of the Taylor remainder.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

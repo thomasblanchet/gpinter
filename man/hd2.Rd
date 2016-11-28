@@ -27,13 +27,13 @@ evaluated.}
 \item{a1}{Second derivative of the spline at \code{x1}.}
 }
 \value{
-The value of first second of the interpolation at \code{x}.
+The value of second derivative of the interpolation function at \code{x}.
 }
 \description{
 Second derivative of the quintic spline over an interval
 \code{[x0, x1]}.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

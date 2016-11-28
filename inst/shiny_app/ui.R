@@ -4,118 +4,19 @@ library(shinyjs)
 
 # Define UI for the application
 shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
-    tabPanel("Instructions",
+    tabPanel("Help",
         fixedPage(
             fixedRow(
                 column(8,
-                    tags$p(
-                        "This application provides an interface to the function",
-                        tags$code("tabulation_fit"), "of the R package",
-                        tags$code("gpinter"), ". It can estimate nonparametrically
-                        the entire distribution of income or wealth from tabulated
-                        data such as those provided by tax authorities."),
-                    tags$p(
-                        "This application takes an arbitrary number of Excel 2007
-                        or CSV files as input. You can import those files using the",
-                        tags$span("Browse...", style="border: 1px solid #ccc;
-                            border-radius: 3px; padding: 1px 3px 1px 3px;"), "button
-                        in the panel on the right. For the CSV files, you can
-                        adjust the exact format with the", tags$span(icon("cog"), "CSV options",
-                            style="font-weight: bold;"), "menu. For the Excel files, only the
-                        first sheet is read."
-                    ),
-                    tags$p(
-                        "The input files must take the form of tables whose first
-                        row is the name of each column. The following three columns
-                        are mandatory:",
-                        tags$ul(
-                            tags$li(tags$kbd("p"), ": a set of values greater
-                                or equal to 0 and lower than 1,  associated to a
-                                percentile of the distribution."),
-                            tags$li(tags$kbd("threshold"), ": the quantile
-                                associated to each value of", tags$kbd("p"), "."),
-                            tags$li(tags$kbd("average"), "(first row only) :
-                                the average over the entire distribution.")
-                            ),
-                        "At least one of the following columns are required:",
-                        tags$ul(
-                            tags$li(tags$kbd("bracketshare"), ": the income/wealth
-                                share of the bracket."),
-                            tags$li(tags$kbd("topshare"), ": the income/wealth
-                                share of the bracket and the brackets above it."),
-                            tags$li(tags$kbd("bracketavg"), ": the average
-                                income/wealth within the bracket."),
-                            tags$li(tags$kbd("topavg"), ": the average income/wealth
-                                above the bracket."),
-                            tags$li(tags$kbd("invpareto"), ": the inverted Pareto coefficient.")
-                            ),
-                        "The following columns are optional:",
-                        tags$ul(
-                            tags$li(tags$kbd("label"), "(first row only) : a name for the dataset. If not
-                                specified, the file name is used."),
-                            tags$li(tags$kbd("samplesize"), "(first row only) : the size of the sample the
-                                tabulation is based on. Only used is full confidence intervals
-                                are requested.")
-                            )
-                            ),
-                    tags$p("An example of input data is provided below:"),
-                    tags$table(
-                        tags$thead(
-                            tags$tr(
-                                tags$th("label"),
-                                tags$th("average"),
-                                tags$th("p"),
-                                tags$th("threshold"),
-                                tags$th("bracketshare")
-                            )
-                        ),
-                        tags$tbody(
-                            tags$tr(
-                                tags$td("US 2010"),
-                                tags$td("53587"),
-                                tags$td("0.900"),
-                                tags$td("96480"),
-                                tags$td("0.10537")
-                            ),
-                            tags$tr(
-                                tags$td(""),
-                                tags$td(""),
-                                tags$td("0.950"),
-                                tags$td("136910"),
-                                tags$td("0.14840")
-                            ),
-                            tags$tr(
-                                tags$td(""),
-                                tags$td(""),
-                                tags$td("0.990"),
-                                tags$td("351366"),
-                                tags$td("0.04007")
-                            ),
-                            tags$tr(
-                                tags$td(""),
-                                tags$td(""),
-                                tags$td("0.995"),
-                                tags$td("544503"),
-                                tags$td("0.15940")
-                            )
-                        ),
-                        class = "table table-striped table-condensed"
-                    ),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret."),
-                    tags$p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Philosophi autem in suis lectulis plerumque moriuntur. Pauca mutat vel plura sane; Quae cum essent dicta, finem fecimus et ambulandi et disputandi. Cur id non ita fit? Duo Reges: constructio interrete. Cum id quoque, ut cupiebat, audivisset, evelli iussit eam, qua erat transfixus, hastam. Quamquam id quidem, infinitum est in hac urbe; Sin kakan malitiam dixisses, ad aliud nos unum certum vitium consuetudo Latina traduceret.")
+                    withMathJax(includeHTML("help.html"))
                 ),
                 column(4,
                     tags$div(
                         tags$ul(
-                            tags$li(a("Presentation", href="#presentation")),
+                            tags$li(a("Introduction", href="#")),
                             tags$li(a("Functionalities", href="#functionalities")),
                             tags$li(a("Usage", href="#usage"), tags$ul(
-                                tags$li(a("Input data format", href="#usage-input-format")),
-                                tags$li(a("Example", href="#usage-example"))
+                                tags$li(a("Input data format", href="#input-format"))
                             ))
                         ),
                         class = "nav-doc"
@@ -128,12 +29,9 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
     tabPanel("Input data",
         fixedPage(
             fixedRow(
-                column(8,
-                    uiOutput("input_tabs")
-                ),
-                column(4,
+                column(7,
                     tags$h4(icon("files-o"), HTML("&nbsp;"), "Import file(s)"),
-                    tags$p("Supports CSV and Excel 2007 formats."),
+                    tags$p("Supports CSV and Excel formats."),
                     fileInput("file_input",
                         width = "100%",
                         label = NULL,
@@ -143,67 +41,116 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
                             'text/comma-separated-values',
                             'text/tab-separated-values',
                             'text/plain',
+                            'application/vnd.ms-excel',
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                             '.txt',
                             '.csv',
                             '.tsv',
+                            '.xls',
                             '.xlsx'
                         )
                     ),
-                    tags$hr(),
-                    tags$h4(icon("cog"), HTML("&nbsp;"), "CSV import options"),
-                    radioButtons('sep_input', 'Separator', c(
-                        "Comma" = ',',
-                        "Semicolon" = ';',
-                        "Tab" = '\t'),
-                        ';'
-                    ),
-                    radioButtons('quote_input', 'Quote', c(
-                        "None" = '',
-                        "Double Quote" = '"',
-                        "Single Quote"="'"),
-                        '"'
-                    ),
-                    radioButtons('decim_input', 'Decimal separator', c(
-                        "Point" = '.',
-                        "Comma" = ','),
-                        ','
-                    ),
-                    tags$hr(),
-                    tags$h4(icon("arrows-h"), HTML("&nbsp;"), "Confidence intervals"),
-                    radioButtons('citype', NULL, c(
-                        "Interpolation error only" = 1,
-                        "Interpolation and sampling error (slow)" = 2),
-                        1
+                    disabled(actionButton('run', "Run",
+                        icon = icon("play"),
+                        width = "100%",
+                        class = "btn-success",
+                        style = "margin-bottom: 20px;"
+                    )),
+                    uiOutput("input_tabs")
+                ),
+                column(5,
+                    tags$div(
+                        tags$div(
+                            tags$h3(icon("sliders"), HTML("&nbsp;"), "Interpolation settings", class="panel-title"),
+                            class = "panel-heading"
+                        ),
+                        tags$div(
+                            disabled(
+                                tags$h4(icon("user"), HTML("&nbsp;"), "Individualisation", tags$span("In progress", class="label label-primary")),
+                                tags$p("The program can individualize the distribution of income or wealth
+                                    under the assumption of equal sharing among spouses. If you select this
+                                    option, you must specify the share of singles in your input files. See help
+                                    for details.",
+                                    style = "font-size: small; color: #666;"
+                                ),
+                                checkboxInput('indiv', "Individualize the distribution", value=FALSE)
+                            ),
+                            hr(),
+                            disabled(
+                                tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up distributions", tags$span("In progress", class="label label-primary")),
+                                tags$p("The program can add up two component income or wealth (typically, labor
+                                    and capital income). The distributions of the two components to be added
+                                    must share the same", tags$code("addupid"), "in the input files. See help for details.",
+                                    style = "font-size: small; color: #666;"
+                            ),
+                                checkboxInput('addup', "Add up distributions", value=FALSE),
+                                withMathJax(tags$p("The dependency between is assumed to be characterized by a Gumbel copula
+                                    with a user-specified parameter \\(\\theta\\). The higher the parameter, the higher the
+                                    dependency, with \\(\\theta = 1\\) meaning independence.",
+                                    style = "font-size: small; color: #666;"
+                                )),
+                                numericInput('gumbelparam', "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%")
+                            ),
+                            hr(),
+                            disabled(
+                                tags$h4(icon("compress"), HTML("&nbsp;"), "Merge distributions", tags$span("In progress", class="label label-primary")),
+                                tags$p("The program can merge several distributions (typically from several
+                                    countries). The distributions to be merged must share the same", tags$code("mergeid"),
+                                    "in the input files. See help for details.",
+                                    style = "font-size: small; color: #666;"
+                                ),
+                                checkboxInput('merge', "Merge distributions", value=FALSE)
+                            ),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default"
                     )
                 )
             )
         ),
         icon=icon("arrow-down")
     ),
-    tabPanel("Results",
+    tabPanel("Tables",
         fixedPage(
             fixedRow(
                 column(9,
                     uiOutput("results_tabs")
                 ),
                 column(3,
-                    downloadButton("dl_all_results",
-                        label = "Download all as CSV",
-                        class = "btn-primary btn-block disabled"
-                    ),
-                    hr(),
-                    tags$h4(icon("cog"), HTML("&nbsp;"), "CSV export options"),
-                    radioButtons('sep_results_out', 'Separator', c(
-                        "Comma" = ',',
-                        "Semicolon" = ';',
-                        "Tab" = '\t'),
-                        ';'
-                    ),
-                    radioButtons('decim_results_out', 'Decimal separator', c(
-                        "Point" = '.',
-                        "Comma" = ','),
-                        ','
+                    disabled(downloadButton("dl_tables_csv",
+                        label = "Download as CSV",
+                        class = "btn-primary btn-block"
+                    )),
+                    disabled(downloadButton("dl_tables_excel",
+                        label = "Download as Excel",
+                        class = "btn-primary btn-block"
+                    )),
+                    tags$div(
+                        tags$div(
+                            tags$h3(icon("columns"), HTML("&nbsp;"), "Customize columns", class="panel-title"),
+                            class = "panel-heading"
+                        ),
+                        tags$div(
+                            tags$p("Select the columns you want to include in the tables.",
+                                style = "font-size: small; color: #666;"
+                            ),
+                            checkboxGroupInput('results_display', NULL,
+                                choices = list(
+                                    "Threshold" = "thres",
+                                    "Top share" = "topshare",
+                                    "Bottom share" = "bottomshare",
+                                    "Bracket share" = "bracketshare",
+                                    "Top average" = "topavg",
+                                    "Bracket average" = "bracketavg",
+                                    "Inverted Pareto coefficient" = "invpareto"
+                                ),
+                                selected = c("perc", "thres", "topshare", "invpareto"),
+                                width = "100%"
+                            ),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default",
+                        style = "margin-top: 20px;"
                     )
                 )
             )
@@ -211,46 +158,120 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
         icon=icon("table")
     ),
     tabPanel("Plots",
-        fixedPage(uiOutput("plot_tabs")),
+        fixedPage(
+            navlistPanel(
+                tabPanel("Lorenz curve",
+                    uiOutput("plots_tabs_lorenz")
+                ),
+                tabPanel("Generalized Pareto curve",
+                    uiOutput("plots_tabs_gpc")
+                ),
+                tabPanel("Probability density function",
+                    uiOutput("plots_tabs_pdf")
+                ),
+                tabPanel("Cumulative density function",
+                    uiOutput("plots_tabs_cdf")
+                ),
+                tabPanel("Quantile function",
+                    uiOutput("plots_tabs_quantile")
+                ),
+                tabPanel("Tail function",
+                    uiOutput("plots_tabs_tail")
+                ),
+                tabPanel("Interpolation function",
+                    uiOutput("plots_tabs_phi")
+                ),
+                tabPanel("Derivative of interpolation function",
+                    uiOutput("plots_tabs_deriv_phi")
+                ),
+                well = FALSE
+            )
+        ),
         icon=icon("area-chart")
     ),
-    tabPanel("Simulate population",
+    tabPanel("Simulate",
         fixedPage(
+            uiOutput("synthpop_select_file"),
+            numericInput("synthpop_size", "Choose sample size",
+                value = 1e6,
+                min = 1,
+                width = "100%"
+            ),
+            hr(),
             fixedRow(
-                column(9,
-                    uiOutput("synthpop_select_file"),
-                    numericInput("synthpop_size", "Choose sample size",
-                        value = 1e6,
-                        min = 1,
-                        width = "100%"
-                    ),
-                    hr(),
-                    fixedRow(
-                        column(12,
-                            downloadButton("synthpop_dl", "Download as CSV",
-                                class = "btn-block btn-primary disabled"
-                            )
-                        )
+                column(6,
+                    downloadButton("synthpop_dl_csv", "Download as CSV",
+                        class = "btn-block btn-primary disabled"
                     )
                 ),
-                column(3,
-                    tags$h4(icon("cog"), HTML("&nbsp;"), "CSV export options"),
-                    radioButtons('synthpop_sep_out', 'Separator', c(
-                        "Comma" = ',',
-                        "Semicolon" = ';',
-                        "Tab" = '\t'),
-                        ';'
-                    ),
-                    radioButtons('synthpop_decim_out', 'Decimal separator', c(
-                        "Point" = '.',
-                        "Comma" = ','),
-                        ','
+                column(6,
+                    downloadButton("synthpop_dl_excel", "Download as Excel",
+                        class = "btn-block btn-primary disabled"
                     )
                 )
             )
         ),
-        icon=icon("users")
+        icon = icon("random")
     ),
+    tabPanel("Diagnostic",
+        icon = icon("stethoscope")
+    ),
+    tabPanel("Options",
+        fixedPage(
+            fixedRow(
+                column(6, tags$div(
+                    tags$div(
+                        tags$h3("CSV import options", class="panel-title"),
+                        class = "panel-heading"
+                    ),
+                    tags$div(
+                        tags$h4("Field separator"),
+                        radioButtons('csv_input_field_separator', NULL, list(
+                            "Comma" = ",",
+                            "Tabs" = "\t",
+                            "Semicolon" = ";"
+                        ), selected = ";"),
+                        tags$h4("Decimal separator"),
+                        radioButtons('csv_input_dec_separator', NULL, list(
+                            "Point" = ".",
+                            "Comma" = ","
+                        ), selected = ","),
+                        tags$h4("Quotes"),
+                        radioButtons('csv_input_quote', NULL, list(
+                            "None" = "",
+                            "Single quotes" = "'",
+                            "Double quotes" = "\""
+                        ), selected = "\""),
+                        class = "panel-body"
+                    ),
+                    class = "panel panel-default"
+                )),
+                column(6, tags$div(
+                    tags$div(
+                        tags$h3("CSV export options", class="panel-title"),
+                        class = "panel-heading"
+                    ),
+                    tags$div(
+                        tags$h4("Field separator"),
+                        radioButtons('csv_output_field_separator', NULL, list(
+                            "Comma" = ",",
+                            "Tabs" = "\t",
+                            "Semicolon" = ";"
+                        ), selected = ";"),
+                        tags$h4("Decimal separator"),
+                        radioButtons('csv_output_dec_separator', NULL, list(
+                            "Point" = ".",
+                            "Comma" = ","
+                        ), selected = ","),
+                        class = "panel-body"
+                    ),
+                    class = "panel panel-default"
+                ))
+            )
+        ),
+        icon = icon("cogs")
+    ),
+    selected = "Input data",
     inverse = TRUE,
     position = "fixed-top",
     theme = "style.css"

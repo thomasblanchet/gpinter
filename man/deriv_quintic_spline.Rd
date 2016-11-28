@@ -27,6 +27,6 @@ First derivative of the quintic spline interpolation function
 over several intervals.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

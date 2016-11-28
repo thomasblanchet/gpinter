@@ -29,6 +29,6 @@ interpolation of the left interval, where the derivative on the right is
 estimated from the three points to the right.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

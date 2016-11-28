@@ -28,6 +28,6 @@ generalized Pareto distribution, but with some rescaling to model the bottom
 of the distribution only.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

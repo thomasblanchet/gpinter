@@ -23,13 +23,43 @@ tabulation_fit(p, threshold, average, bracketshare = NULL, topshare = NULL,
 
 \item{topavg}{The corresponding top average.}
 
-\item{ci}{Should confidence interval (identification region) be computed ?
-Default is \code{TRUE}}
+\item{ci}{Should confidence interval (identification region) be computed?
+Default is \code{TRUE}.}
 
 \item{samplesize}{The size of the underlying sample.}
 
 \item{deriv4max}{A functional bound of the fourth derivative of the
 interpolation function.}
+}
+\value{
+An object of class \code{gpinter_dist} with the following
+components:
+\describe{
+    \item{average}{The distribution average.}
+    \item{pk}{A vector of values in [0, 1].}
+    \item{qk}{A vector of corresponding quantiles.}
+    \item{mk}{A vector of corresponding averages truncated from below at
+        \code{pk}.}
+    \item{bk}{A vector of inverted Pareto coefficients at \code{pk}.}
+    \item{xk}{A vector of interpolation points.}
+    \item{yk}{A vector of values for the interpolation function at \code{xk}.}
+    \item{sk}{A vector of values for the first derivative of the interpolation
+        function at \code{xk}.}
+    \item{ak}{A vector of values for the second derivative of the interpolation
+        function at \code{xk}.}
+    \item{mu_top}{The location parameter of the generalized Pareto distribution
+        in the top bracket.}
+    \item{sigma_top}{The scale parameter of the generalized Pareto distribution
+        in the top bracket.}
+    \item{xi_top}{The shape parameter of the generalized Pareto distribution
+        in the top bracket.}
+    \item{mu_bottom}{The location parameter of the generalized Pareto distribution
+        below the bottom bracket.}
+    \item{sigma_top}{The scale parameter of the generalized Pareto distribution
+        below the bottom bracket.}
+    \item{xi_top}{The shape parameter of the generalized Pareto distribution
+        below the bottom bracket.}
+}
 }
 \description{
 Estimate a distribution nonparametrically based on tabulations
@@ -41,6 +71,6 @@ of a distribution which include:
 }
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

@@ -28,6 +28,6 @@ Gives the bound on the interpolation error of the
 derivative for central intervals.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

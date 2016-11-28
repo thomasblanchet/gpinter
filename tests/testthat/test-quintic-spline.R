@@ -170,3 +170,101 @@ test_that("Quintic spline interpolation function and its derivatives are valid",
         expect_equal(deriv2_quintic_spline(xk, xk, yk, sk, ak), ak)
     }
 })
+
+test_that("Natural quintic spline for some simple cases", {
+    set.seed(19920902)
+    for (i in 1:10) {
+        # Constant function
+        xk <- cumsum(exp(rnorm(10)))
+        yk <- rep(1, 10)
+        sk <- rep(0, 10)
+        ak <- rep(0, 10)
+        expect_equal(natural_quintic_spline(xk, yk, sk), ak)
+
+        # Linear function
+        xk <- cumsum(exp(rnorm(10)))
+        a <- rnorm(1)
+        b <- rnorm(1)
+        yk <- a*xk + b
+        sk <- rep(a, 10)
+        ak <- rep(0, 10)
+        expect_equal(natural_quintic_spline(xk, yk, sk), ak)
+
+        # Quadratic function
+        xk <- cumsum(exp(rnorm(10)))
+        a <- rnorm(1)
+        b <- rnorm(1)
+        c <- rnorm(1)
+        yk <- a*xk^2 + b*xk + c
+        sk <- 2*a*xk + b
+        ak <- rep(2*a, 10)
+        expect_equal(natural_quintic_spline(xk, yk, sk), ak)
+
+        # Compare with explicit solution for three points only
+        xk <- cumsum(exp(rnorm(3)))
+        yk <- rnorm(3)
+        sk <- rnorm(3)
+
+        x1 <- xk[1]
+        x2 <- xk[2]
+        x3 <- xk[3]
+
+        y1 <- yk[1]
+        y2 <- yk[2]
+        y3 <- yk[3]
+
+        s1 <- sk[1]
+        s2 <- sk[2]
+        s3 <- sk[3]
+
+        a1 <- (24*s1*x1^2*x2^2 - 27*s1*x1*x2^3 + 3*s1*x2^4 + 3*s3*(x1 - x2)^3*(x2 - x3) +
+            s2*(x1 - x2)*(7*x1 + 2*x2 - 9*x3)*(x1 - x3)*(x2 - x3) - 48*s1*x1^2*x2*x3 +
+            33*s1*x1*x2^2*x3 + 15*s1*x2^3*x3 + 24*s1*x1^2*x3^2 + 15*s1*x1*x2*x3^2 -
+            39*s1*x2^2*x3^2 - 21*s1*x1*x3^3 + 21*s1*x2*x3^3 - 40*x1*x2^2*y1 + 10*x2^3*y1 +
+            80*x1*x2*x3*y1 + 10*x2^2*x3*y1 - 40*x1*x3^2*y1 - 50*x2*x3^2*y1 + 30*x3^3*y1 -
+            10*x1^3*y2 + 30*x1^2*x2*y2 + 10*x1*x2^2*y2 - 80*x1*x2*x3*y2 - 10*x2^2*x3*y2 +
+            40*x1*x3^2*y2 + 50*x2*x3^2*y2 - 30*x3^3*y2 + 10*x1^3*y3 - 30*x1^2*x2*y3 +
+            30*x1*x2^2*y3 - 10*x2^3*y3)/(6*(x1 - x2)^2*(x1 - x3)*(x2 - x3)^2)
+        a2 <- (-3*s1*x1*x2^3 + 3*s1*x2^4 + 3*s3*(x1 - x2)^3*(x2 - x3) + 9*s1*x1*x2^2*x3 -
+            9*s1*x2^3*x3 - 9*s1*x1*x2*x3^2 + 9*s1*x2^2*x3^2 + 3*s1*x1*x3^3 - 3*s1*x2*x3^3 +
+            7*s2*(x1 - x2)*(x1 - x3)*(x2 - x3)*(x1 - 2*x2 + x3) + 10*x2^3*y1 - 30*x2^2*x3*y1 +
+            30*x2*x3^2*y1 - 10*x3^3*y1 - 10*x1^3*y2 + 30*x1^2*x2*y2 - 30*x1*x2^2*y2 +
+            30*x2^2*x3*y2 - 30*x2*x3^2*y2 + 10*x3^3*y2 + 10*x1^3*y3 - 30*x1^2*x2*y3 +
+            30*x1*x2^2*y3 - 10*x2^3*y3)/(2*(x1 - x2)^2*(x1 - x3)*(x2 - x3)^2)
+        a3 <- -(3*s1*x1*x2^3 - 3*s1*x2^4 + 3*s3*(x1 - x2)^2*(7*x1 + x2 - 8*x3)*(x2 - x3) +
+            s2*(x1 - x2)*(9*x1 - 2*x2 - 7*x3)*(x1 - x3)*(x2 - x3) - 9*s1*x1*x2^2*x3 +
+            9*s1*x2^3*x3 + 9*s1*x1*x2*x3^2 - 9*s1*x2^2*x3^2 - 3*s1*x1*x3^3 + 3*s1*x2*x3^3 -
+            10*x2^3*y1 + 30*x2^2*x3*y1 - 30*x2*x3^2*y1 + 10*x3^3*y1 - 30*x1^3*y2 +
+            50*x1^2*x2*y2 - 10*x1*x2^2*y2 + 40*x1^2*x3*y2 - 80*x1*x2*x3*y2 + 10*x2^2*x3*y2 +
+            30*x2*x3^2*y2 - 10*x3^3*y2 + 30*x1^3*y3 - 50*x1^2*x2*y3 + 10*x1*x2^2*y3 +
+            10*x2^3*y3 - 40*x1^2*x3*y3 + 80*x1*x2*x3*y3 - 40*x2^2*x3*y3)/
+            (6*(x1 - x2)^2*(x1 - x3)*(x2 - x3)^2)
+
+        expect_equal(natural_quintic_spline(xk, yk, sk), c(a1, a2, a3))
+    }
+})
+
+test_that("Natural quintic spline is equivalent to minimization of strain energy", {
+    set.seed(19920902)
+    for (i in 1:10) {
+        xk <- cumsum(exp(rnorm(10)))
+        yk <- rnorm(10)
+        sk <- rnorm(10)
+
+        # Minimize strain energy
+        fit <- optim(
+            par = rep(0, 10),
+            fn = function(theta) {
+                tension(xk, yk, sk, theta)
+            },
+            gr = function(theta) {
+                tension_grad(xk, yk, sk, theta)
+            },
+            method = "BFGS",
+            control = list(trace=0)
+        )
+
+        expect_equal(fit$par, natural_quintic_spline(xk, yk, sk),
+            tolerance=1e-4, scale=max(fit$par))
+    }
+})

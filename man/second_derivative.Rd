@@ -31,6 +31,6 @@ Taylor expansion of the function. The value of the estimated derivative holds
 for the three input points \code{x0}, \code{x1} and \code{x2}.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

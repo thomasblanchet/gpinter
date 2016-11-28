@@ -26,6 +26,6 @@ are chosen so as to ensure the continuity and derivability of the quantile
 function, and to match the average in the last bracket.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

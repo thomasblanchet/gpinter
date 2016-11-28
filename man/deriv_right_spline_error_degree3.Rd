@@ -26,6 +26,6 @@ Gives the bound on the interpolation error of the
 derivative for the right interval.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 

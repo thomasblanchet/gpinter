@@ -1,10 +1,12 @@
 Package: gpinter
 Type: Package
 Title: Generalized Pareto Interpolation
-Version: 0.1
+Version: 0.0.0.9000
 Date: 2016-10-18
-Author: Thomas Blanchet
-Maintainer: Thomas Blanchet <thomas.blanchet@ensae.org>
+Authors@R: c(
+    person("Thomas", "Blanchet", email="thomas.blanchet@ensae.org", role=c("cre", "aut")),
+    person("Juliette", "Fournier", email="jfournie@mit.edu", role="aut"),
+    person("Thomas", "Piketty", email="thomas.piketty@psemail.eu", role="aut"))
 Description: Nonparametric estimation of distributions from tabulated data using generalized Pareto interpolation techniques.
 License: CC BY-SA 4.0
 LazyData: TRUE
@@ -13,8 +15,12 @@ Imports:
     shinyBS (>= 0.61),
     shinyjs (>= 0.7),
     evaluate (>= 0.10),
-    xlsx (>= 0.5.7)
+    readxl (>= 0.1.1),
+    nloptr (>= 1.0.4),
+    ggplot2 (>= 2.1.0)
 Suggests:
-    testthat
+    testthat (>= 1.0.2),
+    numDeriv (>= 2016.8-1),
+    xlsx (>= 0.5.7)
 RoxygenNote: 5.0.1
 Encoding: UTF-8

@@ -25,6 +25,6 @@ The values of the interpolation function at each point \code{x}.
 Quintic spline interpolation function over several intervals.
 }
 \author{
-Thomas Blanchet
+Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
 
