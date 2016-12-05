@@ -17,40 +17,14 @@
 #' @param topshare The corresponding top share.
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
+#' @param invpareto The inverted Pareto coefficient.
 #' @param ci Should confidence interval (identification region) be computed?
 #' Default is \code{TRUE}.
 #' @param samplesize The size of the underlying sample.
 #' @param deriv4max A functional bound of the fourth derivative of the
 #' interpolation function.
 #'
-#' @return An object of class \code{gpinter_dist} with the following
-#' components:
-#' \describe{
-#'     \item{average}{The distribution average.}
-#'     \item{pk}{A vector of values in [0, 1].}
-#'     \item{qk}{A vector of corresponding quantiles.}
-#'     \item{mk}{A vector of corresponding averages truncated from below at
-#'         \code{pk}.}
-#'     \item{bk}{A vector of inverted Pareto coefficients at \code{pk}.}
-#'     \item{xk}{A vector of interpolation points.}
-#'     \item{yk}{A vector of values for the interpolation function at \code{xk}.}
-#'     \item{sk}{A vector of values for the first derivative of the interpolation
-#'         function at \code{xk}.}
-#'     \item{ak}{A vector of values for the second derivative of the interpolation
-#'         function at \code{xk}.}
-#'     \item{mu_top}{The location parameter of the generalized Pareto distribution
-#'         in the top bracket.}
-#'     \item{sigma_top}{The scale parameter of the generalized Pareto distribution
-#'         in the top bracket.}
-#'     \item{xi_top}{The shape parameter of the generalized Pareto distribution
-#'         in the top bracket.}
-#'     \item{mu_bottom}{The location parameter of the generalized Pareto distribution
-#'         below the bottom bracket.}
-#'     \item{sigma_top}{The scale parameter of the generalized Pareto distribution
-#'         below the bottom bracket.}
-#'     \item{xi_top}{The shape parameter of the generalized Pareto distribution
-#'         below the bottom bracket.}
-#' }
+#' @return An object of class \code{gpinter_dist_orig}.
 #'
 #' @importFrom stats integrate optim
 #' @importFrom nloptr nloptr
@@ -58,8 +32,7 @@
 #' @export
 
 tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
-                           bracketavg=NULL, topavg=NULL, ci=TRUE,
-                           samplesize=NULL, deriv4max=NULL) {
+                           bracketavg=NULL, topavg=NULL, invpareto=NULL) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -98,22 +71,32 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         }
         topavg <- topavg[ord]
         m <- (1 - p)*topavg
+    } else if (!is.null(invpareto)) {
+        if (length(invpareto) != n) {
+            stop("'p' and 'invpareto' must have the same length.")
+        }
+        invpareto <- invpareto[ord]
+        m <- (1 - p)*threshold*invpareto
+        # The inverted Pareto may not be defined for the first threshold
+        if (is.na(invpareto[1]) & p[1] == 0) {
+            m[1] <- average
+        }
     } else {
-        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg' or 'topavg'.")
+        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg', 'topavg' or 'invpareto'.")
     }
 
     # Sanity check of the data
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
-        stop("Threshold must be strictly increasing.")
+        stop("Thresholds must be strictly increasing.")
     }
     if (any(diff(m) >= 0)) {
         stop("Truncated average must be strictly decreasing.")
     }
-    # Truncated mean function is concanve
+    # Truncated mean function is concave
     for (i in 2:(n - 1)) {
         chord <- m[i - 1] + (m[i + 1] - m[i - 1])*(p[i] - p[i - 1])/(p[i +1] - p[i - 1])
-        if (m[i] <= chord) {
+        if (m[i] < chord) {
             stop("Truncated average must be concave.")
         }
     }
@@ -239,8 +222,8 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
                     )
                     qk_cns <- c(
                         qk_cns,
-                        new_pt$s_new1*exp(new_pts$x_new1 - new_pts$y_new1),
-                        new_pt$s_new2*exp(new_pts$x_new2 - new_pts$y_new2),
+                        new_pts$s_new1*exp(new_pts$x_new1 - new_pts$y_new1),
+                        new_pts$s_new2*exp(new_pts$x_new2 - new_pts$y_new2),
                         q1
                     )
                     mk_cns <- c(mk_cns, exp(-new_pts$y_new1), exp(-new_pts$y_new2), m1)
@@ -286,7 +269,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
 
     # Object to return
     result <- list()
-    class(result) <- c("gpinter_dist_tabulation", "gpinter_dist_orig", "gpinter_dist")
+    class(result) <- c("gpinter_dist_orig", "gpinter_dist")
     result$use_hist <- use_hist
     result$pk <- pk_cns
     result$qk <- qk_cns

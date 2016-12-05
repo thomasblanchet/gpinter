@@ -1,3 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+.navbar-default .navbar-brand {
+    padding-top: 8px;
+    text-transform: uppercase;
+}
+
+
+.navbar-default .navbar-brand a p:first-child {
+    font-size: 20px;
+    color: #FFF;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.navbar-default .navbar-brand a p:last-child {
+    font-size: 10px;
+    color: #FFF;
+    margin-bottom: 0;
+    margin-top: -3px;
+}
+
+.navbar-default .navbar-brand a,
+.navbar-default .navbar-brand a:focus,
+.navbar-default .navbar-brand a:hover {
+    color: #FFF;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-default .navbar-brand:focus a,
+.navbar-default .navbar-brand:hover a {
+    color: #FFF;
+    font-weight: bold;
+}
+
+.navbar {
+    /*background-color: #0b6685;*/
+    border-bottom: none;
+    /*text-transform: uppercase;*/
+}
+
+.navbar-default .navbar-nav li a {
+    /*background-color: #0b6685;*/
+    color: #FFF;
+}
+
+.navbar-default .navbar-nav li a:hover {
+    /*background-color: #005C7D;*/
+    color: #FFF;
+}
+
+.navbar-default .navbar-nav li.active a,
+.navbar-default .navbar-nav li.active a:focus,
+.navbar-default .navbar-nav li.active a:hover {
+    /*background-color: #005C7D;*/
+    color: #FFF;
+}
+
 .tabs-presentation {
     margin-bottom: 20px;
 }
@@ -69,13 +128,9 @@
 }
 
 body {
-    margin-top: 360px;
+    margin-top: 380px;
     margin-bottom: 50px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-span.btn-file {
-    margin-right: -2px !important;
+    font-family: 'Lato', sans-serif;
 }
 
 .anchor {
@@ -87,6 +142,10 @@ span.btn-file {
 
 #synthpop_dl_excel {
     margin-top: 10px;
+}
+
+span.btn-file {
+    margin-right: -2px !important;
 }
 
 @media (min-width: 768px) {
@@ -112,7 +171,7 @@ span.btn-file {
         display: block;
     }
     body {
-        margin-top: 130px;
+        margin-top: 80px;
     }
     .anchor {
         display: block;

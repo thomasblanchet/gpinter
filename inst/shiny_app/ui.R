@@ -3,53 +3,14 @@ library(shinyBS)
 library(shinyjs)
 
 # Define UI for the application
-shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
-    tabPanel("Help",
-        fixedPage(
-            fixedRow(
-                column(8,
-                    withMathJax(includeHTML("help.html"))
-                ),
-                column(4,
-                    tags$div(
-                        tags$ul(
-                            tags$li(a("Introduction", href="#")),
-                            tags$li(a("Functionalities", href="#functionalities")),
-                            tags$li(a("Usage", href="#usage"), tags$ul(
-                                tags$li(a("Input data format", href="#input-format"))
-                            ))
-                        ),
-                        class = "nav-doc"
-                    )
-                )
-            )
-        ),
-        icon = icon("question-circle")
-    ),
-    tabPanel("Input data",
+shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
+        tags$p("WID.WORLD"),
+        tags$p("generalized Pareto interpolation"),
+        href = "http://apps.wid.world/gpinter/"
+    ), tabPanel("Input data",
         fixedPage(
             fixedRow(
                 column(7,
-                    tags$h4(icon("files-o"), HTML("&nbsp;"), "Import file(s)"),
-                    tags$p("Supports CSV and Excel formats."),
-                    fileInput("file_input",
-                        width = "100%",
-                        label = NULL,
-                        multiple = TRUE,
-                        accept = c(
-                            'text/csv',
-                            'text/comma-separated-values',
-                            'text/tab-separated-values',
-                            'text/plain',
-                            'application/vnd.ms-excel',
-                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                            '.txt',
-                            '.csv',
-                            '.tsv',
-                            '.xls',
-                            '.xlsx'
-                        )
-                    ),
                     disabled(actionButton('run', "Run",
                         icon = icon("play"),
                         width = "100%",
@@ -61,12 +22,41 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
                 column(5,
                     tags$div(
                         tags$div(
-                            tags$h3(icon("sliders"), HTML("&nbsp;"), "Interpolation settings", class="panel-title"),
+                            tags$h3(icon("files-o"), HTML("&nbsp;"), "Import file(s)", class="panel-title"),
+                            class = "panel-heading"
+                        ),
+                        tags$div(
+                            tags$p("Supports CSV and Excel formats."),
+                            fileInput("file_input",
+                                width = "100%",
+                                label = NULL,
+                                multiple = TRUE,
+                                accept = c(
+                                    'text/csv',
+                                    'text/comma-separated-values',
+                                    'text/tab-separated-values',
+                                    'text/plain',
+                                    'application/vnd.ms-excel',
+                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                    '.txt',
+                                    '.csv',
+                                    '.tsv',
+                                    '.xls',
+                                    '.xlsx'
+                                )
+                            ),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default"
+                    ),
+                    tags$div(
+                        tags$div(
+                            tags$h3(icon("cogs"), HTML("&nbsp;"), "Interpolation options", class="panel-title"),
                             class = "panel-heading"
                         ),
                         tags$div(
                             disabled(
-                                tags$h4(icon("user"), HTML("&nbsp;"), "Individualisation", tags$span("In progress", class="label label-primary")),
+                                tags$h4(icon("user"), HTML("&nbsp;"), "Individualize", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
                                 tags$p("The program can individualize the distribution of income or wealth
                                     under the assumption of equal sharing among spouses. If you select this
                                     option, you must specify the share of singles in your input files. See help
@@ -77,26 +67,20 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
                             ),
                             hr(),
                             disabled(
-                                tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up distributions", tags$span("In progress", class="label label-primary")),
-                                tags$p("The program can add up two component income or wealth (typically, labor
+                                tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up components", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
+                                tags$p("The program can add up two component income or wealth (eg. labor
                                     and capital income). The distributions of the two components to be added
-                                    must share the same", tags$code("addupid"), "in the input files. See help for details.",
+                                    must share a common identifiant in the input files. See help for details.",
                                     style = "font-size: small; color: #666;"
-                            ),
-                                checkboxInput('addup', "Add up distributions", value=FALSE),
-                                withMathJax(tags$p("The dependency between is assumed to be characterized by a Gumbel copula
-                                    with a user-specified parameter \\(\\theta\\). The higher the parameter, the higher the
-                                    dependency, with \\(\\theta = 1\\) meaning independence.",
-                                    style = "font-size: small; color: #666;"
-                                )),
-                                numericInput('gumbelparam', "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%")
+                                ),
+                                checkboxInput('addup', "Add up distributions", value=FALSE)
                             ),
                             hr(),
                             disabled(
-                                tags$h4(icon("compress"), HTML("&nbsp;"), "Merge distributions", tags$span("In progress", class="label label-primary")),
+                                tags$h4(icon("globe"), HTML("&nbsp;"), "Merge countries", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
                                 tags$p("The program can merge several distributions (typically from several
-                                    countries). The distributions to be merged must share the same", tags$code("mergeid"),
-                                    "in the input files. See help for details.",
+                                    countries). The distributions to be merged must share a common identifiant
+                                    in the input files. See help for details.",
                                     style = "font-size: small; color: #666;"
                                 ),
                                 checkboxInput('merge', "Merge distributions", value=FALSE)
@@ -214,11 +198,68 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
         icon = icon("random")
     ),
     tabPanel("Diagnostic",
+        fixedPage(
+            tags$h1(tags$span("In progress", class="label label-primary"), style="text-align: center;")
+        ),
         icon = icon("stethoscope")
     ),
-    tabPanel("Options",
+    tabPanel("Help",
         fixedPage(
             fixedRow(
+                column(8,
+                    withMathJax(includeHTML("help.html"))
+                ),
+                column(4,
+                    tags$div(
+                        tags$ul(
+                            tags$li(a("Introduction", href="#")),
+                            tags$li(a("Functionalities", href="#functionalities")),
+                            tags$li(a("Usage", href="#usage"), tags$ul(
+                                tags$li(a("Input data format", href="#input-format"))
+                            ))
+                        ),
+                        class = "nav-doc"
+                    )
+                )
+            )
+        ),
+        icon = icon("question-circle")
+    ),
+    tabPanel("Settings",
+        fixedPage(
+            fixedRow(
+                column(6,
+                    tags$div(
+                        tags$div(
+                            tags$h3("Variable names", class="panel-title"),
+                            class = "panel-heading"
+                        ),
+                        tags$div(
+                            tags$form(
+                                tags$div(
+                                    textInput("var_p", "Fractiles", "p", width="100%"),
+                                    textInput("var_q", "Thresholds", "thr", width="100%"),
+                                    textInput("var_b", "Inverted Pareto coefficient", "b", width="100%"),
+                                    textInput("var_bracketshare", "Bracket share", "bracketshare", width="100%"),
+                                    textInput("var_topshare", "Top share", "topshare", width="100%"),
+                                    textInput("var_bracketavg", "Bracket average", "bracketavg", width="100%"),
+                                    textInput("var_topavg", "Top average", "topavg", width="100%"),
+                                    textInput("var_bracketsingle", "Share of singles inside bracket", "bracketsingle", width="100%"),
+                                    textInput("var_topsingle", "Share of singles in bracket and above", "topsingle", width="100%"),
+                                    textInput("var_label", "Label", "year", width="100%"),
+                                    textInput("var_average", "Average", "average", width="100%"),
+                                    textInput("var_popsize", "Population size", "popsize", width="100%"),
+                                    textInput("var_gumbel", "Gumbel copula parameter", "gumbel", width="100%"),
+                                    textInput("var_addupid", "ID for matching the distributions to add up", "addupid", width="100%"),
+                                    textInput("var_mergeid", "ID for matching the distributions to merge", "mergeid", width="100%"),
+                                    class = "form-group"
+                                )
+                            ),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default"
+                    )
+                ),
                 column(6, tags$div(
                     tags$div(
                         tags$h3("CSV import options", class="panel-title"),
@@ -236,17 +277,11 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
                             "Point" = ".",
                             "Comma" = ","
                         ), selected = ","),
-                        tags$h4("Quotes"),
-                        radioButtons('csv_input_quote', NULL, list(
-                            "None" = "",
-                            "Single quotes" = "'",
-                            "Double quotes" = "\""
-                        ), selected = "\""),
                         class = "panel-body"
                     ),
                     class = "panel panel-default"
-                )),
-                column(6, tags$div(
+                ),
+                tags$div(
                     tags$div(
                         tags$h3("CSV export options", class="panel-title"),
                         class = "panel-heading"
@@ -269,10 +304,11 @@ shinyUI(tagList(useShinyjs(), navbarPage("Generalized Pareto interpolation",
                 ))
             )
         ),
-        icon = icon("cogs")
+        icon = icon("sliders")
     ),
     selected = "Input data",
-    inverse = TRUE,
     position = "fixed-top",
-    theme = "style.css"
+    inverse = TRUE,
+    theme = "style.css",
+    windowTitle = "Generalized Pareto interpolation - WID.WORLD"
 )))

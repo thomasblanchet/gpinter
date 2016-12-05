@@ -530,12 +530,8 @@ add_one_point <- function(x0, x1, y0, y1, s0, s1, a0, a1) {
     new_pt <- nloptr::nloptr(
         opts = list(
             maxeval = 1e4,
-            algorithm = "NLOPT_LD_AUGLAG",
-            xtol_rel = sqrt(.Machine$double.eps),
-            local_opts = list(
-                algorithm = "NLOPT_LD_SLSQP",
-                xtol_rel = sqrt(.Machine$double.eps)
-            )
+            algorithm = "NLOPT_LD_SLSQP",
+            xtol_rel = sqrt(.Machine$double.eps)
         ),
         x0 = c(y_ini, s_ini, a_ini),
         eval_f = function(theta) {
@@ -626,12 +622,8 @@ add_two_points <- function(x0, x1, y0, y1, s0, s1, a0, a1) {
     new_pts <- nloptr::nloptr(
         opts = list(
             maxeval = 1e4,
-            algorithm = "NLOPT_LD_AUGLAG",
-            xtol_rel = sqrt(.Machine$double.eps),
-            local_opts = list(
-                algorithm = "NLOPT_LD_SLSQP",
-                xtol_rel = sqrt(.Machine$double.eps)
-            )
+            algorithm = "NLOPT_LD_SLSQP",
+            xtol_rel = sqrt(.Machine$double.eps)
         ),
         x0 = c(y_ini1, s_ini1, a_ini1, y_ini2, s_ini2, a_ini2),
         eval_f = function(theta) {

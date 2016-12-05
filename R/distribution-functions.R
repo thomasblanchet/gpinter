@@ -250,7 +250,8 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
                     return(exp(x - y)*dydx - q)
                 },
                 lower = dist$pk[j],
-                upper = dist$pk[j + 1]
+                upper = dist$pk[j + 1],
+                tol = sqrt(.Machine$double.eps)
             )$root)
         }
     }))
@@ -307,12 +308,27 @@ fitted_density.gpinter_dist_orig <- function(dist, x, ...) {
         # We are in the interpolation region, with Pareto interpolation
         # Get the value of the probability associated to the quantile
         p <- fitted_cdf(dist, x)
-        x <- -log(1 - p)
-        y <- quintic_spline(x, dist$xk, dist$yk, dist$sk, dist$ak)
-        dydx <- deriv_quintic_spline(x, dist$xk, dist$yk, dist$sk, dist$ak)
-        d2ydx2 <- deriv2_quintic_spline(x, dist$xk, dist$yk, dist$sk, dist$ak)
+        z <- -log(1 - p)
+        y <- h(z,
+            dist$xk[k], dist$xk[k + 1],
+            dist$yk[k], dist$yk[k + 1],
+            dist$sk[k], dist$sk[k + 1],
+            dist$ak[k], dist$ak[k + 1]
+        )
+        dydx <- hd1(z,
+            dist$xk[k], dist$xk[k + 1],
+            dist$yk[k], dist$yk[k + 1],
+            dist$sk[k], dist$sk[k + 1],
+            dist$ak[k], dist$ak[k + 1]
+        )
+        d2ydx2 <- hd2(z,
+            dist$xk[k], dist$xk[k + 1],
+            dist$yk[k], dist$yk[k + 1],
+            dist$sk[k], dist$sk[k + 1],
+            dist$ak[k], dist$ak[k + 1]
+        )
 
-        1/(exp(2*x - y)*(d2ydx2 + dydx*(1 - dydx)))
+        1/(exp(2*z - y)*(d2ydx2 + dydx*(1 - dydx)))
     })))))
 }
 
@@ -484,10 +500,36 @@ invpareto.gpinter_dist <- function(dist, p, ...) {
     x <- -log(1 - p)
     dydx <- deriv_phi(dist, x)
     b <- 1/dydx
-    if (dist$xi_top > 0) {
-        b[p == 1] <- 1/(1 - dist$xi_top)
-    } else {
-        b[p == 1] <- 1
-    }
+    # if (dist$xi_top > 0) {
+    #     b[p == 1] <- 1/(1 - dist$xi_top)
+    # } else {
+    #     b[p == 1] <- 1
+    # }
     return(b)
+}
+
+#' @title Gini coefficient
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Compute the value of the Gini coefficient for a distribution
+#' estimated via generalized Pareto interpolation.
+#'
+#' @param dist An object of class \code{gpinter_dist_orig}, \code{gpinter_dist_indiv},
+#' \code{gpinter_dist_addup} or \code{gpinter_dist_merge}.
+#' @param ... Ignored.
+#'
+#' @return The value of the inverted Pareto coefficient at \code{p}.
+#'
+#' @importFrom stats integrate
+#'
+#' @export
+
+gini <- function(dist, ...) UseMethod("gini")
+
+#' @export
+gini.gpinter_dist <- function(dist, ...) {
+    return(2*integrate(function(p) {
+        return(p - bottom_share(dist, p))
+    }, lower=0, upper=1)$value)
 }
