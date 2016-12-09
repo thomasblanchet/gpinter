@@ -164,7 +164,7 @@ code {
 }
 
 body {
-    margin-top: 380px;
+    margin-top: 375px;
     margin-bottom: 50px;
     font-family: 'Lato', sans-serif;
 }
@@ -201,7 +201,7 @@ span.btn-file {
         display: block;
     }
     body {
-        margin-top: 130px;
+        margin-top: 180px;
     }
     .anchor {
         display: block;
