@@ -3,22 +3,12 @@ library(shinyBS)
 library(shinyjs)
 
 # Define UI for the application
-shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
+shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
         tags$p("WID.WORLD"),
-        tags$p("generalized Pareto interpolation"),
-        href = "http://apps.wid.world/gpinter/"
-    ), tabPanel("Input data",
+        tags$p("generalized Pareto interpolation")
+    )), tabPanel("Input data",
         fixedPage(
             fixedRow(
-                column(7,
-                    disabled(actionButton('run', "Run",
-                        icon = icon("play"),
-                        width = "100%",
-                        class = "btn-success",
-                        style = "margin-bottom: 20px;"
-                    )),
-                    uiOutput("input_tabs")
-                ),
                 column(5,
                     tags$div(
                         tags$div(
@@ -44,6 +34,19 @@ shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
                                     '.xls',
                                     '.xlsx'
                                 )
+                            ),
+                            tags$div(
+                                tags$div(
+                                    id = "import_progress",
+                                    role = "progressbar",
+                                    `aria-valuenow` = "0",
+                                    `aria-valuemin` = "0",
+                                    `aria-valuemax` = "100",
+                                    style = "width: 0%;",
+                                    class = "progress-bar progress-bar-striped"
+                                ),
+                                id = "import_progress_container",
+                                class = "progress"
                             ),
                             class = "panel-body"
                         ),
@@ -89,16 +92,25 @@ shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
                         ),
                         class = "panel panel-default"
                     )
+                ),
+                column(7,
+                    uiOutput("input_data_view_header"),
+                    uiOutput("input_data_view")
                 )
             )
         ),
         icon=icon("arrow-down")
     ),
-    tabPanel("Tables",
+    tabPanel("Output tables",
         fixedPage(
             fixedRow(
                 column(9,
-                    uiOutput("results_tabs")
+                    fixedRow(
+                        column(4, disabled(selectInput("output_table_year", "Year", choices=NULL))),
+                        column(4, disabled(selectInput("output_table_country", "Country", choices=NULL))),
+                        column(4, disabled(selectInput("output_table_component", "Component", choices=NULL)))
+                    ),
+                    uiOutput("output_table")
                 ),
                 column(3,
                     disabled(downloadButton("dl_tables_csv",
@@ -143,41 +155,210 @@ shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
     ),
     tabPanel("Plots",
         fixedPage(
-            navlistPanel(
-                tabPanel("Lorenz curve",
-                    uiOutput("plots_tabs_lorenz")
+            tabsetPanel(
+                tabPanel("Distribution",
+                    fixedRow(
+                        column(4, disabled(selectInput("output_dist_plot_year", "Year", choices=NULL, width="100%"))),
+                        column(4, disabled(selectInput("output_dist_plot_country", "Country", choices=NULL, width="100%"))),
+                        column(4, disabled(selectInput("output_dist_plot_component", "Component", choices=NULL, width="100%"))),
+                        style = "margin-top: 10px;"
+                    ),
+                    hr(style="margin-top: 0;"),
+                    navlistPanel(
+                        tabPanel("Lorenz curve",
+                            plotOutput("plot_lorenz"),
+                            disabled(sliderInput("slider_lorenz",
+                                min = 0,
+                                max = 1,
+                                value = c(0, 1),
+                                step = 0.01,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Generalized Pareto curve",
+                            plotOutput("plot_gpc"),
+                            disabled(sliderInput("slider_gpc",
+                                min = 0,
+                                max = 1,
+                                value = c(0.1, 1),
+                                step = 0.01,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Probability density function",
+                            plotOutput("plot_pdf"),
+                            disabled(sliderInput("slider_pdf",
+                                min = 0,
+                                max = 1e5,
+                                value = c(0, 1e5),
+                                step = 1,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Cumulative density function",
+                            plotOutput("plot_cdf"),
+                            disabled(sliderInput("slider_cdf",
+                                min = 0,
+                                max = 1e5,
+                                value = c(0, 1e5),
+                                step = 1,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Quantile function",
+                            plotOutput("plot_quantile"),
+                            disabled(sliderInput("slider_quantile",
+                                min = 0,
+                                max = 1,
+                                value = c(0, 1),
+                                step = 0.01,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Top tail",
+                            plotOutput("plot_tail"),
+                            disabled(sliderInput("slider_tail",
+                                min = 0,
+                                max = 10,
+                                value = c(1, 7),
+                                step = 0.1,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Interpolation function",
+                            plotOutput("plot_phi"),
+                            disabled(sliderInput("slider_phi",
+                                min = 0,
+                                max = 10,
+                                value = c(0, 7),
+                                step = 0.1,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        tabPanel("Derivative of interpolation function",
+                            plotOutput("plot_deriv_phi"),
+                            disabled(sliderInput("slider_deriv_phi",
+                                min = 0,
+                                max = 10,
+                                value = c(0, 7),
+                                step = 0.1,
+                                label = NULL,
+                                width = "100%"
+                            ))
+                        ),
+                        well = FALSE
+                    )
                 ),
-                tabPanel("Generalized Pareto curve",
-                    uiOutput("plots_tabs_gpc")
+                tabPanel("Time series",
+                    fixedRow(
+                        column(6, disabled(selectInput("output_time_plot_country", "Country", choices=NULL, width="100%"))),
+                        column(6, disabled(selectInput("output_time_plot_component", "Component", choices=NULL, width="100%"))),
+                        style = "margin-top: 10px;"
+                    ),
+                    hr(style="margin-top: 0;"),
+                    navlistPanel(
+                        tabPanel("Top 1%",
+                            plotOutput("plot_top_1"),
+                            disabled(sliderInput("slider_top_1",
+                                min = 1900,
+                                max = 2015,
+                                value = c(1900, 2015),
+                                step = 1,
+                                label = NULL,
+                                width = "100%",
+                                sep = ""
+                            ))
+                        ),
+                        tabPanel("Top 10%",
+                            plotOutput("plot_top_10"),
+                            disabled(sliderInput("slider_top_10",
+                                min = 1900,
+                                max = 2015,
+                                value = c(1900, 2015),
+                                step = 1,
+                                label = NULL,
+                                width = "100%",
+                                sep = ""
+                            ))
+                        ),
+                        tabPanel("Middle 40%",
+                            plotOutput("plot_middle_40"),
+                            disabled(sliderInput("slider_middle_40",
+                                min = 1900,
+                                max = 2015,
+                                value = c(1900, 2015),
+                                step = 1,
+                                label = NULL,
+                                width = "100%",
+                                sep = ""
+                            ))
+                        ),
+                        tabPanel("Bottom 50%",
+                            plotOutput("plot_bottom_50"),
+                            disabled(sliderInput("slider_bottom_50",
+                                min = 1900,
+                                max = 2015,
+                                value = c(1900, 2015),
+                                step = 1,
+                                label = NULL,
+                                width = "100%",
+                                sep = ""
+                            ))
+                        ),
+                        tabPanel("Gini index",
+                            plotOutput("plot_gini"),
+                            disabled(sliderInput("slider_gini",
+                                min = 1900,
+                                max = 2015,
+                                value = c(1900, 2015),
+                                step = 1,
+                                label = NULL,
+                                width = "100%",
+                                sep = ""
+                            ))
+                        ),
+                        well = FALSE
+                    )
                 ),
-                tabPanel("Probability density function",
-                    uiOutput("plots_tabs_pdf")
-                ),
-                tabPanel("Cumulative density function",
-                    uiOutput("plots_tabs_cdf")
-                ),
-                tabPanel("Quantile function",
-                    uiOutput("plots_tabs_quantile")
-                ),
-                tabPanel("Tail function",
-                    uiOutput("plots_tabs_tail")
-                ),
-                tabPanel("Interpolation function",
-                    uiOutput("plots_tabs_phi")
-                ),
-                tabPanel("Derivative of interpolation function",
-                    uiOutput("plots_tabs_deriv_phi")
-                ),
-                well = FALSE
+                id = "plot_tabs"
             )
         ),
         icon=icon("area-chart")
     ),
-    tabPanel("Simulate",
+    tabPanel("Sample",
         fixedPage(
-            uiOutput("synthpop_select_file"),
-            numericInput("synthpop_size", "Choose sample size",
-                value = 1e6,
+            fixedRow(
+                column(4,
+                    tags$form(
+                        disabled(selectInput("synthpop_year", "Year", choices=NULL, width="100%")),
+                        disabled(checkboxInput("synthpop_year_all", "Use all years", value=TRUE, width="100%")),
+                        class = "select-synthpop"
+                    )
+                ),
+                column(4,
+                    tags$form(
+                        disabled(selectInput("synthpop_country", "Country", choices=NULL, width="100%")),
+                        disabled(checkboxInput("synthpop_country_all", "Use all countries", value=TRUE, width="100%")),
+                        class = "select-synthpop"
+                    )
+                ),
+                column(4,
+                    tags$form(
+                        disabled(selectInput("synthpop_component", "Component", choices=NULL, width="100%")),
+                        disabled(checkboxInput("synthpop_component_all", "Use all components", value=TRUE, width="100%")),
+                        class = "select-synthpop"
+                    )
+                )
+            ),
+            numericInput("synthpop_size", "Sample size",
+                value = 1e3,
                 min = 1,
                 width = "100%"
             ),
@@ -237,21 +418,21 @@ shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
                         tags$div(
                             tags$form(
                                 tags$div(
+                                    textInput("var_year", "Year", "year", width="100%"),
+                                    textInput("var_country", "Country", "country", width="100%"),
+                                    textInput("var_component", "Component", "component", width="100%"),
                                     textInput("var_p", "Fractiles", "p", width="100%"),
                                     textInput("var_q", "Thresholds", "thr", width="100%"),
                                     textInput("var_b", "Inverted Pareto coefficient", "b", width="100%"),
-                                    textInput("var_bracketshare", "Bracket share", "bracketshare", width="100%"),
-                                    textInput("var_topshare", "Top share", "topshare", width="100%"),
+                                    textInput("var_bracketshare", "Bracket share", "bracketsh", width="100%"),
+                                    textInput("var_topshare", "Top share", "topsh", width="100%"),
                                     textInput("var_bracketavg", "Bracket average", "bracketavg", width="100%"),
                                     textInput("var_topavg", "Top average", "topavg", width="100%"),
                                     textInput("var_bracketsingle", "Share of singles inside bracket", "bracketsingle", width="100%"),
                                     textInput("var_topsingle", "Share of singles in bracket and above", "topsingle", width="100%"),
-                                    textInput("var_label", "Label", "year", width="100%"),
                                     textInput("var_average", "Average", "average", width="100%"),
                                     textInput("var_popsize", "Population size", "popsize", width="100%"),
                                     textInput("var_gumbel", "Gumbel copula parameter", "gumbel", width="100%"),
-                                    textInput("var_addupid", "ID for matching the distributions to add up", "addupid", width="100%"),
-                                    textInput("var_mergeid", "ID for matching the distributions to merge", "mergeid", width="100%"),
                                     class = "form-group"
                                 )
                             ),
@@ -306,6 +487,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(tags$a(
         ),
         icon = icon("sliders")
     ),
+    id = "main_navbar",
     selected = "Input data",
     position = "fixed-top",
     inverse = TRUE,
