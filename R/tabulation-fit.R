@@ -18,11 +18,6 @@
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
 #' @param invpareto The inverted Pareto coefficient.
-#' @param ci Should confidence interval (identification region) be computed?
-#' Default is \code{TRUE}.
-#' @param samplesize The size of the underlying sample.
-#' @param deriv4max A functional bound of the fourth derivative of the
-#' interpolation function.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'

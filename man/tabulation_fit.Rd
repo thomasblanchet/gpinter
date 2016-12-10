@@ -5,8 +5,7 @@
 \title{Fit a nonparametric distribution on tabulated data}
 \usage{
 tabulation_fit(p, threshold, average, bracketshare = NULL, topshare = NULL,
-  bracketavg = NULL, topavg = NULL, ci = TRUE, samplesize = NULL,
-  deriv4max = NULL)
+  bracketavg = NULL, topavg = NULL, invpareto = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -23,43 +22,10 @@ tabulation_fit(p, threshold, average, bracketshare = NULL, topshare = NULL,
 
 \item{topavg}{The corresponding top average.}
 
-\item{ci}{Should confidence interval (identification region) be computed?
-Default is \code{TRUE}.}
-
-\item{samplesize}{The size of the underlying sample.}
-
-\item{deriv4max}{A functional bound of the fourth derivative of the
-interpolation function.}
+\item{invpareto}{The inverted Pareto coefficient.}
 }
 \value{
-An object of class \code{gpinter_dist} with the following
-components:
-\describe{
-    \item{average}{The distribution average.}
-    \item{pk}{A vector of values in [0, 1].}
-    \item{qk}{A vector of corresponding quantiles.}
-    \item{mk}{A vector of corresponding averages truncated from below at
-        \code{pk}.}
-    \item{bk}{A vector of inverted Pareto coefficients at \code{pk}.}
-    \item{xk}{A vector of interpolation points.}
-    \item{yk}{A vector of values for the interpolation function at \code{xk}.}
-    \item{sk}{A vector of values for the first derivative of the interpolation
-        function at \code{xk}.}
-    \item{ak}{A vector of values for the second derivative of the interpolation
-        function at \code{xk}.}
-    \item{mu_top}{The location parameter of the generalized Pareto distribution
-        in the top bracket.}
-    \item{sigma_top}{The scale parameter of the generalized Pareto distribution
-        in the top bracket.}
-    \item{xi_top}{The shape parameter of the generalized Pareto distribution
-        in the top bracket.}
-    \item{mu_bottom}{The location parameter of the generalized Pareto distribution
-        below the bottom bracket.}
-    \item{sigma_top}{The scale parameter of the generalized Pareto distribution
-        below the bottom bracket.}
-    \item{xi_top}{The shape parameter of the generalized Pareto distribution
-        below the bottom bracket.}
-}
+An object of class \code{gpinter_dist_orig}.
 }
 \description{
 Estimate a distribution nonparametrically based on tabulations

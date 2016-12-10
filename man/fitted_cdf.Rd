@@ -2,7 +2,7 @@
 % Please edit documentation in R/distribution-functions.R
 \name{fitted_cdf}
 \alias{fitted_cdf}
-\title{Cumulative density function for generalized Pareto interpolation}
+\title{Cumulative distribution function for generalized Pareto interpolation}
 \usage{
 fitted_cdf(dist, x, ...)
 }
@@ -18,7 +18,7 @@ fitted_cdf(dist, x, ...)
 The value of the CDF at \code{x}.
 }
 \description{
-Compute the value of the cumulative density function for a
+Compute the value of the cumulative distribution function for a
 distribution estimated via generalized Pareto interpolation.
 }
 \author{

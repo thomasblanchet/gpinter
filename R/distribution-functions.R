@@ -172,11 +172,11 @@ support.gpinter_dist_orig <- function(dist, ...) {
     return(list(lower=lower, upper=upper))
 }
 
-#' @title Cumulative density function for generalized Pareto interpolation
+#' @title Cumulative distribution function for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
-#' @description Compute the value of the cumulative density function for a
+#' @description Compute the value of the cumulative distribution function for a
 #' distribution estimated via generalized Pareto interpolation.
 #'
 #' @param dist An object of class \code{gpinter_dist_orig}, \code{gpinter_dist_indiv},

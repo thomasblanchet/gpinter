@@ -106,9 +106,9 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
             fixedRow(
                 column(9,
                     fixedRow(
-                        column(4, disabled(selectInput("output_table_year", "Year", choices=NULL))),
-                        column(4, disabled(selectInput("output_table_country", "Country", choices=NULL))),
-                        column(4, disabled(selectInput("output_table_component", "Component", choices=NULL)))
+                        column(4, disabled(selectInput("output_table_year", "Year", choices=NULL, width="100%"))),
+                        column(4, disabled(selectInput("output_table_country", "Country", choices=NULL, width="100%"))),
+                        column(4, disabled(selectInput("output_table_component", "Component", choices=NULL, width="100%")))
                     ),
                     uiOutput("output_table")
                 ),

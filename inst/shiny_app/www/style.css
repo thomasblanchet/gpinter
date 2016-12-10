@@ -169,6 +169,10 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+#run {
+    margin-bottom: 20px;
+}
+
 .anchor {
     display: block;
     position: relative;
@@ -212,6 +216,9 @@ span.btn-file {
     #synthpop_dl_excel {
         margin-top: 0;
     }
+    #run {
+        margin-bottom: 0;
+    }
 }
 
 @media (min-width: 992px) {
@@ -230,6 +237,9 @@ span.btn-file {
     #synthpop_dl_excel {
         margin-top: 0;
     }
+    #run {
+        margin-bottom: 0;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -247,5 +257,8 @@ span.btn-file {
     }
     #synthpop_dl_excel {
         margin-top: 0;
+    }
+    #run {
+        margin-bottom: 0;
     }
 }

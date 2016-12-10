@@ -201,6 +201,12 @@ shinyServer(function(input, output, session) {
         updateNavbarPage(session, "main_navbar", selected="Input data")
     })
 
+    # G-percentiles: fractiles to show to the user
+    gperc <- c(
+        seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
+        seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
+    )
+
     # Reactive values for the input data and the results
     data <- reactiveValues(
         data       = NULL,
@@ -209,10 +215,9 @@ shinyServer(function(input, output, session) {
         years      = NULL,
         countries  = NULL,
         components = NULL,
-        results    = NULL
+        results    = NULL,
+        tables     = NULL
     )
-
-
 
     clear_all <- function() {
         data$data       <- NULL
@@ -222,6 +227,7 @@ shinyServer(function(input, output, session) {
         data$countries  <- NULL
         data$components <- NULL
         data$results    <- NULL
+        data$tables     <- NULL
 
         disable("synthpop_dl_csv")
         disable("synthpop_dl_excel")
@@ -558,7 +564,7 @@ shinyServer(function(input, output, session) {
                 style = "box-shadow: none; border-style: dashed; color: #666;"
             ))
         } else if (length(data$data) == 0 & length(data$errors) > 0) {
-            return(tags$div(
+            return(tagList(tags$div(
                 tags$p("There is nothing to display because all of your files
                     generated an error during the importation. Please check
                     the format of your input data and try again."), tags$p(
@@ -566,8 +572,10 @@ shinyServer(function(input, output, session) {
                         tags$li(tags$i(class="fa fa-li fa-times-circle"), e$message)
                     }), class="fa-ul")
                 ),
-                class="alert alert-danger", role="alert"
-            ))
+                class = "alert alert-danger",
+                role = "alert",
+                style = "max-height: 500px; overflow: scroll;"
+            ), actionButton("clear", "Clear data", icon=icon("eraser"), class="btn-block btn-danger")))
         } else {
             if (length(data$errors) > 0) {
                 warning_message <- tags$div(
@@ -592,31 +600,31 @@ shinyServer(function(input, output, session) {
             select_input_menu <- tagList()
             if (length(data$years) > 1) {
                 select_input_menu <- tagList(select_input_menu,
-                    column(4, selectInput("input_view_year", "Year", choices=data$years))
+                    column(4, selectInput("input_view_year", "Year", choices=data$years, width="100%"))
                 )
             } else {
                 select_input_menu <- tagList(select_input_menu,
-                    disabled(column(4, selectInput("input_view_year", "Year", choices=data$years)))
+                    disabled(column(4, selectInput("input_view_year", "Year", choices=data$years, width="100%")))
                 )
             }
 
             if (length(data$countries) > 1) {
                 select_input_menu <- tagList(select_input_menu,
-                    column(4, selectInput("input_view_country", "Country", choices=data$countries))
+                    column(4, selectInput("input_view_country", "Country", choices=data$countries, width="100%"))
                 )
             } else {
                 select_input_menu <- tagList(select_input_menu,
-                    disabled(column(4, selectInput("input_view_country", "Country", choices=data$countries)))
+                    disabled(column(4, selectInput("input_view_country", "Country", choices=data$countries, width="100%")))
                 )
             }
 
             if (length(data$component) > 1) {
                 select_input_menu <- tagList(select_input_menu,
-                    column(4, selectInput("input_view_component", "Component", choices=data$components))
+                    column(4, selectInput("input_view_component", "Component", choices=data$components, width="100%"))
                 )
             } else {
                 select_input_menu <- tagList(select_input_menu,
-                    disabled(column(4, selectInput("input_view_component", "Component", choices=data$components)))
+                    disabled(column(4, selectInput("input_view_component", "Component", choices=data$components, width="100%")))
                 )
             }
 
@@ -806,11 +814,15 @@ shinyServer(function(input, output, session) {
 
         # List to store the results
         list_results <- list()
+        # List to store the tables we generated
+        list_tables <- list()
         i <- 1
         for (year in data$years) {
             list_results[[year]] <- list()
+            list_tables[[year]] <- list()
             for (country in data$countries) {
                 list_results[[year]][[country]] <- list()
+                list_tables[[year]][[country]] <- list()
                 for (component in data$components) {
                     data_model <- data$data[[year]][[country]][[component]]
 
@@ -866,6 +878,28 @@ shinyServer(function(input, output, session) {
 
                     list_results[[year]][[country]][[component]] <- result_model
 
+                    # Build the tables
+                    table <- list(
+                        bottom50  = bottom_share(result, 0.5),
+                        middle40  = bracket_share(result, 0.5, 0.9),
+                        top10     = top_share(result, 0.9),
+                        top1      = top_share(result, 0.99),
+                        gini      = gini(result),
+                        threshold = fitted_quantile(result, gperc),
+                        top_share = top_share(result, gperc)
+                    )
+
+                    table$bottom_share  <- 1 - table$top_share
+                    table$bracket_share <- diff(c(table$bottom_share, 1))
+
+                    table$top_average     <- result_model$average*table$top_share/(1 - gperc)
+                    table$bottom_average  <- result_model$average*table$bottom_share/gperc
+                    table$bracket_average <- result_model$average*table$bracket_share/diff(c(gperc, 1))
+
+                    table$invpareto <- table$top_average/table$threshold
+
+                    list_tables[[year]][[country]][[component]] <- table
+
                     # Update the progress bar
                     i <- i + 1
                     shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", i, ")"))
@@ -883,6 +917,7 @@ shinyServer(function(input, output, session) {
 
         # Store the results
         data$results <- list_results
+        data$tables <- list_tables
 
         # Update the interface
         updateSelectInput(session, "output_table_year", choices=data$years)
@@ -950,6 +985,7 @@ shinyServer(function(input, output, session) {
         component <- input$output_table_component
 
         result <- data$results[[year]][[country]][[component]]
+        table <- data$tables[[year]][[country]][[component]]
 
         if (is.null(result)) {
             return(tags$div(icon("info-circle"), HTML("&nbsp;"),
@@ -957,20 +993,14 @@ shinyServer(function(input, output, session) {
                 class="alert alert-info", role="alert"))
         }
 
-        # Create the list of percentiles we want to show the user
-        gperc <- c(
-            seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
-            seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
-        )
-
         summary_table <- renderTable(
             data.frame(
                 "Average" = sprintf("%.0f", result$average),
-                "Bottom 50%" = sprintf("%.1f%%", 100*bottom_share(result, 0.5)),
-                "Middle 40%" = sprintf("%.1f%%", 100*bracket_share(result, 0.5, 0.9)),
-                "Top 10%" = sprintf("%.1f%%", 100*top_share(result, 0.9)),
-                "Top 1%" = sprintf("%.1f%%", 100*top_share(result, 0.99)),
-                "Gini" = sprintf("%.3f", gini(result)),
+                "Bottom 50%" = sprintf("%.1f%%", 100*table$bottom50),
+                "Middle 40%" = sprintf("%.1f%%", 100*table$middle40),
+                "Top 10%" = sprintf("%.1f%%", 100*table$top10),
+                "Top 1%" = sprintf("%.1f%%", 100*table$top1),
+                "Gini" = sprintf("%.3f", table$gini),
                 check.names = FALSE
             ),
             striped = TRUE,
@@ -981,34 +1011,27 @@ shinyServer(function(input, output, session) {
         out_df <- data.frame("Percentiles" = sprintf("%1.5f", gperc))
 
         if ("thres" %in% input$results_display) {
-            col <- fitted_quantile(result, gperc)
-            out_df["Threshold"] <- ifelse(is.na(col), NA, sprintf("%.0f", col))
-            out_df[is.infinite(col), "Threshold"] <- "–∞"
+            out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, sprintf("%.0f", table$threshold))
+            out_df[is.infinite(table$threshold), "Threshold"] <- "–∞"
         }
         if ("topshare" %in% input$results_display) {
-            col <- top_share(result, gperc)
-            out_df["Top share"] <- ifelse(is.na(col), NA, sprintf("%.2f%%", 100*col))
+            out_df["Top share"] <- ifelse(is.na(table$top_share), NA, sprintf("%.2f%%", 100*table$top_share))
         }
         if ("bottomshare" %in% input$results_display) {
-            col <- bottom_share(result, gperc)
-            out_df["Bottom share"] <- ifelse(is.na(col), NA, sprintf("%.2f%%", 100*col))
+            out_df["Bottom share"] <- ifelse(is.na(table$bottom_share), NA, sprintf("%.2f%%", 100*table$bottom_share))
         }
         if ("bracketshare" %in% input$results_display) {
-            col <- bracket_share(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
-            out_df["Bracket share"] <- ifelse(is.na(col), NA, sprintf("%.2f%%", 100*col))
+            out_df["Bracket share"] <- ifelse(is.na(table$bracket_share), NA, sprintf("%.2f%%", 100*table$bracket_share))
         }
         if ("topavg" %in% input$results_display) {
-            col <- top_average(result, gperc)
-            out_df["Top average"] <- ifelse(is.na(col), NA, sprintf("%.0f", col))
+            out_df["Top average"] <- ifelse(is.na(table$top_average), NA, sprintf("%.0f", table$top_average))
         }
         if ("bracketavg" %in% input$results_display) {
-            col <- bracket_average(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
-            out_df["Bracket average"] <- ifelse(is.na(col), NA, sprintf("%.0f", col))
+            out_df["Bracket average"] <- ifelse(is.na(table$bracket_average), NA, sprintf("%.0f", table$bracket_average))
         }
         if ("invpareto" %in% input$results_display) {
-            col <- invpareto(result, gperc)
-            out_df["Inverted Pareto coefficient"] <- ifelse(is.na(col), NA, sprintf("%.2f", col))
-            out_df[is.infinite(col), "Inverted Pareto coefficient"] <- "∞"
+            out_df["Inverted Pareto coefficient"] <- ifelse(is.na(table$invpareto), NA, sprintf("%.2f", table$invpareto))
+            out_df[is.infinite(table$invpareto), "Inverted Pareto coefficient"] <- "∞"
         }
 
         detailed_table <- renderTable(out_df,
@@ -1031,11 +1054,6 @@ shinyServer(function(input, output, session) {
             return(paste0("tables-", format.Date(Sys.time(), "%Y-%m-%d-%H-%M-%S"), ".zip"))
         },
         content = function(dest) {
-            gperc <- c(
-                seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
-                seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
-            )
-
             tmp <- tempdir()
             files <- c()
             for (country in data$countries) {
@@ -1061,43 +1079,43 @@ shinyServer(function(input, output, session) {
                             }
                         }),
                         "Bottom 50%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(bottom_share(result, 0.5))
+                                return(table$bottom50)
                             }
                         }),
                         "Middle 40%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(bracket_share(result, 0.5, 0.9))
+                                return(table$middle40)
                             }
                         }),
                         "Top 10%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(top_share(result, 0.9))
+                                return(table$top10)
                             }
                         }),
                         "Top 1%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(top_share(result, 0.99))
+                                return(table$top1)
                             }
                         }),
                         "Gini" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(gini(result))
+                                return(table$gini)
                             }
                         }),
                         check.names  = FALSE,
@@ -1119,6 +1137,7 @@ shinyServer(function(input, output, session) {
 
                     for (year in data$years) {
                         result <- data$results[[year]][[country]][[component]]
+                        table <- data$tables[[year]][[country]][[component]]
                         if (is.null(result)) {
                             next
                         }
@@ -1130,25 +1149,25 @@ shinyServer(function(input, output, session) {
                         out_df <- data.frame("Percentiles" = gperc)
 
                         if ("thres" %in% input$results_display) {
-                            out_df["Threshold"] <- fitted_quantile(result, gperc)
+                            out_df["Threshold"] <- table$threshold
                         }
                         if ("topshare" %in% input$results_display) {
-                            out_df["Top share"] <- top_share(result, gperc)
+                            out_df["Top share"] <- table$top_share
                         }
                         if ("bottomshare" %in% input$results_display) {
-                            out_df["Bottom share"] <- bottom_share(result, gperc)
+                            out_df["Bottom share"] <- table$bottom_share
                         }
                         if ("bracketshare" %in% input$results_display) {
-                            out_df["Bracket share"] <- bracket_share(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
+                            out_df["Bracket share"] <- table$bracket_share
                         }
                         if ("topavg" %in% input$results_display) {
-                            out_df["Top average"] <- top_average(result, gperc)
+                            out_df["Top average"] <- table$top_average
                         }
                         if ("bracketavg" %in% input$results_display) {
-                            out_df["Bracket average"] <- bracket_average(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
+                            out_df["Bracket average"] <- table$bracket_average
                         }
                         if ("invpareto" %in% input$results_display) {
-                            out_df["Inverted Pareto coefficient"] <- invpareto(result, gperc)
+                            out_df["Inverted Pareto coefficient"] <- table$invpareto
                         }
 
                         filename <- paste0(tmp, "/", data_label, ".csv")
@@ -1204,46 +1223,46 @@ shinyServer(function(input, output, session) {
                             }
                         }),
                         "Bottom 50%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(bottom_share(result, 0.5))
+                                return(table$bottom50)
                             }
                         }),
                         "Middle 40%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(bracket_share(result, 0.5, 0.9))
+                                return(table$middle40)
                             }
                         }),
                         "Top 10%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(top_share(result, 0.9))
+                                return(table$top10)
                             }
                         }),
                         "Top 1%" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(top_share(result, 0.99))
+                                return(table$top1)
                             }
                         }),
                         "Gini" = sapply(data$years, function(year) {
-                            result <- data$results[[year]][[country]][[component]]
-                            if (is.null(result)) {
+                            table <- data$tables[[year]][[country]][[component]]
+                            if (is.null(table)) {
                                 return(NA)
                             } else {
-                                return(gini(result))
+                                return(table$gini)
                             }
                         }),
-                        check.names = FALSE,
+                        check.names  = FALSE,
                         stringsAsFactors = FALSE
                     )
                     df_series[, "Year"] <- as.numeric(df_series[, "Year"])
@@ -1255,6 +1274,7 @@ shinyServer(function(input, output, session) {
 
                     for (year in data$years) {
                         result <- data$results[[year]][[country]][[component]]
+                        table <- data$tables[[year]][[country]][[component]]
                         if (is.null(result)) {
                             next
                         }
@@ -1263,31 +1283,31 @@ shinyServer(function(input, output, session) {
                         data_label <- data_label[data_label != "n/a"]
                         data_label <- paste(data_label, collapse=", ")
                         if (data_label == "") {
-                            data_label = "no name"
+                            data_label <- "no name"
                         }
 
                         out_df <- data.frame("Percentiles" = gperc)
 
                         if ("thres" %in% input$results_display) {
-                            out_df["Threshold"] <- fitted_quantile(result, gperc)
+                            out_df["Threshold"] <- table$threshold
                         }
                         if ("topshare" %in% input$results_display) {
-                            out_df["Top share"] <- top_share(result, gperc)
+                            out_df["Top share"] <- table$top_share
                         }
                         if ("bottomshare" %in% input$results_display) {
-                            out_df["Bottom share"] <- bottom_share(result, gperc)
+                            out_df["Bottom share"] <- table$bottom_share
                         }
                         if ("bracketshare" %in% input$results_display) {
-                            out_df["Bracket share"] <- bracket_share(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
+                            out_df["Bracket share"] <- table$bracket_share
                         }
                         if ("topavg" %in% input$results_display) {
-                            out_df["Top average"] <- top_average(result, gperc)
+                            out_df["Top average"] <- table$top_average
                         }
                         if ("bracketavg" %in% input$results_display) {
-                            out_df["Bracket average"] <- bracket_average(result, gperc, c(gperc, 1)[2:(length(gperc) + 1)])
+                            out_df["Bracket average"] <- table$bracket_average
                         }
                         if ("invpareto" %in% input$results_display) {
-                            out_df["Inverted Pareto coefficient"] <- invpareto(result, gperc)
+                            out_df["Inverted Pareto coefficient"] <- table$invpareto
                         }
 
                         sheet <- createSheet(wb, strtrim(data_label, 31))
