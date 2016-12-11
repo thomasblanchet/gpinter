@@ -498,72 +498,10 @@ shinyServer(function(input, output, session) {
 
     output$input_data_view_header <- renderUI({
         if (is.null(data$data) & is.null(data$errors)) {
-            return(tags$div(
-                tags$div(
-                    tags$p("This interface lets you reconstruct the full distribution of income or
-                        wealth based on tabulated data files such as those provided by tax autorities."),
-                    tags$p("To import the tabulation files, use the “Browse” button
-                        on the left and choose or more file from your computer. You must have one CSV file or
-                        Excel sheet per tabulation. Each must take the form of a table with the following format:"),
-                    tags$table(
-                        tags$tr(
-                            tags$th("year"), tags$th("country"),
-                            tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketsh")
-                        ),
-                        tags$tr(
-                            tags$td("2010"), tags$td("US"), tags$td("53 587"), tags$td("0.1"),
-                            tags$td("5 665"), tags$td("0.13459")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.5"),
-                            tags$td("31 829"), tags$td("0.41007")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.9"),
-                            tags$td("96 480"), tags$td("0.10537")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.95"),
-                            tags$td("136 910"), tags$td("0.14840")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.99"),
-                            tags$td("351 366"), tags$td("0.19946")
-                        ),
-                        class = "table table-bordered table-condensed",
-                        style = "margin-bottom: 2px;"
-                    ),
-                    tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
-                        "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",
-                        actionLink("import_example", "import it directly to the interface.", icon("arrow-down")),
-                        style="font-size: small;"),
-                    tags$p("Each column of the table correspond to a variable. You need to at least specify:",
-                        tags$ul(
-                            tags$li(tags$code("p"), "for fractiles"),
-                            tags$li(tags$code("thr"), "for matching quantiles"),
-                            tags$li(tags$code("average"), "for the overall average")
-                        )
-                    ), tags$p("You must also specify one of the following:",
-                        tags$ul(
-                            tags$li(tags$code("bracketsh"), "for the share of the bracket"),
-                            tags$li(tags$code("topsh"), "for the top share"),
-                            tags$li(tags$code("bracketavg"), "for the average in the bracket"),
-                            tags$li(tags$code("topavg"), "for the top average"),
-                            tags$li(tags$code("b"), "for the inverted Pareto coefficient")
-                        )
-                    ), tags$p("Finally, if you have several tabulations, you will need to identify them
-                        using at least one of the following fields:", tags$ul(
-                            tags$li(tags$code("year"), "for the period covered by the tabulation"),
-                            tags$li(tags$code("country"), "for the country or region"),
-                            tags$li(tags$code("component"), "for the component (for example labor or capital income)")
-                        )
-                    ),
-                    class = "panel-body"
-                ),
-                class = "panel panel-default",
-                style = "box-shadow: none; border-style: dashed; color: #666;"
-            ))
+            shinyjs::show("help_intro")
+            return(NULL)
         } else if (length(data$data) == 0 & length(data$errors) > 0) {
+            shinyjs::hide("help_intro")
             return(tagList(tags$div(
                 tags$p("There is nothing to display because all of your files
                     generated an error during the importation. Please check
@@ -577,6 +515,7 @@ shinyServer(function(input, output, session) {
                 style = "max-height: 500px; overflow: scroll;"
             ), actionButton("clear", "Clear data", icon=icon("eraser"), class="btn-block btn-danger")))
         } else {
+            shinyjs::hide("help_intro")
             if (length(data$errors) > 0) {
                 warning_message <- tags$div(
                     tags$button(type="button", class="close", `data-dismiss`="alert", `aria-label`="Close",
@@ -837,7 +776,7 @@ shinyServer(function(input, output, session) {
 
                     # Update the status message in the dialog
                     shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-                        "Currently working on: ", data_label, "')"))
+                        "Interpolating: ", data_label, "')"))
 
                     result_model <- tryCatch({
                         args <- list(
@@ -1011,7 +950,7 @@ shinyServer(function(input, output, session) {
         out_df <- data.frame("Percentiles" = sprintf("%1.5f", gperc))
 
         if ("thres" %in% input$results_display) {
-            out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, sprintf("%.0f", table$threshold))
+            out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, format(round(table$threshold), big.mark=" ", scientific=FALSE))
             out_df[is.infinite(table$threshold), "Threshold"] <- "–∞"
         }
         if ("topshare" %in% input$results_display) {
@@ -1024,10 +963,10 @@ shinyServer(function(input, output, session) {
             out_df["Bracket share"] <- ifelse(is.na(table$bracket_share), NA, sprintf("%.2f%%", 100*table$bracket_share))
         }
         if ("topavg" %in% input$results_display) {
-            out_df["Top average"] <- ifelse(is.na(table$top_average), NA, sprintf("%.0f", table$top_average))
+            out_df["Top average"] <- ifelse(is.na(table$top_average), NA, format(round(table$top_average), big.mark=" ", scientific=FALSE))
         }
         if ("bracketavg" %in% input$results_display) {
-            out_df["Bracket average"] <- ifelse(is.na(table$bracket_average), NA, sprintf("%.0f", table$bracket_average))
+            out_df["Bracket average"] <- ifelse(is.na(table$bracket_average), NA, format(round(table$bracket_average), big.mark=" ", scientific=FALSE))
         }
         if ("invpareto" %in% input$results_display) {
             out_df["Inverted Pareto coefficient"] <- ifelse(is.na(table$invpareto), NA, sprintf("%.2f", table$invpareto))
@@ -1387,7 +1326,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_lorenz) == max(input$slider_lorenz)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_lorenz)
@@ -1404,7 +1343,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_gpc) == max(input$slider_gpc)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_gpc)
@@ -1421,7 +1360,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_pdf) == max(input$slider_pdf)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         qmin <- min(input$slider_pdf)
@@ -1438,7 +1377,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_cdf) == max(input$slider_cdf)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         qmin <- min(input$slider_cdf)
@@ -1455,7 +1394,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_quantile) == max(input$slider_quantile)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_quantile)
@@ -1472,7 +1411,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_tail) == max(input$slider_tail)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_tail)
@@ -1489,7 +1428,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_phi) == max(input$slider_phi)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_phi)
@@ -1506,7 +1445,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_deriv_phi) == max(input$slider_deriv_phi)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_deriv_phi)
@@ -1516,7 +1455,7 @@ shinyServer(function(input, output, session) {
     })
 
     # Generate the time plots
-    result_plot_allyears <- reactive({
+    tables_plot_allyears <- reactive({
         if (is.null(data$results)) {
             return(NULL)
         }
@@ -1525,14 +1464,14 @@ shinyServer(function(input, output, session) {
         component <- input$output_time_plot_component
 
         return(lapply(data$years, function(year) {
-            return(data$results[[year]][[country]][[component]])
+            return(data$tables[[year]][[country]][[component]])
         }))
     })
 
     observe({
-        results <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(results)) {
+        if (is.null(tables)) {
             disable("slider_top_1")
             disable("slider_top_10")
             disable("slider_middle_40")
@@ -1560,9 +1499,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_top_1 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_top_1)) {
+        if (is.null(tables) || is.null(input$slider_top_1)) {
             return(plot_text("No data"))
         }
 
@@ -1575,7 +1514,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top1 = sapply(result, function(dist) top_share(dist, 0.99))
+            top1 = sapply(tables, function(tab) tab$top1)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1590,9 +1529,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_top_10 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_top_10)) {
+        if (is.null(tables) || is.null(input$slider_top_10)) {
             return(plot_text("No data"))
         }
 
@@ -1605,7 +1544,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top10 = sapply(result, function(dist) top_share(dist, 0.90))
+            top10 = sapply(tables, function(tab) tab$top10)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1620,9 +1559,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_middle_40 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_middle_40)) {
+        if (is.null(tables) || is.null(input$slider_middle_40)) {
             return(plot_text("No data"))
         }
 
@@ -1635,7 +1574,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            middle40 = sapply(result, function(dist) bracket_share(dist, 0.50, 0.90))
+            middle40 = sapply(tables, function(tab) tab$middle40)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1650,9 +1589,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_bottom_50 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_bottom_50)) {
+        if (is.null(tables) || is.null(input$slider_bottom_50)) {
             return(plot_text("No data"))
         }
 
@@ -1665,7 +1604,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            bottom50 = sapply(result, function(dist) bottom_share(dist, 0.50))
+            bottom50 = sapply(tables, function(tab) tab$bottom50)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1680,9 +1619,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_gini <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_gini)) {
+        if (is.null(tables) || is.null(input$slider_gini)) {
             return(plot_text("No data"))
         }
 
@@ -1695,7 +1634,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            gini = sapply(result, function(dist) gini(dist))
+            gini = sapply(tables, function(tab) tab$gini)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]

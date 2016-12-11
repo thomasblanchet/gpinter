@@ -55,6 +55,12 @@ phi.gpinter_dist_orig <- function(dist, x, ...) {
     }))))
 }
 
+#' @export
+phi.gpinter_dist_merge <- function(dist, x, ...) {
+    p <- 1 - exp(-x)
+    return(-log(dist$average*top_share(dist, p)))
+}
+
 #' @title Derivative of the interpolation function from generalized Pareto
 #' interpolation
 #'
@@ -105,6 +111,14 @@ deriv_phi.gpinter_dist_orig <- function(dist, x, ...) {
     }))))
 }
 
+#' @export
+deriv_phi.gpinter_dist_merge <- function(dist, x, ...) {
+    p <- 1 - exp(-x)
+    q <- fitted_quantile(dist, p)
+    m <- dist$average*threshold_share(dist, q)/(1 - p)
+    return(q/m)
+}
+
 #' @title Quantile function for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -130,6 +144,31 @@ fitted_quantile.gpinter_dist_orig <- function(dist, probs, ...) {
     y <- phi(dist, x)
     dydx <- deriv_phi(dist, x)
     return(exp(x - y)*dydx)
+}
+
+#' @export
+fitted_quantile.gpinter_dist_merge <- function(dist, probs, ...) {
+    supp <- support(dist)
+    if (is.finite(supp$lower)) {
+        lb <- supp$lower
+    } else {
+        lb <- 0
+    }
+
+    if (is.finite(supp$upper)) {
+        ub <- supp$upper
+    } else {
+        ub <- 10*dist$average
+    }
+
+    # Invert the CDF
+    return(sapply(probs, function(p) {
+        eq <- uniroot(function(q) {
+            return(fitted_cdf(dist, q) - p)
+        }, lower=lb, upper=ub, extendInt = "upX")
+
+        return(eq$root)
+    }))
 }
 
 #' @title Support of a distribution estimated via generalized Pareto interpolation
@@ -170,6 +209,16 @@ support.gpinter_dist_orig <- function(dist, ...) {
     }
 
     return(list(lower=lower, upper=upper))
+}
+
+#' @export
+support.gpinter_dist_merge <- function(dist, ...) {
+    bounds <- sapply(dist$parent_dist, function(dist) {
+        support <- support(dist)
+        return(c(support$lower, support$upper))
+    })
+    # Take the lowest lower bound and the highest upper bound
+    return(list(lower=min(bounds[1, ]), upper=max(bounds[2, ])))
 }
 
 #' @title Cumulative distribution function for generalized Pareto interpolation
@@ -257,6 +306,18 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
     }))
 }
 
+#' @export
+fitted_cdf.gpinter_dist_merge <- function(dist, x, ...) {
+    # Calculate the CDF for each parent distribution
+    cdfs <- t(sapply(dist$parent_dist, function(dist) fitted_cdf(dist, x)))
+    # Return mean weighted by population sizes
+    if (length(x) == 1) {
+        return(sum(cdfs*dist$relsize))
+    } else {
+        return(colSums(cdfs*dist$relsize))
+    }
+}
+
 #' @title Probability density function for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -331,6 +392,50 @@ fitted_density.gpinter_dist_orig <- function(dist, x, ...) {
         1/(exp(2*z - y)*(d2ydx2 + dydx*(1 - dydx)))
     })))))
 }
+#' @export
+fitted_density.gpinter_dist_merge <- function(dist, x, ...) {
+    # Calculate the PDF for each parent distribution
+    pdfs <- t(sapply(dist$parent_dist, function(parent) fitted_density(parent, x)))
+    # Return mean weighted by population sizes
+    if (length(x) == 1) {
+        return(sum(pdfs*dist$relsize))
+    } else {
+        return(colSums(pdfs*dist$relsize))
+    }
+}
+
+#' @title Share above a threshold
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description The mean truncated at the threshold \eqn{q} is
+#' \deqn{E[X 1\{X > q\}]}.
+#'
+#' @param dist An object of class \code{gpinter_dist_orig}, \code{gpinter_dist_indiv},
+#' \code{gpinter_dist_addup} or \code{gpinter_dist_merge}.
+#' @param p A vector of real numbers.
+#' @param ... Ignored.
+#'
+#' @export
+
+threshold_share <- function(dist, p, ...) UseMethod("threshold_share")
+
+#' @export
+threshold_share.gpinter_dist_orig <- function(dist, q, ...) {
+    p <- fitted_cdf(dist, q)
+    return(top_share(dist, p))
+}
+
+#' @export
+threshold_share.gpinter_dist_merge <- function(dist, q, ...) {
+    # Calculate the truncated means for individual distributions
+    truncmeans <- t(sapply(dist$parent_dist, function(parent) parent$average*threshold_share(parent, q)))
+    if (length(q) == 1) {
+        return(truncmeans*dist$relsize/dist$average)
+    } else {
+        return(colSums(truncmeans*dist$relsize/dist$average))
+    }
+}
 
 #' @title Top share for generalized Pareto interpolation
 #'
@@ -358,6 +463,12 @@ top_share.gpinter_dist_orig <- function(dist, p, ...) {
     ts[p == 1] <- 0
     ts[p == 0] <- 1
     return(ts)
+}
+
+#' @export
+top_share.gpinter_dist_merge <- function(dist, p, ...) {
+    q <- fitted_quantile(dist, p)
+    return(threshold_share(dist, q))
 }
 
 #' @title Bottom share for generalized Pareto interpolation
