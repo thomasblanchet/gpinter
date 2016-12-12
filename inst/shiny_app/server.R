@@ -955,6 +955,10 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_year_all) {
                 enable("synthpop_year")
             }
+        } else {
+            disable("output_table_year")
+            disable("output_dist_plot_year")
+            disable("synthpop_year_all")
         }
         updateSelectInput(session, "output_table_country", choices=data$results_countries)
         updateSelectInput(session, "output_dist_plot_country", choices=data$results_countries)
@@ -968,6 +972,11 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_country_all) {
                 enable("synthpop_country")
             }
+        } else {
+            disable("output_table_country")
+            disable("output_dist_plot_country")
+            disable("output_time_plot_country")
+            disable("synthpop_country_all")
         }
         updateSelectInput(session, "output_table_component", choices=data$results_components)
         updateSelectInput(session, "output_dist_plot_component", choices=data$results_components)
@@ -981,6 +990,11 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_component_all) {
                 enable("synthpop_component")
             }
+        } else {
+            disable("output_table_component")
+            disable("output_dist_plot_component")
+            disable("output_time_plot_component")
+            disable("synthpop_component_all")
         }
 
         enable("synthpop_dl_csv")
