@@ -311,7 +311,9 @@ fitted_cdf.gpinter_dist_merge <- function(dist, x, ...) {
     # Calculate the CDF for each parent distribution
     cdfs <- t(sapply(dist$parent_dist, function(dist) fitted_cdf(dist, x)))
     # Return mean weighted by population sizes
-    if (length(x) == 1) {
+    if (length(x) == 0) {
+        return(numeric(0))
+    } else if (length(x) == 1) {
         return(sum(cdfs*dist$relsize))
     } else {
         return(colSums(cdfs*dist$relsize))
@@ -408,17 +410,17 @@ fitted_density.gpinter_dist_merge <- function(dist, x, ...) {
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
-#' @description The mean truncated at the threshold \eqn{q} is
-#' \deqn{E[X 1\{X > q\}]}.
+#' @description Calculate the share a threshold. It is mathematically equivalent
+#' to \code{top_share(dist, fitted_cdf(dist, q))}, but can be much faster.
 #'
 #' @param dist An object of class \code{gpinter_dist_orig}, \code{gpinter_dist_indiv},
 #' \code{gpinter_dist_addup} or \code{gpinter_dist_merge}.
-#' @param p A vector of real numbers.
+#' @param q A vector of real numbers.
 #' @param ... Ignored.
 #'
 #' @export
 
-threshold_share <- function(dist, p, ...) UseMethod("threshold_share")
+threshold_share <- function(dist, q, ...) UseMethod("threshold_share")
 
 #' @export
 threshold_share.gpinter_dist_orig <- function(dist, q, ...) {
@@ -430,8 +432,10 @@ threshold_share.gpinter_dist_orig <- function(dist, q, ...) {
 threshold_share.gpinter_dist_merge <- function(dist, q, ...) {
     # Calculate the truncated means for individual distributions
     truncmeans <- t(sapply(dist$parent_dist, function(parent) parent$average*threshold_share(parent, q)))
-    if (length(q) == 1) {
-        return(truncmeans*dist$relsize/dist$average)
+    if (length(q) == 0) {
+        return(numeric(0))
+    } else if (length(q) == 1) {
+        return(sum(truncmeans*dist$relsize/dist$average))
     } else {
         return(colSums(truncmeans*dist$relsize/dist$average))
     }

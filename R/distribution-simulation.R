@@ -12,7 +12,7 @@
 #'
 #' @return A sample of size \code{n}.
 #'
-#' @importFrom stats runif
+#' @importFrom stats runif rmultinom
 #'
 #' @export
 

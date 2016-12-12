@@ -75,7 +75,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                 in the input files. See help for details.",
                                 style = "font-size: small; color: #666;"
                             ),
-                            checkboxInput('merge', "Merge countries", value=FALSE),
+                            checkboxInput('merge', "Merge countries", value=TRUE),
                             hr(),
                             disabled(
                                 tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up components", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
@@ -84,7 +84,14 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                     must share a common identifiant in the input files. See help for details.",
                                     style = "font-size: small; color: #666;"
                                 ),
-                                checkboxInput('addup', "Add up distributions", value=FALSE)
+                                checkboxInput('addup', "Add up distributions", value=FALSE),
+                                tags$p("The dependence between the two components is assumed to be characterized
+                                    by a Gumbel copula with parameter \\(\\theta\\). The higher
+                                    \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
+                                    full independence. You may specify a value for \\(\\theta\\) in each files,
+                                    or set a global value below. See help for details.",
+                                    style = "font-size: small; color: #666;"),
+                                numericInput("gumbel_theta", "Gumbel copula parameter \\(\\theta\\)", 3, min=1, width="100%")
                             ),
                             class = "panel-body"
                         ),
