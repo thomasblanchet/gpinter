@@ -69,6 +69,14 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                 checkboxInput('indiv', "Individualize the distribution", value=FALSE)
                             ),
                             hr(),
+                            tags$h4(icon("globe"), HTML("&nbsp;"), "Merge countries"),
+                            tags$p("The program can merge several distributions (typically from several
+                                countries). The distributions to be merged must share a common identifiant
+                                in the input files. See help for details.",
+                                style = "font-size: small; color: #666;"
+                            ),
+                            checkboxInput('merge', "Merge countries", value=TRUE),
+                            hr(),
                             disabled(
                                 tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up components", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
                                 tags$p("The program can add up two component income or wealth (eg. labor
@@ -76,17 +84,14 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                     must share a common identifiant in the input files. See help for details.",
                                     style = "font-size: small; color: #666;"
                                 ),
-                                checkboxInput('addup', "Add up distributions", value=FALSE)
-                            ),
-                            hr(),
-                            disabled(
-                                tags$h4(icon("globe"), HTML("&nbsp;"), "Merge countries", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
-                                tags$p("The program can merge several distributions (typically from several
-                                    countries). The distributions to be merged must share a common identifiant
-                                    in the input files. See help for details.",
-                                    style = "font-size: small; color: #666;"
-                                ),
-                                checkboxInput('merge', "Merge distributions", value=FALSE)
+                                checkboxInput('addup', "Add up distributions", value=FALSE),
+                                tags$p("The dependence between the two components is assumed to be characterized
+                                    by a Gumbel copula with parameter \\(\\theta\\). The higher
+                                    \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
+                                    full independence. You may specify a value for \\(\\theta\\) in each files,
+                                    or set a global value below. See help for details.",
+                                    style = "font-size: small; color: #666;"),
+                                numericInput("gumbel_theta", "Gumbel copula parameter \\(\\theta\\)", 3, min=1, width="100%")
                             ),
                             class = "panel-body"
                         ),
@@ -94,6 +99,75 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                     )
                 ),
                 column(7,
+                    tags$div(
+                        tags$div(
+                            tags$p("This interface lets you reconstruct the full distribution of income or
+                                wealth based on tabulated data files such as those provided by tax autorities."),
+                            tags$p("To import the tabulation files, use the “Browse” button
+                                on the left and choose or more file from your computer. You must have one CSV file or
+                                Excel sheet per tabulation. Each must take the form of a table with the following format:"),
+                            tags$table(
+                                tags$tr(
+                                    tags$th("year"), tags$th("country"),
+                                    tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketsh")
+                                ),
+                                tags$tr(
+                                    tags$td("2010"), tags$td("US"), tags$td("53 587"), tags$td("0.1"),
+                                    tags$td("5 665"), tags$td("0.13459")
+                                ),
+                                tags$tr(
+                                    tags$td(""), tags$td(""), tags$td(""), tags$td("0.5"),
+                                    tags$td("31 829"), tags$td("0.41007")
+                                ),
+                                tags$tr(
+                                    tags$td(""), tags$td(""), tags$td(""), tags$td("0.9"),
+                                    tags$td("96 480"), tags$td("0.10537")
+                                ),
+                                tags$tr(
+                                    tags$td(""), tags$td(""), tags$td(""), tags$td("0.95"),
+                                    tags$td("136 910"), tags$td("0.14840")
+                                ),
+                                tags$tr(
+                                    tags$td(""), tags$td(""), tags$td(""), tags$td("0.99"),
+                                    tags$td("351 366"), tags$td("0.19946")
+                                ),
+                                class = "table table-bordered table-condensed",
+                                style = "margin-bottom: 2px;"
+                            ),
+                            tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
+                                "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",
+                                actionLink("import_example", "import it directly to the interface.", icon("arrow-down")),
+                                style="text-align: center; font-size: small;"),
+                            tags$p("Each column of the table correspond to a variable. You need to at least specify:",
+                                tags$ul(
+                                    tags$li(tags$code("p"), "for fractiles"),
+                                    tags$li(tags$code("thr"), "for matching quantiles"),
+                                    tags$li(tags$code("average"), "for the overall average")
+                                )
+                            ),
+                            tags$p("You must also specify one of the following:",
+                                tags$ul(
+                                    tags$li(tags$code("bracketsh"), "for the share of the bracket"),
+                                    tags$li(tags$code("topsh"), "for the top share"),
+                                    tags$li(tags$code("bracketavg"), "for the average in the bracket"),
+                                    tags$li(tags$code("topavg"), "for the top average"),
+                                    tags$li(tags$code("b"), "for the inverted Pareto coefficient")
+                                )
+                            ),
+                            tags$p("Finally, if you have several tabulations, you will need to identify them
+                                using at least one of the following fields:",
+                                tags$ul(
+                                    tags$li(tags$code("year"), "for the period covered by the tabulation"),
+                                    tags$li(tags$code("country"), "for the country or region"),
+                                    tags$li(tags$code("component"), "for the component (for example labor or capital income)")
+                                )
+                            ),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default",
+                        style = "box-shadow: none; border-style: dashed; color: #666;",
+                        id = "help_intro"
+                    ),
                     uiOutput("input_data_view_header"),
                     uiOutput("input_data_view")
                 )
@@ -140,7 +214,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                     "Bracket average" = "bracketavg",
                                     "Inverted Pareto coefficient" = "invpareto"
                                 ),
-                                selected = c("perc", "thres", "topshare", "invpareto"),
+                                selected = c("perc", "thres", "topshare", "topavg", "invpareto"),
                                 width = "100%"
                             ),
                             class = "panel-body"
@@ -198,7 +272,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                 width = "100%"
                             ))
                         ),
-                        tabPanel("Cumulative density function",
+                        tabPanel("Cumulative distribution function",
                             plotOutput("plot_cdf"),
                             disabled(sliderInput("slider_cdf",
                                 min = 0,
@@ -214,7 +288,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                             disabled(sliderInput("slider_quantile",
                                 min = 0,
                                 max = 1,
-                                value = c(0, 1),
+                                value = c(0.05, 0.95),
                                 step = 0.01,
                                 label = NULL,
                                 width = "100%"

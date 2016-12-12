@@ -17,10 +17,19 @@
 plot_lorenz <- function(dist, xlim, ...) UseMethod("plot_lorenz")
 
 #' @export
-plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
+plot_lorenz.gpinter_dist_orig <- function(dist, xlim, ...) {
     pmin <- xlim[1]
     pmax <- xlim[2]
-    p_curve <- seq(pmin, pmax, length.out=200)
+    # Puts many point at the end if pmax == 1 to correctly draw the vertical
+    # tangent near the end
+    if (pmax == 1) {
+        p_curve <- c(
+            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=160),
+            seq(0.01*pmin + 0.99*pmax, pmax, length.out=40)
+        )
+    } else {
+        p_curve <- seq(pmin, pmax, length.out=200)
+    }
     p_point <- dist$pk_nc[(dist$pk_nc >= pmin) & (dist$pk_nc <= pmax)]
 
     if (pmax == 1 & max(p_point) < 1) {
@@ -51,6 +60,35 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
     return(plot)
 }
 
+#' @export
+plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
+    pmin <- xlim[1]
+    pmax <- xlim[2]
+    # Puts many point at the end if pmax == 1 to correctly draw the vertical
+    # tangent near the end
+    if (pmax == 1) {
+        p_curve <- c(
+            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=40),
+            seq(0.01*pmin + 0.99*pmax, pmax, length.out=10)
+        )
+    } else {
+        p_curve <- seq(pmin, pmax, length.out=50)
+    }
+
+    df_curve <- data.frame(
+        p = p_curve,
+        y = bottom_share(dist, p_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_abline(slope=1, linetype="dashed") +
+        ggplot2::xlab("fraction of the population") +
+        ggplot2::ylab("cumulative share")
+
+    return(plot)
+}
+
 #' @title Generalized Pareto curve plot
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -70,7 +108,7 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
 plot_gpc <- function(dist, xlim, ...) UseMethod("plot_gpc")
 
 #' @export
-plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
+plot_gpc.gpinter_dist_orig <- function(dist, xlim, ...) {
     pmin <- xlim[1]
     pmax <- xlim[2]
     p_curve <- seq(pmin, pmax, length.out=200)
@@ -91,6 +129,26 @@ plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
     plot <- ggplot2::ggplot() +
         ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
         ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
+        ggplot2::xlab("p") +
+        ggplot2::ylab("inverted Pareto coefficient")
+
+    return(plot)
+}
+
+#' @export
+plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
+    pmin <- xlim[1]
+    pmax <- xlim[2]
+    p_curve <- seq(pmin, pmax, length.out=50)
+    p_curve <- p_curve[p_curve != 1]
+
+    df_curve <- data.frame(
+        p = p_curve,
+        y = invpareto(dist, p_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
         ggplot2::xlab("p") +
         ggplot2::ylab("inverted Pareto coefficient")
 
@@ -151,7 +209,7 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
 plot_cdf <- function(dist, xlim, ...) UseMethod("plot_cdf")
 
 #' @export
-plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
+plot_cdf.gpinter_dist_orig <- function(dist, xlim, ...) {
     qmin <- xlim[1]
     qmax <- xlim[2]
     q_curve <- seq(qmin, qmax, length.out=200)
@@ -171,7 +229,26 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
         ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
         ggplot2::xlab("x") +
-        ggplot2::ylab("cumulaitve density")
+        ggplot2::ylab("cumulative distribution function")
+
+    return(plot)
+}
+
+#' @export
+plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
+    qmin <- xlim[1]
+    qmax <- xlim[2]
+    q_curve <- seq(qmin, qmax, length.out=50)
+
+    df_curve <- data.frame(
+        x = q_curve,
+        y = fitted_cdf(dist, q_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::xlab("x") +
+        ggplot2::ylab("cumulative distribution function")
 
     return(plot)
 }
@@ -195,7 +272,7 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
 plot_quantile <- function(dist, xlim, ...) UseMethod("plot_quantile")
 
 #' @export
-plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
+plot_quantile.gpinter_dist_orig <- function(dist, xlim, ...) {
     pmin <- xlim[1]
     pmax <- xlim[2]
     p_curve <- seq(pmin, pmax, length.out=200)
@@ -228,6 +305,25 @@ plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
     return(plot)
 }
 
+#' @export
+plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
+    pmin <- xlim[1]
+    pmax <- xlim[2]
+    p_curve <- seq(pmin, pmax, length.out=50)
+
+    df_curve <- data.frame(
+        p = p_curve,
+        y = fitted_quantile(dist, p_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::xlab("p") +
+        ggplot2::ylab("quantile")
+
+    return(plot)
+}
+
 #' @title Tail function plot
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -247,7 +343,7 @@ plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
 plot_tail <- function(dist, xlim, ...) UseMethod("plot_tail")
 
 #' @export
-plot_tail.gpinter_dist <- function(dist, xlim, ...) {
+plot_tail.gpinter_dist_orig <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
     x_curve <- seq(xmin, xmax, length.out=200)
@@ -266,6 +362,25 @@ plot_tail.gpinter_dist <- function(dist, xlim, ...) {
     plot <- ggplot2::ggplot() +
         ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::xlab("-log(1 - p)") +
+        ggplot2::ylab("log(Q(p))")
+
+    return(plot)
+}
+
+#' @export
+plot_tail.gpinter_dist <- function(dist, xlim, ...) {
+    xmin <- xlim[1]
+    xmax <- xlim[2]
+    x_curve <- seq(xmin, xmax, length.out=50)
+
+    df_curve <- data.frame(
+        x = x_curve,
+        y = log(fitted_quantile(dist, 1 - exp(-x_curve)))
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::xlab("-log(1 - p)") +
         ggplot2::ylab("log(Q(p))")
 
@@ -291,7 +406,7 @@ plot_tail.gpinter_dist <- function(dist, xlim, ...) {
 plot_phi <- function(dist, xlim, ...) UseMethod("plot_phi")
 
 #' @export
-plot_phi.gpinter_dist <- function(dist, xlim, ...) {
+plot_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
     x_curve <- seq(xmin, xmax, length.out=200)
@@ -310,6 +425,25 @@ plot_phi.gpinter_dist <- function(dist, xlim, ...) {
     plot <- ggplot2::ggplot() +
         ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::xlab("x") +
+        ggplot2::ylab("interpolation function")
+
+    return(plot)
+}
+
+#' @export
+plot_phi.gpinter_dist <- function(dist, xlim, ...) {
+    xmin <- xlim[1]
+    xmax <- xlim[2]
+    x_curve <- seq(xmin, xmax, length.out=50)
+
+    df_curve <- data.frame(
+        x = x_curve,
+        y = phi(dist, x_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
         ggplot2::xlab("x") +
         ggplot2::ylab("interpolation function")
 
@@ -335,7 +469,7 @@ plot_phi.gpinter_dist <- function(dist, xlim, ...) {
 plot_deriv_phi <- function(dist, xlim, ...) UseMethod("plot_deriv_phi")
 
 #' @export
-plot_deriv_phi.gpinter_dist <- function(dist, xlim, ...) {
+plot_deriv_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
     x_curve <- seq(xmin, xmax, length.out=200)
@@ -359,5 +493,25 @@ plot_deriv_phi.gpinter_dist <- function(dist, xlim, ...) {
 
     return(plot)
 }
+
+#' @export
+plot_deriv_phi.gpinter_dist <- function(dist, xlim, ...) {
+    xmin <- xlim[1]
+    xmax <- xlim[2]
+    x_curve <- seq(xmin, xmax, length.out=50)
+
+    df_curve <- data.frame(
+        x = x_curve,
+        y = deriv_phi(dist, x_curve)
+    )
+
+    plot <- ggplot2::ggplot() +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::xlab("x") +
+        ggplot2::ylab("derivative of interpolation function")
+
+    return(plot)
+}
+
 
 

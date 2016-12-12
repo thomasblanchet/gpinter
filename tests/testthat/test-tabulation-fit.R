@@ -1,6 +1,6 @@
 test_that("tabulation_fit is exact for a Pareto distribution", {
     set.seed(19920902)
-    for (i in 1:10) {
+    for (i in 1:3) {
         # Parameters of the Pareto distribution
         alpha <- runif(1, min=1, max=3)
         mu <- 5*rexp(1)
@@ -62,6 +62,10 @@ test_that("tabulation_fit is exact for a Pareto distribution", {
         )
         expect_equal(
             top_share(dist, p_test),
+            (1 - p_test)^(1 - 1/alpha)
+        )
+        expect_equal(
+            threshold_share(dist, q_test),
             (1 - p_test)^(1 - 1/alpha)
         )
         expect_equal(

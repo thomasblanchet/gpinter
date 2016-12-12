@@ -7,8 +7,8 @@
 simulate_gpinter(dist, n, ...)
 }
 \arguments{
-\item{dist}{A \code{gpinter_dist_orig} object, as returned by
-\code{tabulation_fit} or \code{share_fit}.}
+\item{dist}{An object of class \code{gpinter_dist_orig}, \code{gpinter_dist_indiv},
+\code{gpinter_dist_addup} or \code{gpinter_dist_merge}.}
 
 \item{n}{The size of the sample to generate.}
 

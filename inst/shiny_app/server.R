@@ -209,25 +209,31 @@ shinyServer(function(input, output, session) {
 
     # Reactive values for the input data and the results
     data <- reactiveValues(
-        data       = NULL,
-        nb_data    = NULL,
-        errors     = NULL,
-        years      = NULL,
-        countries  = NULL,
-        components = NULL,
-        results    = NULL,
-        tables     = NULL
+        data               = NULL,
+        nb_data            = NULL,
+        errors             = NULL,
+        years              = NULL,
+        countries          = NULL,
+        components         = NULL,
+        results            = NULL,
+        tables             = NULL,
+        results_years      = NULL,
+        results_countries  = NULL,
+        results_components = NULL
     )
 
     clear_all <- function() {
-        data$data       <- NULL
-        data$nb_data    <- NULL
-        data$errors     <- NULL
-        data$year       <- NULL
-        data$countries  <- NULL
-        data$components <- NULL
-        data$results    <- NULL
-        data$tables     <- NULL
+        data$data               <- NULL
+        data$nb_data            <- NULL
+        data$errors             <- NULL
+        data$year               <- NULL
+        data$countries          <- NULL
+        data$components         <- NULL
+        data$results            <- NULL
+        data$tables             <- NULL
+        data$results_years      <- NULL
+        data$results_countries  <- NULL
+        data$results_components <- NULL
 
         disable("synthpop_dl_csv")
         disable("synthpop_dl_excel")
@@ -340,26 +346,25 @@ shinyServer(function(input, output, session) {
                             year <- as.character(parsed_input$year)
                             country <- parsed_input$country
                             component <- parsed_input$component
-                            if ((year %in% list_years) &
-                                (country %in% list_countries) &
-                                (component %in% list_components)) {
-                                list_errors <- c(errors, list(simpleError(paste0(
+
+                            if (!year %in% list_years) {
+                                list_years <- c(list_years, year)
+                                list_data[[year]] <- list()
+                            }
+                            if (!country %in% list_countries) {
+                                list_countries <- c(list_countries, country)
+                                list_data[[year]][[country]] <- list()
+                            }
+                            if (!component %in% list_components) {
+                                list_components <- c(list_components, component)
+                            }
+
+                            if (!is.null(list_data[[year]][[country]][[component]])) {
+                                list_errors <- c(list_errors, list(simpleError(paste0(
                                     "“", filename, "” was ignored because there is already a tabulation with
                                     the same year, country and component."
                                 ))))
                             } else {
-                                if (!year %in% list_years) {
-                                    list_years <- c(list_years, year)
-                                    list_data[[year]] <- list()
-                                }
-                                if (!country %in% list_countries) {
-                                    list_countries <- c(list_countries, country)
-                                    list_data[[year]][[country]] <- list()
-                                }
-                                if (!component %in% list_components) {
-                                    list_components <- c(list_components, component)
-                                    list_data[[year]][[country]][[component]] <- list()
-                                }
                                 list_data[[year]][[country]][[component]] <- parsed_input
                                 nb_data <- nb_data + 1
                             }
@@ -384,7 +389,8 @@ shinyServer(function(input, output, session) {
                     # In case of error, add it to the list and move on to the next file
                     if (is.error(sheets)) {
                         list_errors <- c(list_errors, list(sheets))
-                    } else {# Otherwise, loop over the sheets of the Excel file and import them
+                    } else {
+                        # Otherwise, loop over the sheets of the Excel file and import them
                         # one by one
                         k <- 1
                         for (sh in sheets) {
@@ -416,26 +422,25 @@ shinyServer(function(input, output, session) {
                                     year <- as.character(parsed_input$year)
                                     country <- parsed_input$country
                                     component <- parsed_input$component
-                                    if ((year %in% list_years) &
-                                            (country %in% list_countries) &
-                                            (component %in% list_components)) {
+
+                                    if (!year %in% list_years) {
+                                        list_years <- c(list_years, year)
+                                        list_data[[year]] <- list()
+                                    }
+                                    if (!country %in% list_countries) {
+                                        list_countries <- c(list_countries, country)
+                                        list_data[[year]][[country]] <- list()
+                                    }
+                                    if (!component %in% list_components) {
+                                        list_components <- c(list_components, component)
+                                    }
+
+                                    if (!is.null(list_data[[year]][[country]][[component]])) {
                                         list_errors <- c(list_errors, list(simpleError(paste0(
                                             "The sheet “", sh, "” of “", filename, "” was ignored because there is already a tabulation with
                                             the same year, country and component."
                                         ))))
                                     } else {
-                                        if (!year %in% list_years) {
-                                            list_years <- c(list_years, year)
-                                            list_data[[year]] <- list()
-                                        }
-                                        if (!country %in% list_countries) {
-                                            list_countries <- c(list_countries, country)
-                                            list_data[[year]][[country]] <- list()
-                                        }
-                                        if (!component %in% list_components) {
-                                            list_components <- c(list_components, component)
-                                            list_data[[year]][[country]][[component]] <- list()
-                                        }
                                         list_data[[year]][[country]][[component]] <- parsed_input
                                         nb_data <- nb_data + 1
                                     }
@@ -498,72 +503,10 @@ shinyServer(function(input, output, session) {
 
     output$input_data_view_header <- renderUI({
         if (is.null(data$data) & is.null(data$errors)) {
-            return(tags$div(
-                tags$div(
-                    tags$p("This interface lets you reconstruct the full distribution of income or
-                        wealth based on tabulated data files such as those provided by tax autorities."),
-                    tags$p("To import the tabulation files, use the “Browse” button
-                        on the left and choose or more file from your computer. You must have one CSV file or
-                        Excel sheet per tabulation. Each must take the form of a table with the following format:"),
-                    tags$table(
-                        tags$tr(
-                            tags$th("year"), tags$th("country"),
-                            tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketsh")
-                        ),
-                        tags$tr(
-                            tags$td("2010"), tags$td("US"), tags$td("53 587"), tags$td("0.1"),
-                            tags$td("5 665"), tags$td("0.13459")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.5"),
-                            tags$td("31 829"), tags$td("0.41007")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.9"),
-                            tags$td("96 480"), tags$td("0.10537")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.95"),
-                            tags$td("136 910"), tags$td("0.14840")
-                        ),
-                        tags$tr(
-                            tags$td(""), tags$td(""), tags$td(""), tags$td("0.99"),
-                            tags$td("351 366"), tags$td("0.19946")
-                        ),
-                        class = "table table-bordered table-condensed",
-                        style = "margin-bottom: 2px;"
-                    ),
-                    tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
-                        "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",
-                        actionLink("import_example", "import it directly to the interface.", icon("arrow-down")),
-                        style="font-size: small;"),
-                    tags$p("Each column of the table correspond to a variable. You need to at least specify:",
-                        tags$ul(
-                            tags$li(tags$code("p"), "for fractiles"),
-                            tags$li(tags$code("thr"), "for matching quantiles"),
-                            tags$li(tags$code("average"), "for the overall average")
-                        )
-                    ), tags$p("You must also specify one of the following:",
-                        tags$ul(
-                            tags$li(tags$code("bracketsh"), "for the share of the bracket"),
-                            tags$li(tags$code("topsh"), "for the top share"),
-                            tags$li(tags$code("bracketavg"), "for the average in the bracket"),
-                            tags$li(tags$code("topavg"), "for the top average"),
-                            tags$li(tags$code("b"), "for the inverted Pareto coefficient")
-                        )
-                    ), tags$p("Finally, if you have several tabulations, you will need to identify them
-                        using at least one of the following fields:", tags$ul(
-                            tags$li(tags$code("year"), "for the period covered by the tabulation"),
-                            tags$li(tags$code("country"), "for the country or region"),
-                            tags$li(tags$code("component"), "for the component (for example labor or capital income)")
-                        )
-                    ),
-                    class = "panel-body"
-                ),
-                class = "panel panel-default",
-                style = "box-shadow: none; border-style: dashed; color: #666;"
-            ))
+            shinyjs::show("help_intro")
+            return(NULL)
         } else if (length(data$data) == 0 & length(data$errors) > 0) {
+            shinyjs::hide("help_intro")
             return(tagList(tags$div(
                 tags$p("There is nothing to display because all of your files
                     generated an error during the importation. Please check
@@ -577,6 +520,7 @@ shinyServer(function(input, output, session) {
                 style = "max-height: 500px; overflow: scroll;"
             ), actionButton("clear", "Clear data", icon=icon("eraser"), class="btn-block btn-danger")))
         } else {
+            shinyjs::hide("help_intro")
             if (length(data$errors) > 0) {
                 warning_message <- tags$div(
                     tags$button(type="button", class="close", `data-dismiss`="alert", `aria-label`="Close",
@@ -732,6 +676,10 @@ shinyServer(function(input, output, session) {
 
     # Launch the programs when the user clicks the "Run" button
     observeEvent(input$run, {
+        # Determine the amount of computation to perform to properly display
+        # the progress bar to the user
+        progressmax <- 2*data$nb_data
+
         # Show a modal dialog with a custom progress bar
         showModal(modalDialog(
             tags$div(
@@ -744,7 +692,7 @@ shinyServer(function(input, output, session) {
                         role = "progressbar",
                         `aria-valuenow` = "0",
                         `aria-valuemin` = "0",
-                        `aria-valuemax` = data$nb_data,
+                        `aria-valuemax` = progressmax,
                         style = "width: 0%"
                     ),
                     class = "progress"
@@ -837,7 +785,7 @@ shinyServer(function(input, output, session) {
 
                     # Update the status message in the dialog
                     shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-                        "Currently working on: ", data_label, "')"))
+                        "Interpolating: ", data_label, "')"))
 
                     result_model <- tryCatch({
                         args <- list(
@@ -856,7 +804,6 @@ shinyServer(function(input, output, session) {
 
                     # If the program failed, stop and show the error to the user
                     if (is.error(result_model)) {
-                        # Show the error to the user
                         shinyjs::show("failure_message")
                         shinyjs::show("dismiss_run_failure")
                         shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
@@ -878,32 +825,107 @@ shinyServer(function(input, output, session) {
 
                     list_results[[year]][[country]][[component]] <- result_model
 
-                    # Build the tables
-                    table <- list(
-                        bottom50  = bottom_share(result, 0.5),
-                        middle40  = bracket_share(result, 0.5, 0.9),
-                        top10     = top_share(result, 0.9),
-                        top1      = top_share(result, 0.99),
-                        gini      = gini(result),
-                        threshold = fitted_quantile(result, gperc),
-                        top_share = top_share(result, gperc)
-                    )
-
-                    table$bottom_share  <- 1 - table$top_share
-                    table$bracket_share <- diff(c(table$bottom_share, 1))
-
-                    table$top_average     <- result_model$average*table$top_share/(1 - gperc)
-                    table$bottom_average  <- result_model$average*table$bottom_share/gperc
-                    table$bracket_average <- result_model$average*table$bracket_share/diff(c(gperc, 1))
-
-                    table$invpareto <- table$top_average/table$threshold
-
-                    list_tables[[year]][[country]][[component]] <- table
-
                     # Update the progress bar
                     i <- i + 1
                     shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", i, ")"))
-                    shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: ", 100*i/data$nb_data, "%')"))
+                    shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: ", 100*i/progressmax, "%')"))
+                }
+            }
+        }
+
+        results_years <- data$years
+        results_countries <- data$countries
+        results_components <- data$components
+
+        list_results_merged <- list()
+        if (input$merge) {
+            shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
+                "Merging distributions')"))
+            for (year in results_years) {
+                list_results_merged[[year]] <- list("merged"=list())
+                for (component in results_components) {
+                    list_dist <- list()
+                    popsize <- c()
+                    for (country in results_countries) {
+                        dist <- list_results[[year]][[country]][[component]]
+                        if (!is.null(dist)) {
+                            list_dist <- c(list_dist, list(dist))
+                            popsize <- c(popsize, data$data[[year]][[country]][[component]]$popsize)
+                        }
+                    }
+                    merged_dist <- tryCatch(merge_dist(list_dist, popsize), error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                    if (is.error(merged_dist)) {
+                        shinyjs::show("failure_message")
+                        shinyjs::show("dismiss_run_failure")
+                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
+
+                        shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while mergeing on ", "placeholder", ". ",
+                            "Please check your data.')"))
+                        # Sanitize & display error message
+                        msg <- merged_dist$message
+                        msg <- gsub("\n", "", msg, fixed=TRUE)
+                        msg <- gsub("'", "\\'", msg, fixed=TRUE)
+                        shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
+                        shinyjs::removeClass("run_progress", "active")
+
+                        # Clear the results
+                        data$results <- NULL
+
+                        return(NULL)
+                    }
+                    list_results_merged[[year]][["merged"]][[component]] <- merged_dist
+                }
+            }
+
+            list_results <- list_results_merged
+            results_countries <- "merged"
+        }
+
+        # Count the number of tabulations to generate
+        progressmax2 <- 0
+        for (year in results_years) {
+            for (country in results_countries) {
+                for (component in results_components) {
+                    if (!is.null(result)) {
+                        progressmax2 <- progressmax2 + 1
+                    }
+                }
+            }
+        }
+        # At each step, we know increase the progress bar by:
+        progress_step <- (progressmax - i)/progressmax2
+
+        # Create the tabulations
+        list_tables <- list()
+        for (year in results_years) {
+            list_tables[[year]] <- list()
+            for (country in results_countries) {
+                list_tables[[year]][[country]] <- list()
+                for (component in results_components) {
+                    result <- list_results[[year]][[country]][[component]]
+                    if (!is.null(result)) {
+                        # Update the status message in the dialog
+                        table_label <- c(component, country, year)
+                        table_label <- table_label[!table_label %in% c("n/a", "merged", "addedup")]
+                        table_label <- paste(table_label, collapse=", ")
+                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
+                            "Generating table: ", table_label, "')"))
+
+                        table <- as.list(generate_tabulation(result, gperc))
+                        table$bottom50 <- bottom_share(result, 0.5)
+                        table$middle40 <- bracket_share(result, 0.5, 0.9)
+                        table$top10 <- top_share(result, 0.9)
+                        table$top1 <- top_share(result, 0.99)
+                        table$gini <- gini(result)
+                        list_tables[[year]][[country]][[component]] <- table
+
+                        # Update the progress bar
+                        i <- i + progress_step
+                        shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", i, ")"))
+                        shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: ", 100*i/progressmax, "%')"))
+                    }
                 }
             }
         }
@@ -918,12 +940,15 @@ shinyServer(function(input, output, session) {
         # Store the results
         data$results <- list_results
         data$tables <- list_tables
+        data$results_years <- results_years
+        data$results_countries <- results_countries
+        data$results_components <- results_components
 
         # Update the interface
-        updateSelectInput(session, "output_table_year", choices=data$years)
-        updateSelectInput(session, "output_dist_plot_year", choices=data$years)
-        updateSelectInput(session, "synthpop_year", choices=data$years)
-        if (length(data$years) > 1) {
+        updateSelectInput(session, "output_table_year", choices=data$results_years)
+        updateSelectInput(session, "output_dist_plot_year", choices=data$results_years)
+        updateSelectInput(session, "synthpop_year", choices=data$results_years)
+        if (length(data$results_years) > 1) {
             enable("output_table_year")
             enable("output_dist_plot_year")
             enable("synthpop_year_all")
@@ -931,11 +956,11 @@ shinyServer(function(input, output, session) {
                 enable("synthpop_year")
             }
         }
-        updateSelectInput(session, "output_table_country", choices=data$countries)
-        updateSelectInput(session, "output_dist_plot_country", choices=data$countries)
-        updateSelectInput(session, "output_time_plot_country", choices=data$countries)
-        updateSelectInput(session, "synthpop_country", choices=data$countries)
-        if (length(data$countries) > 1) {
+        updateSelectInput(session, "output_table_country", choices=data$results_countries)
+        updateSelectInput(session, "output_dist_plot_country", choices=data$results_countries)
+        updateSelectInput(session, "output_time_plot_country", choices=data$results_countries)
+        updateSelectInput(session, "synthpop_country", choices=data$results_countries)
+        if (length(data$results_countries) > 1) {
             enable("output_table_country")
             enable("output_dist_plot_country")
             enable("output_time_plot_country")
@@ -944,11 +969,11 @@ shinyServer(function(input, output, session) {
                 enable("synthpop_country")
             }
         }
-        updateSelectInput(session, "output_table_component", choices=data$components)
-        updateSelectInput(session, "output_dist_plot_component", choices=data$components)
-        updateSelectInput(session, "output_time_plot_component", choices=data$components)
-        updateSelectInput(session, "synthpop_component", choices=data$components)
-        if (length(data$components) > 1) {
+        updateSelectInput(session, "output_table_component", choices=data$results_components)
+        updateSelectInput(session, "output_dist_plot_component", choices=data$results_components)
+        updateSelectInput(session, "output_time_plot_component", choices=data$results_components)
+        updateSelectInput(session, "synthpop_component", choices=data$results_components)
+        if (length(data$results_components) > 1) {
             enable("output_table_component")
             enable("output_dist_plot_component")
             enable("output_time_plot_component")
@@ -995,7 +1020,7 @@ shinyServer(function(input, output, session) {
 
         summary_table <- renderTable(
             data.frame(
-                "Average" = sprintf("%.0f", result$average),
+                "Average" = format(round(result$average), big.mark=" ", scientific=FALSE),
                 "Bottom 50%" = sprintf("%.1f%%", 100*table$bottom50),
                 "Middle 40%" = sprintf("%.1f%%", 100*table$middle40),
                 "Top 10%" = sprintf("%.1f%%", 100*table$top10),
@@ -1008,10 +1033,10 @@ shinyServer(function(input, output, session) {
         )
 
         # Detailed tabulation
-        out_df <- data.frame("Percentiles" = sprintf("%1.5f", gperc))
+        out_df <- data.frame("Fractiles" = sprintf("%1.5f", gperc))
 
         if ("thres" %in% input$results_display) {
-            out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, sprintf("%.0f", table$threshold))
+            out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, format(round(table$threshold), big.mark=" ", scientific=FALSE))
             out_df[is.infinite(table$threshold), "Threshold"] <- "–∞"
         }
         if ("topshare" %in% input$results_display) {
@@ -1024,10 +1049,10 @@ shinyServer(function(input, output, session) {
             out_df["Bracket share"] <- ifelse(is.na(table$bracket_share), NA, sprintf("%.2f%%", 100*table$bracket_share))
         }
         if ("topavg" %in% input$results_display) {
-            out_df["Top average"] <- ifelse(is.na(table$top_average), NA, sprintf("%.0f", table$top_average))
+            out_df["Top average"] <- ifelse(is.na(table$top_average), NA, format(round(table$top_average), big.mark=" ", scientific=FALSE))
         }
         if ("bracketavg" %in% input$results_display) {
-            out_df["Bracket average"] <- ifelse(is.na(table$bracket_average), NA, sprintf("%.0f", table$bracket_average))
+            out_df["Bracket average"] <- ifelse(is.na(table$bracket_average), NA, format(round(table$bracket_average), big.mark=" ", scientific=FALSE))
         }
         if ("invpareto" %in% input$results_display) {
             out_df["Inverted Pareto coefficient"] <- ifelse(is.na(table$invpareto), NA, sprintf("%.2f", table$invpareto))
@@ -1056,8 +1081,8 @@ shinyServer(function(input, output, session) {
         content = function(dest) {
             tmp <- tempdir()
             files <- c()
-            for (country in data$countries) {
-                for (component in data$components) {
+            for (country in data$results_countries) {
+                for (component in data$results_components) {
                     # Times series for the given country and income concept
                     series_label <- c(component, country)
                     series_label <- series_label[series_label != "n/a"]
@@ -1135,7 +1160,7 @@ shinyServer(function(input, output, session) {
                     )
                     files <- c(files, filename_series)
 
-                    for (year in data$years) {
+                    for (year in data$results_years) {
                         result <- data$results[[year]][[country]][[component]]
                         table <- data$tables[[year]][[country]][[component]]
                         if (is.null(result)) {
@@ -1146,7 +1171,7 @@ shinyServer(function(input, output, session) {
                         data_label <- data_label[data_label != "n/a"]
                         data_label <- paste(data_label, collapse=", ")
 
-                        out_df <- data.frame("Percentiles" = gperc)
+                        out_df <- data.frame("Fractiles" = gperc)
 
                         if ("thres" %in% input$results_display) {
                             out_df["Threshold"] <- table$threshold
@@ -1200,8 +1225,8 @@ shinyServer(function(input, output, session) {
             )
             # Create the workbook
             wb <- createWorkbook()
-            for (country in data$countries) {
-                for (component in data$components) {
+            for (country in data$results_countries) {
+                for (component in data$results_components) {
                     # Times series for the given country and income concept
                     series_label <- c(component, country)
                     series_label <- series_label[series_label != "n/a"]
@@ -1272,7 +1297,7 @@ shinyServer(function(input, output, session) {
                     sheet <- createSheet(wb, strtrim(series_label, 31))
                     addDataFrame(df_series, sheet, row.names=FALSE)
 
-                    for (year in data$years) {
+                    for (year in data$results_years) {
                         result <- data$results[[year]][[country]][[component]]
                         table <- data$tables[[year]][[country]][[component]]
                         if (is.null(result)) {
@@ -1387,7 +1412,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_lorenz) == max(input$slider_lorenz)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_lorenz)
@@ -1404,7 +1429,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_gpc) == max(input$slider_gpc)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_gpc)
@@ -1421,7 +1446,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_pdf) == max(input$slider_pdf)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         qmin <- min(input$slider_pdf)
@@ -1438,7 +1463,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_cdf) == max(input$slider_cdf)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         qmin <- min(input$slider_cdf)
@@ -1455,7 +1480,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_quantile) == max(input$slider_quantile)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         pmin <- min(input$slider_quantile)
@@ -1472,7 +1497,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_tail) == max(input$slider_tail)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_tail)
@@ -1489,7 +1514,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_phi) == max(input$slider_phi)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_phi)
@@ -1506,7 +1531,7 @@ shinyServer(function(input, output, session) {
         }
 
         if (min(input$slider_deriv_phi) == max(input$slider_deriv_phi)) {
-            return(plot_text("Need more than one year"))
+            return(plot_text("Please select a valid range"))
         }
 
         xmin <- min(input$slider_deriv_phi)
@@ -1516,7 +1541,7 @@ shinyServer(function(input, output, session) {
     })
 
     # Generate the time plots
-    result_plot_allyears <- reactive({
+    tables_plot_allyears <- reactive({
         if (is.null(data$results)) {
             return(NULL)
         }
@@ -1525,14 +1550,14 @@ shinyServer(function(input, output, session) {
         component <- input$output_time_plot_component
 
         return(lapply(data$years, function(year) {
-            return(data$results[[year]][[country]][[component]])
+            return(data$tables[[year]][[country]][[component]])
         }))
     })
 
     observe({
-        results <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(results)) {
+        if (is.null(tables)) {
             disable("slider_top_1")
             disable("slider_top_10")
             disable("slider_middle_40")
@@ -1560,9 +1585,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_top_1 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_top_1)) {
+        if (is.null(tables) || is.null(input$slider_top_1)) {
             return(plot_text("No data"))
         }
 
@@ -1575,7 +1600,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top1 = sapply(result, function(dist) top_share(dist, 0.99))
+            top1 = sapply(tables, function(tab) tab$top1)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1590,9 +1615,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_top_10 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_top_10)) {
+        if (is.null(tables) || is.null(input$slider_top_10)) {
             return(plot_text("No data"))
         }
 
@@ -1605,7 +1630,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top10 = sapply(result, function(dist) top_share(dist, 0.90))
+            top10 = sapply(tables, function(tab) tab$top10)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1620,9 +1645,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_middle_40 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_middle_40)) {
+        if (is.null(tables) || is.null(input$slider_middle_40)) {
             return(plot_text("No data"))
         }
 
@@ -1635,7 +1660,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            middle40 = sapply(result, function(dist) bracket_share(dist, 0.50, 0.90))
+            middle40 = sapply(tables, function(tab) tab$middle40)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1650,9 +1675,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_bottom_50 <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_bottom_50)) {
+        if (is.null(tables) || is.null(input$slider_bottom_50)) {
             return(plot_text("No data"))
         }
 
@@ -1665,7 +1690,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            bottom50 = sapply(result, function(dist) bottom_share(dist, 0.50))
+            bottom50 = sapply(tables, function(tab) tab$bottom50)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
@@ -1680,9 +1705,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$plot_gini <- renderPlot({
-        result <- result_plot_allyears()
+        tables <- tables_plot_allyears()
 
-        if (is.null(result) || is.null(input$slider_gini)) {
+        if (is.null(tables) || is.null(input$slider_gini)) {
             return(plot_text("No data"))
         }
 
@@ -1695,7 +1720,7 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            gini = sapply(result, function(dist) gini(dist))
+            gini = sapply(tables, function(tab) tab$gini)
         )
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
