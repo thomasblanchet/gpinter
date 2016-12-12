@@ -16,6 +16,11 @@
 
 merge_dist <- function(dist, popsize) {
     ndist <- length(dist)
+
+    if (ndist == 1) {
+        warning("Only one distribution was given: nothing to be merged")
+        return(dist)
+    }
     if (length(popsize) != ndist) {
         stop("'dist' and 'popsize' must have the same length.")
     }

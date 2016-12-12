@@ -75,7 +75,7 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                 in the input files. See help for details.",
                                 style = "font-size: small; color: #666;"
                             ),
-                            checkboxInput('merge', "Merge countries", value=TRUE),
+                            checkboxInput('merge', "Merge countries", value=FALSE),
                             hr(),
                             disabled(
                                 tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up components", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
