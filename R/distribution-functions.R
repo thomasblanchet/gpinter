@@ -221,6 +221,15 @@ support.gpinter_dist_merge <- function(dist, ...) {
     return(list(lower=min(bounds[1, ]), upper=max(bounds[2, ])))
 }
 
+#' @export
+support.gpinter_dist_indiv <- function(dist, ...) {
+    support_orig <- support(dist)
+    return(list(
+        lower = min(support_orig$lower/2, support_orig$lower),
+        upper = support_orig$upper
+    ))
+}
+
 #' @title Cumulative distribution function for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -318,6 +327,24 @@ fitted_cdf.gpinter_dist_merge <- function(dist, x, ...) {
     } else {
         return(colSums(cdfs*dist$relsize))
     }
+}
+
+#' @export
+fitted_cdf.gpinter_dist_indiv <- function(dist, x, ...) {
+    # Get the fractile associated to x and 2*x for the parent distribution
+    p1 <- fitted_cdf(dist$parent, x)
+    p2 <- fitted_cdf(dist$parent, 2*x)
+    # Get the couple share of those with income above x
+    c1 <- couple_share(dist, p1)
+    c2 <- couple_share(dist, p2)
+    # Get the overall couple share
+    c0 <- dist$couple_share
+
+    # Calculate the complementary of the distribution function
+    ccdf <- ((1 - c1)*(1 - p1) + 2*c2*(1 - p2))/(1 + c0)
+    names(ccdf) <- NULL
+
+    return(1 - ccdf)
 }
 
 #' @title Probability density function for generalized Pareto interpolation

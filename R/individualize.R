@@ -11,9 +11,9 @@
 #' @param singleshare The overall share of singles.
 #' @param coupleshare The overall share of couples.
 #' @param singletop A vector with the same length as \code{p}: the share
-#' of singles in the top 100*(1 - p)%.
+#' of singles in the top 100*(1 - p)\%.
 #' @param coupletop A vector with the same length as \code{p}: the share
-#' of couples in the top 100*(1 - p)%.
+#' of couples in the top 100*(1 - p)\%.
 #' @param singlebracket A vector with the same length as \code{p}: the share
 #' of singles in the matching bracket.
 #' @param couplebracket A vector with the same length as \code{p}: the share
@@ -110,8 +110,9 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     new_dist <- list()
     class(new_dist) <- c("gpinter_dist", "gpinter_dist_indiv")
 
-    new_dist$average <- dist$average/(1 + coupleshare)
+    new_dist$average <- dist$average/(1 + lambda_all)
     new_dist$parent <- dist
+    new_dist$couple_share <- lambda_all
     new_dist$spline <- list(
         xk = p,
         yk = lambda,
@@ -119,4 +120,31 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     )
 
     return(new_dist)
+}
+
+#' @title Share of couples above a fractile
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Give the share of couples above any fractile \code{p} of the
+#' parent distribution of an individualized distribution, interpolated
+#' with PCHIP.
+#'
+#' @param dist An object of class \code{gpinter_dist_indiv}.
+#' @param p A vector of fractiles.
+#' @param ... Ignored.
+#'
+#' @return A vector with the share of couples above each value of \code{p}.
+#'
+#' @export
+
+couple_share <- function(dist, p, ...) UseMethod("couple_share")
+
+#' @export
+couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
+    return(cubic_spline(p,
+        dist$spline$xk,
+        dist$spline$yk,
+        dist$spline$sk
+    ))
 }
