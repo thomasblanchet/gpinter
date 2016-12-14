@@ -35,74 +35,53 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     p <- p[ord]
 
     if (!is.null(singleshare)) {
-        lambda_all <- 1 - singleshare
+        m <- 1 - singleshare
     } else if (!is.null(coupleshare)) {
-        lambda_all <- coupleshare
+        m <- coupleshare
     } else {
         stop("You must either specify 'singleshare' or 'coupleshare'.")
     }
 
-    if (lambda_all >= 1 || lambda_all < 0) {
+    if (m >= 1 || m < 0) {
         stop("'singleshare' and 'coupleshare' must be between 0 and 1.")
     }
 
     if (!is.null(singletop)) {
         singletop <- singletop[ord]
-        lambda <- 1 - singletop
+        ck <- 1 - singletop
+        ck <- (1 - p)*ck
+        if (p[1] != 0) {
+            p <- c(0, p)
+            ck <- c(m, ck)
+        }
+        ck <- -diff(c(ck, 0))/diff(c(p, 1))
     } else if (!is.null(coupletop)) {
         coupletop <- coupletop[ord]
-        lambda <- coupletop
+        ck <- coupletop
+        ck <- (1 - p)*ck
+        if (p[1] != 0) {
+            p <- c(0, p)
+            ck <- c(m, ck)
+        }
+        ck <- -diff(c(ck, 0))/diff(c(p, 1))
     } else if (!is.null(singlebracket)) {
         singlebracket <- singlebracket[ord]
-        lambda <- 1 - singlebracket
-        lambda <- diff(c(p, 1))*lambda
-        lambda <- rev(cumsum(rev(lambda)))
-        lambda <- lambda/(1 - p)
+        ck <- 1 - singlebracket
+        if (p[1] != 0) {
+            ck <- c((m - sum(ck*diff(c(p, 1))))/p[1], ck)
+            p <- c(0, p)
+        }
     } else if (!is.null(couplebracket)) {
         couplebracket <- couplebracket[ord]
-        lambda <- couplebracket
-        lambda <- diff(c(p, 1))*lambda
-        lambda <- rev(cumsum(rev(lambda)))
-        lambda <- lambda/(1 - p)
-    }
-
-    if (any(lambda >= 1) || any(lambda < 0)) {
-        stop("The share of couples must be between 0 and 1.")
-    }
-
-    # Add a value for p == 0 if necessary
-    if (p[1] != 0) {
-        p <- c(0, p)
-        lambda <- c(lambda_all, lambda)
-    }
-    # Add a value for p == 1 assuming a constant share in the last threshold
-    p <- c(p, 1)
-    lambda <- c(lambda, tail(lambda, n=1))
-
-    # Interpolate the share of couples via PCHIP
-    n <- length(lambda)
-    secant <- (lambda[2:n] - lambda[1:(n - 1)])/(p[2:n] - p[1:(n - 1)])
-    tangent <- c(
-        secant[1],
-        (secant[1:(n - 2)] + secant[2:(n - 1)])/2,
-        secant[n - 1]
-    )
-
-    for (k in 1:(n - 1)) {
-        if (secant[k] == 0) {
-            tangent[k] <- 0
-            tangent[k + 1] <- 0
-        } else if (k > 1 && secant[k - 1]*secant[k] < 0) {
-            tangent[k] <- 0
-        } else {
-            alpha <- tangent[k]/secant[k]
-            beta <- tangent[k + 1]/secant[k]
-            if (alpha^2 + beta^2 > 9) {
-                tau <- 3/sqrt(alpha^2 + beta^2)
-                tangent[k] <- tau*tangent[k]
-                tangent[k + 1] <- tau*tangent[k + 1]
-            }
+        ck <- couplebracket
+        if (p[1] != 0) {
+            ck <- c((m - sum(ck*diff(c(p, 1))))/p[1], ck)
+            p <- c(0, p)
         }
+    }
+
+    if (any(ck >= 1) || any(ck < 0)) {
+        stop("The share of couples must be between 0 and 1.")
     }
 
     # Return an object with the parent distribution and the interpolated couple
@@ -110,14 +89,11 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     new_dist <- list()
     class(new_dist) <- c("gpinter_dist", "gpinter_dist_indiv")
 
-    new_dist$average <- dist$average/(1 + lambda_all)
+    new_dist$average <- dist$average/(1 + m)
     new_dist$parent <- dist
-    new_dist$couple_share <- lambda_all
-    new_dist$spline <- list(
-        xk = p,
-        yk = lambda,
-        sk = tangent
-    )
+    new_dist$couple_share <- m
+    new_dist$pk <- p
+    new_dist$ck <- ck
 
     return(new_dist)
 }
@@ -139,12 +115,28 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
 #' @export
 
 couple_share <- function(dist, p, ...) UseMethod("couple_share")
+deriv_couple_share <- function(dist, p, ...) UseMethod("deriv_couple_share")
 
 #' @export
 couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
-    return(cubic_spline(p,
-        dist$spline$xk,
-        dist$spline$yk,
-        dist$spline$sk
-    ))
+    # Find the bracket in which p falls
+    pk <- c(dist$pk, 1)
+    k <- cut(p, breaks=pk, include.lowest=TRUE, labels=FALSE)
+
+    # Mass of couples above the current bracket
+    a <- rev(cumsum(rev(dist$ck*diff(pk))))
+    a <- c(a[2:length(a)], 0)
+
+    # Mass of couples above p in the current bracket
+    b <- (pk[k + 1] - p)*dist$ck[k]
+
+    return((b + a[k])/(1 - p))
+}
+
+#' @export
+deriv_couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
+    # Find the bracket in which p falls
+    k <- cut(p, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
+
+    return(-dist$ck[k])
 }

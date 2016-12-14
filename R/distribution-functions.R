@@ -342,7 +342,6 @@ fitted_cdf.gpinter_dist_indiv <- function(dist, x, ...) {
 
     # Calculate the complementary of the distribution function
     ccdf <- ((1 - c1)*(1 - p1) + 2*c2*(1 - p2))/(1 + c0)
-    names(ccdf) <- NULL
 
     return(1 - ccdf)
 }
@@ -421,6 +420,7 @@ fitted_density.gpinter_dist_orig <- function(dist, x, ...) {
         1/(exp(2*z - y)*(d2ydx2 + dydx*(1 - dydx)))
     })))))
 }
+
 #' @export
 fitted_density.gpinter_dist_merge <- function(dist, x, ...) {
     # Calculate the PDF for each parent distribution
@@ -431,6 +431,25 @@ fitted_density.gpinter_dist_merge <- function(dist, x, ...) {
     } else {
         return(colSums(pdfs*dist$relsize))
     }
+}
+
+#' @export
+fitted_density.gpinter_dist_indiv <- function(dist, x, ...) {
+    p1 <- fitted_cdf(dist$parent, x)
+    p2 <- fitted_cdf(dist$parent, 2*x)
+
+    f1 <- fitted_density(dist$parent, x)
+    f2 <- fitted_density(dist$parent, 2*x)
+
+    c1 <- couple_share(dist, 1 - p1)
+    c2 <- couple_share(dist, 1 - p2)
+
+    d1 <- deriv_couple_share(dist, 1 - p1)
+    d2 <- deriv_couple_share(dist, 1 - p2)
+
+    c0 <- dist$couple_share
+
+    return((f1*(c1 - d1*(1 - p1) - 1) - 4*f2*(c2 + d2*(1 - p2))))
 }
 
 #' @title Share above a threshold
