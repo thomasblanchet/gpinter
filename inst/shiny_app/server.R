@@ -5,6 +5,9 @@ library(xlsx)
 library(readxl)
 library(gpinter)
 
+# Increased max upload size to 50MB
+options(shiny.maxRequestSize = 50*1024^2) 
+
 # Parse the user input data into a suitable R list
 parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     data_list <- list()
