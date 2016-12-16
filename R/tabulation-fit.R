@@ -18,6 +18,10 @@
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
 #' @param invpareto The inverted Pareto coefficient.
+#' @param gpd_bottom Should the GPD model be used at the bottom of the
+#' distribution? Otherwise, if there is no value for \code{p == 0}, the program
+#' assumes a lower bound of 0. Default is \code{FALSE} if
+#' \code{min(threshold) > 0}, and \code{TRUE} otherwise.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -27,7 +31,7 @@
 #' @export
 
 tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
-                           bracketavg=NULL, topavg=NULL, invpareto=NULL) {
+                           bracketavg=NULL, topavg=NULL, invpareto=NULL, gpd_bottom=FALSE) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -72,6 +76,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         }
         invpareto <- invpareto[ord]
         m <- (1 - p)*threshold*invpareto
+
         # The inverted Pareto may not be defined for the first threshold
         if (is.na(invpareto[1]) & p[1] == 0) {
             m[1] <- average
@@ -84,9 +89,6 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
         stop("Thresholds must be strictly increasing.")
-    }
-    if (any(diff(m) >= 0)) {
-        stop("Truncated average must be strictly decreasing.")
     }
     # Truncated mean function is concave
     for (i in 2:(n - 1)) {
@@ -101,7 +103,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
     # The average between each bracket is within the bracket
     bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
-    if (any(bracketavg < threshold) | any(bracketavg[1:(n - 1)] > threshold[2:n])) {
+    if (any(bracketavg <= threshold) | any(bracketavg[1:(n - 1)] >= threshold[2:n])) {
         stop("Input data on quantiles and moments is inconsistent.")
     }
 
@@ -113,8 +115,11 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     yk <- -log(mk)
     sk <- (1 - pk)*qk/mk
 
+    # Estimate the second derivative at the end points
+    an <- left_derivative(xk[n - 2], xk[n - 1], xk[n], sk[n - 2], sk[n - 1], sk[n])
+
     # Calculate the second derivative
-    ak <- natural_quintic_spline(xk, yk, sk)
+    ak <- clamped_quintic_spline(xk, yk, sk, an)
 
     # Keep non-constrained parameter values in memory
     xk_nc <- xk
@@ -289,7 +294,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # If we get xi == 1 or sigma == 0, the GPD is not valid, so use a
     # standard Pareto instead (which breaks derivability of the quantile
     # function)
-    if (param_top$sigma == 0 || param_top$xi == 1) {
+    if (param_top$sigma <= 0 || param_top$xi >= 1) {
         result$mu_top    <- qk[n]
         result$xi_top    <- 1 - sk[n]
         result$sigma_top <- result$mu_top*result$xi_top

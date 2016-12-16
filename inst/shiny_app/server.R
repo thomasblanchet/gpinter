@@ -6,7 +6,7 @@ library(readxl)
 library(gpinter)
 
 # Increased max upload size to 50MB
-options(shiny.maxRequestSize = 50*1024^2) 
+options(shiny.maxRequestSize = 50*1024^2)
 
 # Parse the user input data into a suitable R list
 parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
@@ -66,6 +66,10 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     # Look for the year, country and component
     if (var$year %in% colnames(data)) {
         data_list$year <- as.numeric(data[1, var$year])
+        # If the year does not take the form of a number
+        if (is.na(data_list$year)) {
+            data_list$year <- data[1, var$year]
+        }
     }
     if (var$country %in% colnames(data)) {
         data_list$country <- data[1, var$country]
