@@ -526,7 +526,7 @@ natural_quintic_spline <- function(xk, yk, sk) {
     return(solve(A, b))
 }
 
-#' @title Estimate a clamped quintic spline
+#' @title Estimate a quintic spline clamped at the last point
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'

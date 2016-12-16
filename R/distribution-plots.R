@@ -190,6 +190,58 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
     return(plot)
 }
 
+#' @title Histogram plot
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Plots the histogram of a distribution estimated via
+#' generalized Pareto interpolation.
+#'
+#' @param dist A \code{gpinter_dist} object, as returned by
+#' \code{tabulation_fit} or \code{share_fit}.
+#' @param xlim The range of the curve.
+#' @param ... Ignored.
+#'
+#' @importFrom ggplot2 ggplot aes_string geom_line
+#'
+#' @export
+
+plot_hist <- function(dist, xlim, ...) UseMethod("plot_hist")
+
+#' @export
+plot_hist.gpinter_dist <- function(dist, xlim, ...) {
+    # Range of the histogram
+    supp <- support(dist)
+    if (is.infinite(supp$lower)) {
+        q_min <- round(fitted_quantile(dist, 0.01))
+    } else {
+        q_min <- round(supp$lower)
+    }
+    q_max <- round(fitted_quantile(dist, 0.99))
+
+    # Bins
+    n <- 100
+    q <- seq(q_min, q_max, length.out=(n + 1))
+
+    p <- fitted_cdf(dist, q)
+    h <- diff(p)
+
+    barpos <- (q[1:n] + q[2:(n + 1)])/2
+    barwidth <- (q_max - q_min)/n
+
+    df <- data.frame(
+        x = barpos,
+        y = h
+    )
+
+    plot <- ggplot2::ggplot(data=df, aes_string(x="x", y="y")) +
+        ggplot2::geom_bar(stat="identity", width=0.8*barwidth) +
+        ggplot2::xlim(xlim) + ggplot2::scale_y_continuous(labels = scales::percent) +
+        ggplot2::ylab("population share")
+
+    return(plot)
+}
+
 #' @title Cumulative density plot
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -197,7 +249,7 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
 #' @description Plots the density of a distribution estimated via
 #' generalized Pareto interpolation.
 #'
-#' @param dist A \code{gpinter_dist_orig} object, as returned by
+#' @param dist A \code{gpinter_dist} object, as returned by
 #' \code{tabulation_fit} or \code{share_fit}.
 #' @param xlim The range of the curve.
 #' @param ... Ignored.
