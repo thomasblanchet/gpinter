@@ -197,8 +197,6 @@ code {
 }
 
 body {
-    margin-top: 375px;
-    margin-bottom: 50px;
     font-family: 'Lato', sans-serif;
 }
 
@@ -237,9 +235,6 @@ span.btn-file {
     .nav-doc {
         display: block;
     }
-    body {
-        margin-top: 180px;
-    }
     .anchor {
         display: block;
         position: relative;
@@ -258,9 +253,6 @@ span.btn-file {
     .nav-doc {
         display: block;
     }
-    body {
-        margin-top: 80px;
-    }
     .anchor {
         display: block;
         position: relative;
@@ -278,9 +270,6 @@ span.btn-file {
 @media (min-width: 1200px) {
     .nav-doc {
         display: block;
-    }
-    body {
-        margin-top: 80px;
     }
     .anchor {
         display: block;

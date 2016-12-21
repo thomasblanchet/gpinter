@@ -596,7 +596,6 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
     ),
     id = "main_navbar",
     selected = "Input data",
-    position = "fixed-top",
     inverse = TRUE,
     theme = "style.css",
     windowTitle = "Generalized Pareto interpolation - WID.WORLD"
