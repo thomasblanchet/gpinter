@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
+.shiny-plot-output {
+    background-image: url('spin.gif');
+    background-size: 99px 99px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.shiny-plot-output.recalculating {
+    opacity: 1;
+}
+
+.shiny-plot-output.recalculating > img {
+    opacity: 0.3;
+}
+
 .navbar-default .navbar-brand {
     padding-top: 8px;
     text-transform: uppercase;

@@ -39,7 +39,7 @@ generate_tabulation.gpinter_dist_orig <- function(dist, fractiles, ...) {
 }
 
 #' @export
-generate_tabulation.gpinter_dist_merge <- function(dist, fractiles, ...) {
+generate_tabulation.gpinter_dist <- function(dist, fractiles, ...) {
     tab <- list(
         fractile = fractiles,
         threshold = fitted_quantile(dist, fractiles)

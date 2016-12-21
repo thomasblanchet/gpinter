@@ -7,7 +7,7 @@
 merge_dist(dist, popsize)
 }
 \arguments{
-\item{dist}{A vector of objects of class \code{gpinter_dist}.}
+\item{dist}{A vector of objects of class \code{gpinter_dist_orig}.}
 
 \item{popsize}{A vector of the same length with the population associated
 with each distribution.}

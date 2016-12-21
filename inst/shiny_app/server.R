@@ -165,6 +165,63 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
         return(simpleError("no data on shares/averages/inverted Pareto coefficients"))
     }
 
+    # Look for single/couple share
+    if (var$singlebracket %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$singlebracket] <- gsub(",", ".", data[, var$singlebracket])
+        }
+        data[, var$singlebracket] <- as.numeric(data[, var$singlebracket])
+        if (anyNA(data[, var$singlebracket])) {
+            return(simpleError("single shares contain missing values"))
+        }
+        data_list$whichcouple <- "singlebracket"
+        data_list$singlebracket <- data[, var$singlebracket]
+    } else if (var$couplebracket %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$couplebracket] <- gsub(",", ".", data[, var$couplebracket])
+        }
+        data[, var$couplebracket] <- as.numeric(data[, var$couplebracket])
+        if (anyNA(data[, var$couplebracket])) {
+            return(simpleError("single shares contain missing values"))
+        }
+        data_list$whichcouple <- "couplebracket"
+        data_list$couplebracket <- data[, var$couplebracket]
+    } else if (var$singletop %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$singletop] <- gsub(",", ".", data[, var$singletop])
+        }
+        data[, var$singletop] <- as.numeric(data[, var$singletop])
+        if (anyNA(data[, var$singletop])) {
+            return(simpleError("couple shares contain missing values"))
+        }
+        data_list$whichcouple <- "singletop"
+        data_list$singletop <- data[, var$singletop]
+    } else if (var$coupletop %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$coupletop] <- gsub(",", ".", data[, var$coupletop])
+        }
+        data[, var$coupletop] <- as.numeric(data[, var$coupletop])
+        if (anyNA(data[, var$coupletop])) {
+            return(simpleError("couple shares contain missing values"))
+        }
+        data_list$whichcouple <- "coupletop"
+        data_list$coupletop <- data[, var$coupletop]
+    }
+    # Overall share
+    if (var$singleshare %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$singleshare] <- gsub(",", ".", data[, var$singleshare])
+        }
+        data[, var$singleshare] <- as.numeric(data[, var$singleshare])
+        data_list$singleshare <- data[1, var$singleshare]
+    } else if (var$coupleshare %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$coupleshare] <- gsub(",", ".", data[, var$coupleshare])
+        }
+        data[, var$coupleshare] <- as.numeric(data[, var$coupleshare])
+        data_list$coupleshare <- data[1, var$coupleshare]
+    }
+
     if (is.na(data_list$average) | is.null(data_list$average)) {
         return(simpleError("average is missing"))
     }
@@ -290,8 +347,12 @@ shinyServer(function(input, output, session) {
                 topshare      = trimws(isolate(input$var_topshare)),
                 bracketavg    = trimws(isolate(input$var_bracketavg)),
                 topavg        = trimws(isolate(input$var_topavg)),
-                bracketsingle = trimws(isolate(input$var_bracketsingle)),
-                topsingle     = trimws(isolate(input$var_topsingle)),
+                singleshare   = trimws(isolate(input$var_singleshare)),
+                coupleshare   = trimws(isolate(input$var_coupleshare)),
+                singlebracket = trimws(isolate(input$var_singlebracket)),
+                singletop     = trimws(isolate(input$var_singletop)),
+                couplebracket = trimws(isolate(input$var_couplebracket)),
+                coupletop     = trimws(isolate(input$var_coupletop)),
                 average       = trimws(isolate(input$var_average)),
                 popsize       = trimws(isolate(input$var_popsize)),
                 gumbel        = trimws(isolate(input$var_gumbel))
@@ -630,10 +691,28 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             "Fractiles" = sprintf("%1.5f", data_view$p),
-            "Thresholds" = sprintf("%.0f", data_view$threshold)
+            "Thresholds" = format(round(data_view$threshold), big.mark=" ", scientific=FALSE)
         )
         df[avgsh_clean] <- sprintf("%.3f", data_view[[avgsh]])
         df[is.na(data_view[[avgsh]]), avgsh_clean] <- NA
+
+        # Couple/single share for this data
+        if (!is.null(data_view$whichcouple)) {
+            couplevar <- data_view$whichcouple
+            if (couplevar == "singletop") {
+                couplevar_clean <- "Top single share"
+            } else if (couplevar == "singlebracket") {
+                couplevar_clean <- "Bracket single share"
+            } else if (couplevar == "coupletop") {
+                couplevar_clean <- "Top couple share"
+            } else if (couplevar == "couplebracket") {
+                couplevar_clean <- "Bracket couple share"
+            }
+            if (!is.null(couplevar) & !is.na(couplevar)) {
+                df[couplevar_clean] <- sprintf("%.3f", data_view[[couplevar]])
+                df[is.na(data_view[[couplevar]]), couplevar_clean] <- NA
+            }
+        }
 
         return(tagList(
             tags$h4("Summary"),
@@ -809,6 +888,22 @@ shinyServer(function(input, output, session) {
                         return(simpleError(e$message))
                     })
 
+                    if (!is.error(result_model) & input$interpolation_options == "individualize") {
+                        result_model <- tryCatch({
+                            args <- list(
+                                dist = result_model,
+                                p = data_model$p,
+                                coupleshare = data_model$coupleshare,
+                                singleshare = data_model$singleshare
+                            )
+                            args[data_model$whichcouple] <- data_model[data_model$whichcouple]
+                            result <- do.call(individualize_dist, args)
+                            result
+                        }, error = function(e) {
+                            return(simpleError(e$message))
+                        })
+                    }
+
                     # If the program failed, stop and show the error to the user
                     if (is.error(result_model)) {
                         shinyjs::show("failure_message")
@@ -844,8 +939,8 @@ shinyServer(function(input, output, session) {
         results_countries <- data$countries
         results_components <- data$components
 
-        list_results_merged <- list()
-        if (input$merge) {
+        if (input$interpolation_options == "merge") {
+            list_results_merged <- list()
             shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
                 "Merging distributions')"))
             for (year in results_years) {
@@ -964,6 +1059,10 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_year_all) {
                 enable("synthpop_year")
             }
+        } else {
+            disable("output_table_year")
+            disable("output_dist_plot_year")
+            disable("synthpop_year_all")
         }
         updateSelectInput(session, "output_table_country", choices=data$results_countries)
         updateSelectInput(session, "output_dist_plot_country", choices=data$results_countries)
@@ -977,6 +1076,11 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_country_all) {
                 enable("synthpop_country")
             }
+        } else {
+            disable("output_table_country")
+            disable("output_dist_plot_country")
+            disable("output_time_plot_country")
+            disable("synthpop_country_all")
         }
         updateSelectInput(session, "output_table_component", choices=data$results_components)
         updateSelectInput(session, "output_dist_plot_component", choices=data$results_components)
@@ -990,6 +1094,11 @@ shinyServer(function(input, output, session) {
             if (!input$synthpop_component_all) {
                 enable("synthpop_component")
             }
+        } else {
+            disable("output_table_component")
+            disable("output_dist_plot_component")
+            disable("output_time_plot_component")
+            disable("synthpop_component_all")
         }
 
         enable("synthpop_dl_csv")

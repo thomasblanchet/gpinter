@@ -362,9 +362,20 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
 
     result$average <- average
 
-    result$mu_top    <- param_top$mu
-    result$sigma_top <- param_top$sigma
-    result$xi_top    <- param_top$xi
+    # Estimate the parameters of the generalized Pareto distribution at the top
+    param_top <- gpd_top_parameters(xk[n], yk[n], sk[n], ak[n])
+    # If we get xi == 1 or sigma == 0, the GPD is not valid, so use a
+    # standard Pareto instead (which breaks derivability of the quantile
+    # function)
+    if (param_top$sigma == 0 || param_top$xi == 1) {
+        result$mu_top    <- qk[n]
+        result$xi_top    <- 1 - sk[n]
+        result$sigma_top <- result$mu_top*result$xi_top
+    } else {
+        result$mu_top    <- param_top$mu
+        result$sigma_top <- param_top$sigma
+        result$xi_top    <- param_top$xi
+    }
 
     result$mu_bottom    <- param_bottom$mu
     result$sigma_bottom <- param_bottom$sigma

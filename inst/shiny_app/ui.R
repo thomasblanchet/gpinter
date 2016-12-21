@@ -2,6 +2,43 @@ library(shiny)
 library(shinyBS)
 library(shinyjs)
 
+# Modified radioButtons to include HTML
+radioButtons_withHTML <- function (inputId, label, choices, selected=NULL, inline=FALSE, width=NULL) {
+    choices <- shiny:::choicesWithNames(choices)
+    selected <- if (is.null(selected))
+        choices[[1]]
+    else {
+        shiny:::validateSelected(selected, choices, inputId)
+    }
+    if (length(selected) > 1)
+        stop("The 'selected' argument must be of length 1")
+    options <- generateOptions_withHTML(inputId, choices, selected, inline,
+        type = "radio")
+    divClass <- "form-group shiny-input-radiogroup shiny-input-container"
+    if (inline)
+        divClass <- paste(divClass, "shiny-input-container-inline")
+    tags$div(id = inputId, style = if (!is.null(width))
+        paste0("width: ", validateCssUnit(width), ";"), class = divClass,
+        shiny:::controlLabel(inputId, label), options)
+}
+
+generateOptions_withHTML <- function (inputId, choices, selected, inline, type="checkbox") {
+    options <- mapply(choices, names(choices), FUN = function(value,
+        name) {
+        inputTag <- tags$input(type = type, name = inputId, value = value)
+        if (value %in% selected)
+            inputTag$attribs$checked <- "checked"
+        if (inline) {
+            tags$label(class = paste0(type, "-inline"), inputTag,
+                tags$span(HTML(name)))
+        }
+        else {
+            tags$div(class = type, tags$label(inputTag, tags$span(HTML(name))))
+        }
+    }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    div(class = "shiny-options-group", options)
+}
+
 # Define UI for the application
 shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
         tags$p("WID.WORLD"),
@@ -58,41 +95,22 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                             class = "panel-heading"
                         ),
                         tags$div(
-                            disabled(
-                                tags$h4(icon("user"), HTML("&nbsp;"), "Individualize", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
-                                tags$p("The program can individualize the distribution of income or wealth
-                                    under the assumption of equal sharing among spouses. If you select this
-                                    option, you must specify the share of singles in your input files. See help
-                                    for details.",
-                                    style = "font-size: small; color: #666;"
-                                ),
-                                checkboxInput('indiv', "Individualize the distribution", value=FALSE)
-                            ),
-                            hr(),
-                            tags$h4(icon("globe"), HTML("&nbsp;"), "Merge countries"),
-                            tags$p("The program can merge several distributions (typically from several
-                                countries). The distributions to be merged must share a common identifiant
-                                in the input files. See help for details.",
-                                style = "font-size: small; color: #666;"
-                            ),
-                            checkboxInput('merge', "Merge countries", value=FALSE),
-                            hr(),
-                            disabled(
-                                tags$h4(icon("plus-square"), HTML("&nbsp;"), "Add up components", HTML("&nbsp;"), tags$span("In progress", class="label label-primary")),
-                                tags$p("The program can add up two component income or wealth (eg. labor
-                                    and capital income). The distributions of the two components to be added
-                                    must share a common identifiant in the input files. See help for details.",
-                                    style = "font-size: small; color: #666;"
-                                ),
-                                checkboxInput('addup', "Add up distributions", value=FALSE),
-                                tags$p("The dependence between the two components is assumed to be characterized
-                                    by a Gumbel copula with parameter \\(\\theta\\). The higher
-                                    \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
-                                    full independence. You may specify a value for \\(\\theta\\) in each files,
-                                    or set a global value below. See help for details.",
-                                    style = "font-size: small; color: #666;"),
-                                numericInput("gumbel_theta", "Gumbel copula parameter \\(\\theta\\)", 3, min=1, width="100%")
-                            ),
+                            radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
+                                "<h4 style='margin-top: 0;'>Basic interpolation</h4>
+                                <p style='font-size: small; color: #666;'>Interpolate the distribution
+                                of your data directly, without any transformation.</p>" = "basic",
+                                "<h4 style='margin-top: 0;'>Individualize</h4>
+                                <p style='font-size: small; color: #666;'>Individualize the distribution of income or wealth
+                                under the assumption of equal sharing among spouses. If you select this
+                                option, you must specify the share of singles in your input files.</p>" = "individualize",
+                                "<h4 style='margin-top: 0;'>Merge countries</h4>
+                                <p style='font-size: small; color: #666;'>Merge the distribution of several countries
+                                into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
+                                "<h4 style='margin-top: 0;'>Add up components</h4>
+                                <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example,
+                                labor and capital income), assuming that the dependence between both components
+                                is characterized by a Gumbel copula.</p>" = "addup"
+                            )),
                             class = "panel-body"
                         ),
                         class = "panel panel-default"
@@ -480,8 +498,12 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                     textInput("var_topshare", "Top share", "topsh", width="100%"),
                                     textInput("var_bracketavg", "Bracket average", "bracketavg", width="100%"),
                                     textInput("var_topavg", "Top average", "topavg", width="100%"),
-                                    textInput("var_bracketsingle", "Share of singles inside bracket", "bracketsingle", width="100%"),
-                                    textInput("var_topsingle", "Share of singles in bracket and above", "topsingle", width="100%"),
+                                    textInput("var_singleshare", "Overall share of singles", "singleshare", width="100%"),
+                                    textInput("var_coupleshare", "Overall share of couples", "coupleshare", width="100%"),
+                                    textInput("var_singlebracket", "Share of singles inside bracket", "s", width="100%"),
+                                    textInput("var_singletop", "Share of singles in bracket and above", "topsingle", width="100%"),
+                                    textInput("var_couplebracket", "Share of couples inside bracket", "bracketcouple", width="100%"),
+                                    textInput("var_coupletop", "Share of couples in bracket and above", "topcouple", width="100%"),
                                     textInput("var_average", "Average", "average", width="100%"),
                                     textInput("var_popsize", "Population size", "popsize", width="100%"),
                                     textInput("var_gumbel", "Gumbel copula parameter", "gumbel", width="100%"),

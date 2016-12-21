@@ -24,8 +24,8 @@ plot_lorenz.gpinter_dist_orig <- function(dist, xlim, ...) {
     # tangent near the end
     if (pmax == 1) {
         p_curve <- c(
-            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=160),
-            seq(0.01*pmin + 0.99*pmax, pmax, length.out=40)
+            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=180),
+            seq(0.01*pmin + 0.99*pmax, pmax, length.out=20)
         )
     } else {
         p_curve <- seq(pmin, pmax, length.out=200)
@@ -68,11 +68,11 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
     # tangent near the end
     if (pmax == 1) {
         p_curve <- c(
-            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=40),
-            seq(0.01*pmin + 0.99*pmax, pmax, length.out=10)
+            seq(pmin, 0.01*pmin + 0.99*pmax, length.out=180),
+            seq(0.01*pmin + 0.99*pmax, pmax, length.out=20)
         )
     } else {
-        p_curve <- seq(pmin, pmax, length.out=50)
+        p_curve <- seq(pmin, pmax, length.out=200)
     }
 
     df_curve <- data.frame(
@@ -139,7 +139,7 @@ plot_gpc.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
     pmin <- xlim[1]
     pmax <- xlim[2]
-    p_curve <- seq(pmin, pmax, length.out=50)
+    p_curve <- seq(pmin, pmax, length.out=100)
     p_curve <- p_curve[p_curve != 1]
 
     df_curve <- data.frame(
@@ -290,7 +290,7 @@ plot_cdf.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
     qmin <- xlim[1]
     qmax <- xlim[2]
-    q_curve <- seq(qmin, qmax, length.out=50)
+    q_curve <- seq(qmin, qmax, length.out=200)
 
     df_curve <- data.frame(
         x = q_curve,
@@ -361,7 +361,7 @@ plot_quantile.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
     pmin <- xlim[1]
     pmax <- xlim[2]
-    p_curve <- seq(pmin, pmax, length.out=50)
+    p_curve <- seq(pmin, pmax, length.out=200)
 
     df_curve <- data.frame(
         p = p_curve,
@@ -424,7 +424,7 @@ plot_tail.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_tail.gpinter_dist <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
-    x_curve <- seq(xmin, xmax, length.out=50)
+    x_curve <- seq(xmin, xmax, length.out=200)
 
     df_curve <- data.frame(
         x = x_curve,
@@ -487,7 +487,7 @@ plot_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_phi.gpinter_dist <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
-    x_curve <- seq(xmin, xmax, length.out=50)
+    x_curve <- seq(xmin, xmax, length.out=200)
 
     df_curve <- data.frame(
         x = x_curve,
@@ -550,7 +550,7 @@ plot_deriv_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
 plot_deriv_phi.gpinter_dist <- function(dist, xlim, ...) {
     xmin <- xlim[1]
     xmax <- xlim[2]
-    x_curve <- seq(xmin, xmax, length.out=50)
+    x_curve <- seq(xmin, xmax, length.out=200)
 
     df_curve <- data.frame(
         x = x_curve,
