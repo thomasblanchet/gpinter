@@ -279,9 +279,9 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                                 width = "100%"
                             ))
                         ),
-                        tabPanel("Probability density function",
-                            plotOutput("plot_pdf"),
-                            disabled(sliderInput("slider_pdf",
+                        tabPanel("Histogram",
+                            plotOutput("plot_hist"),
+                            disabled(sliderInput("slider_hist",
                                 min = 0,
                                 max = 1e5,
                                 value = c(0, 1e5),
@@ -476,28 +476,6 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
         ),
         icon = icon("stethoscope")
     ),
-    tabPanel("Help",
-        fixedPage(
-            fixedRow(
-                column(8,
-                    withMathJax(includeHTML("help.html"))
-                ),
-                column(4,
-                    tags$div(
-                        tags$ul(
-                            tags$li(a("Introduction", href="#")),
-                            tags$li(a("Functionalities", href="#functionalities")),
-                            tags$li(a("Usage", href="#usage"), tags$ul(
-                                tags$li(a("Input data format", href="#input-format"))
-                            ))
-                        ),
-                        class = "nav-doc"
-                    )
-                )
-            )
-        ),
-        icon = icon("question-circle")
-    ),
     tabPanel("Settings",
         fixedPage(
             fixedRow(
@@ -558,30 +536,63 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                     ),
                     class = "panel panel-default"
                 ),
-                tags$div(
                     tags$div(
-                        tags$h3("CSV export options", class="panel-title"),
-                        class = "panel-heading"
-                    ),
-                    tags$div(
-                        tags$h4("Field separator"),
-                        radioButtons('csv_output_field_separator', NULL, list(
-                            "Comma" = ",",
-                            "Tabs" = "\t",
-                            "Semicolon" = ";"
-                        ), selected = ";"),
-                        tags$h4("Decimal separator"),
-                        radioButtons('csv_output_dec_separator', NULL, list(
-                            "Point" = ".",
-                            "Comma" = ","
-                        ), selected = ","),
-                        class = "panel-body"
-                    ),
-                    class = "panel panel-default"
-                ))
+                        tags$div(
+                            tags$h3("CSV export options", class="panel-title"),
+                            class = "panel-heading"
+                        ),
+                        tags$div(
+                            tags$h4("Field separator"),
+                            radioButtons('csv_output_field_separator', NULL, list(
+                                "Comma" = ",",
+                                "Tabs" = "\t",
+                                "Semicolon" = ";"
+                            ), selected = ";"),
+                            tags$h4("Decimal separator"),
+                            radioButtons('csv_output_dec_separator', NULL, list(
+                                "Point" = ".",
+                                "Comma" = ","
+                            ), selected = ","),
+                            class = "panel-body"
+                        ),
+                        class = "panel panel-default"
+                    ))
             )
         ),
         icon = icon("sliders")
+    ),
+    navbarMenu("Help",
+        tabPanel("Usage",
+            fixedPage(
+                fixedRow(
+                    column(8,
+                        withMathJax(includeHTML("help.html"))
+                    ),
+                    column(4,
+                        tags$div(
+                            tags$ul(
+                                tags$li(a("Introduction", href="#")),
+                                tags$li(a("Functionalities", href="#functionalities")),
+                                tags$li(a("Usage", href="#usage"), tags$ul(
+                                    tags$li(a("Input data format", href="#input-format"))
+                                ))
+                            ),
+                            class = "nav-doc"
+                        )
+                    )
+                )
+            ),
+            icon = icon("wrench")
+        ),
+        tabPanel("About generalized Pareto interpolation",
+            fixedPage(
+                fixedRow(
+                    p("")
+                )
+            ),
+            icon = icon("info-circle")
+        ),
+        icon = icon("question-circle")
     ),
     id = "main_navbar",
     selected = "Input data",

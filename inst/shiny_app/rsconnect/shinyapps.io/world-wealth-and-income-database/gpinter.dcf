@@ -2,6 +2,6 @@ name: gpinter
 account: world-wealth-and-income-database
 server: shinyapps.io
 appId: 140626
-bundleId: 643346
+bundleId: 645307
 url: https://world-wealth-and-income-database.shinyapps.io/gpinter/
-when: 1481390614.99002
+when: 1481554036.43739

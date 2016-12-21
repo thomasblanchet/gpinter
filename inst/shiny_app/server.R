@@ -5,6 +5,9 @@ library(xlsx)
 library(readxl)
 library(gpinter)
 
+# Increased max upload size to 50MB
+options(shiny.maxRequestSize = 50*1024^2)
+
 # Parse the user input data into a suitable R list
 parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     data_list <- list()
@@ -63,6 +66,10 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     # Look for the year, country and component
     if (var$year %in% colnames(data)) {
         data_list$year <- as.numeric(data[1, var$year])
+        # If the year does not take the form of a number
+        if (is.na(data_list$year)) {
+            data_list$year <- data[1, var$year]
+        }
     }
     if (var$country %in% colnames(data)) {
         data_list$country <- data[1, var$country]
@@ -253,11 +260,6 @@ plot_text <- function(text) {
 }
 
 shinyServer(function(input, output, session) {
-    # Go back to home when clicking title
-    observeEvent(input$main_logo, {
-        updateNavbarPage(session, "main_navbar", selected="Input data")
-    })
-
     # G-percentiles: fractiles to show to the user
     gperc <- c(
         seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
@@ -318,6 +320,12 @@ shinyServer(function(input, output, session) {
             disable(id)
         }
     }
+
+    # Clear all and go back to home when clicking title
+    observeEvent(input$main_logo, {
+        updateNavbarPage(session, "main_navbar", selected="Input data")
+        clear_all()
+    })
 
     # Import the input data
     observe({
@@ -1025,6 +1033,8 @@ shinyServer(function(input, output, session) {
         }
 
         # Update the status message to show success
+        shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", progressmax, ")"))
+        shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: 100%')"))
         shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-thumbs-up\" aria-hidden=\"true\"></i> All done!')"))
         shinyjs::removeClass("run_progress", "active")
 
@@ -1492,14 +1502,14 @@ shinyServer(function(input, output, session) {
 
             enable("slider_lorenz")
             enable("slider_gpc")
-            enable("slider_pdf")
+            enable("slider_hist")
             enable("slider_cdf")
             enable("slider_quantile")
             enable("slider_tail")
             enable("slider_phi")
             enable("slider_deriv_phi")
 
-            updateSliderInput(session, "slider_pdf",
+            updateSliderInput(session, "slider_hist",
                 min = q_min,
                 max = q_max,
                 value = c(q_min, q_max)
@@ -1546,21 +1556,21 @@ shinyServer(function(input, output, session) {
         return(plot_gpc(result, xlim=c(pmin, pmax)))
     })
 
-    output$plot_pdf <- renderPlot({
+    output$plot_hist <- renderPlot({
         result <- result_plot()
 
-        if (is.null(result) || is.null(input$slider_pdf)) {
+        if (is.null(result) || is.null(input$slider_hist)) {
             return(plot_text("No data"))
         }
 
-        if (min(input$slider_pdf) == max(input$slider_pdf)) {
+        if (min(input$slider_hist) == max(input$slider_hist)) {
             return(plot_text("Please select a valid range"))
         }
 
-        qmin <- min(input$slider_pdf)
-        qmax <- max(input$slider_pdf)
+        qmin <- min(input$slider_hist)
+        qmax <- max(input$slider_hist)
 
-        return(plot_density(result, xlim=c(qmin, qmax)))
+        return(plot_hist(result, xlim=c(qmin, qmax)))
     })
 
     output$plot_cdf <- renderPlot({
@@ -1708,8 +1718,19 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top1 = sapply(tables, function(tab) tab$top1)
+            top1 = sapply(tables, function(tab) {
+                if (!is.null(tab)) {
+                    return(tab$top1)
+                } else {
+                    return(NA)
+                }
+            })
         )
+        # Check if there is at least a nonmissing value corresponding to a
+        # nonmissing year
+        if (length(na.omit(df$top1[!is.na(df$year)])) == 0) {
+            return(plot_text("No data"))
+        }
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
         df <- df[df$year >= ymin & df$year <= ymax, ]
@@ -1738,8 +1759,19 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            top10 = sapply(tables, function(tab) tab$top10)
+            top10 = sapply(tables, function(tab) {
+                if (!is.null(tab)) {
+                    return(tab$top10)
+                } else {
+                    return(NA)
+                }
+            })
         )
+        # Check if there is at least a nonmissing value corresponding to a
+        # nonmissing year
+        if (length(na.omit(df$top10[!is.na(df$year)])) == 0) {
+            return(plot_text("No data"))
+        }
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
         df <- df[df$year >= ymin & df$year <= ymax, ]
@@ -1768,8 +1800,19 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            middle40 = sapply(tables, function(tab) tab$middle40)
+            middle40 = sapply(tables, function(tab) {
+                if (!is.null(tab)) {
+                    return(tab$middle40)
+                } else {
+                    return(NA)
+                }
+            })
         )
+        # Check if there is at least a nonmissing value corresponding to a
+        # nonmissing year
+        if (length(na.omit(df$middle40[!is.na(df$year)])) == 0) {
+            return(plot_text("No data"))
+        }
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
         df <- df[df$year >= ymin & df$year <= ymax, ]
@@ -1798,8 +1841,19 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            bottom50 = sapply(tables, function(tab) tab$bottom50)
+            bottom50 = sapply(tables, function(tab) {
+                if (!is.null(tab)) {
+                    return(tab$bottom50)
+                } else {
+                    return(NA)
+                }
+            })
         )
+        # Check if there is at least a nonmissing value corresponding to a
+        # nonmissing year
+        if (length(na.omit(df$bottom50[!is.na(df$year)])) == 0) {
+            return(plot_text("No data"))
+        }
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
         df <- df[df$year >= ymin & df$year <= ymax, ]
@@ -1828,8 +1882,19 @@ shinyServer(function(input, output, session) {
 
         df <- data.frame(
             year = as.numeric(data$years),
-            gini = sapply(tables, function(tab) tab$gini)
+            gini = sapply(tables, function(tab) {
+                if (!is.null(tab)) {
+                    return(tab$gini)
+                } else {
+                    return(NA)
+                }
+            })
         )
+        # Check if there is at least a nonmissing value corresponding to a
+        # nonmissing year
+        if (length(na.omit(df$gini[!is.na(df$year)])) == 0) {
+            return(plot_text("No data"))
+        }
         df$year <- as.numeric(df$year)
         df <- df[!is.na(df$year), ]
         df <- df[df$year >= ymin & df$year <= ymax, ]

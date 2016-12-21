@@ -18,6 +18,13 @@
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
 #' @param invpareto The inverted Pareto coefficient.
+#' @param bottom_model Which model to use at the bottom of the distribution?
+#' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
+#' Pareto distribution, or \code{"hist"} for histogram density. Default is
+#' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
+#' @param hist_lower_bound Lower bound of the histogram in the bottom of the
+#' distribution. Only relevant if \code{min(p) > 0} and
+#' \code{bottom_model == "hist"}. Default is \code{0}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -27,7 +34,8 @@
 #' @export
 
 tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
-                           bracketavg=NULL, topavg=NULL, invpareto=NULL) {
+                           bracketavg=NULL, topavg=NULL, invpareto=NULL,
+                           bottom_model=NULL, hist_lower_bound=0) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -40,6 +48,21 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     ord <- order(p)
     p <- p[ord]
     threshold <- threshold[ord]
+
+    # Model for the bottom
+    if (p[1] > 0 && is.null(bottom_model)) {
+        if (threshold[1] > 0) {
+            bottom_model <- "hist"
+        } else {
+            bottom_model <- "gpd"
+        }
+    }
+    if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd")) {
+        stop("'bottom_model' must be one of 'hist' or 'gpd', or NULL.")
+    }
+    if (!is.null(bottom_model) && bottom_model == "hist" && hist_lower_bound > threshold[1]) {
+        stop("'hist_lower_bound' must be smaller than min(threshold).")
+    }
 
     # Put the information on average in the right format (truncated average)
     if (!is.null(bracketshare)) {
@@ -72,6 +95,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         }
         invpareto <- invpareto[ord]
         m <- (1 - p)*threshold*invpareto
+
         # The inverted Pareto may not be defined for the first threshold
         if (is.na(invpareto[1]) & p[1] == 0) {
             m[1] <- average
@@ -84,9 +108,6 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
         stop("Thresholds must be strictly increasing.")
-    }
-    if (any(diff(m) >= 0)) {
-        stop("Truncated average must be strictly decreasing.")
     }
     # Truncated mean function is concave
     for (i in 2:(n - 1)) {
@@ -101,7 +122,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
     # The average between each bracket is within the bracket
     bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
-    if (any(bracketavg < threshold) | any(bracketavg[1:(n - 1)] > threshold[2:n])) {
+    if (any(bracketavg <= threshold) | any(bracketavg[1:(n - 1)] >= threshold[2:n])) {
         stop("Input data on quantiles and moments is inconsistent.")
     }
 
@@ -113,8 +134,11 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     yk <- -log(mk)
     sk <- (1 - pk)*qk/mk
 
+    # Estimate the second derivative at the last point
+    an <- left_derivative(xk[n - 2], xk[n - 1], xk[n], sk[n - 2], sk[n - 1], sk[n])
+
     # Calculate the second derivative
-    ak <- natural_quintic_spline(xk, yk, sk)
+    ak <- clamped_quintic_spline(xk, yk, sk, an)
 
     # Keep non-constrained parameter values in memory
     xk_nc <- xk
@@ -262,10 +286,62 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         }
     }
 
+    # Estimate the parameters of the generalized Pareto distribution at the top
+    param_top <- gpd_top_parameters(xk[n], yk[n], sk[n], ak[n])
+    # If we get xi >= 1 or sigma <= 0, the GPD is not valid, so use a
+    # standard Pareto instead (which breaks derivability of the quantile
+    # function)
+    if (param_top$sigma <= 0 || param_top$xi >= 1) {
+        param_top$mu_top    <- qk[n]
+        param_top$xi_top    <- 1 - sk[n]
+        param_top$sigma_top <- param_top$mu_top*param_top$xi_top
+    }
+
+    # Estimate the parameters of the model for the bottom
+    if (p[1] > 0) {
+        if (bottom_model == "gpd") {
+            param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
+            # Same thing as for the top if xi >= 1 or sigma <= 0
+            if (param_bottom$sigma <= 0 || param_bottom$xi >= 1) {
+                param_bottom$mu_bottom <- qk[n]
+                param_bottom$xi_bottom <- 1 - sk[n]
+                param_bottom$sigma_bottom <- param_bottom$mu_top*param_bottom$xi_top
+            }
+        } else if (bottom_model == "hist") {
+            # Estimate the average in the bottom
+            bracketavg <- (average - mk_cns[1])/pk_cns[1]
+
+            use_hist <- c(TRUE, TRUE, use_hist)
+            hist <- hist_interpol(0, pk_cns[1], hist_lower_bound, qk_cns[1], bracketavg)
+            fk_cns <- c(hist$f0, hist$f1, fk_cns)
+            pk_cns <- c(0, hist$pstar, pk_cns)
+            qk_cns <- c(hist_lower_bound, hist$qstar, qk_cns)
+            mk_cns <- c(
+                average,
+                hist_lorenz(hist$pstar,
+                    hist$pstar, hist$p1,
+                    hist$qstar, hist$q1,
+                    mk_cns[1], hist$f1
+                ),
+                mk_cns
+            )
+            xk_cns <- c(0, -log(1 - hist$pstar), xk_cns)
+            yk_cns <- c(-log(average), NA, yk_cns)
+            sk_cns <- c(hist_lower_bound/average, NA, sk_cns)
+            ak_cns <- c(NA, NA, ak_cns)
+
+            param_bottom <- list(mu=NA, sigma=NA, xi=NA)
+        }
+    } else {
+        param_bottom <- list(mu=NA, sigma=NA, xi=NA)
+    }
+
     # Object to return
     result <- list()
     class(result) <- c("gpinter_dist_orig", "gpinter_dist")
+
     result$use_hist <- use_hist
+
     result$pk <- pk_cns
     result$qk <- qk_cns
     result$xk <- xk_cns
@@ -274,6 +350,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     result$ak <- ak_cns
     result$fk <- fk_cns
     result$mk <- mk_cns
+
     result$pk_nc <- p
     result$xk_nc <- xk_nc
     result$yk_nc <- yk_nc
@@ -282,6 +359,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     result$qk_nc <- threshold
     result$mk_nc <- m
     result$bk_nc <- m/((1 - p)*threshold)
+
     result$average <- average
 
     # Estimate the parameters of the generalized Pareto distribution at the top
@@ -299,13 +377,6 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         result$xi_top    <- param_top$xi
     }
 
-    # Estimate the parameters of the generalized Pareto distribution at the
-    # bottom, if necessary
-    if (min(p) > 0) {
-        param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
-    } else {
-        param_bottom <- list(mu=NA, sigma=NA, xi=NA)
-    }
     result$mu_bottom    <- param_bottom$mu
     result$sigma_bottom <- param_bottom$sigma
     result$xi_bottom    <- param_bottom$xi

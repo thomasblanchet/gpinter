@@ -405,6 +405,56 @@ tension_grad <- function(xk, yk, sk, ak) {
     return(c(grad_a0k, 0) + c(0, grad_a1k))
 }
 
+#' @title Estimate the value of the right-derivative on an irregular grid
+#' using three points
+#'
+#' @author Thomas Blanchet
+#'
+#' @description Estimate the value of the right-derivative of a function
+#' based on three irregularly-spaced points. The method is based on a
+#' second-order Taylor expansion of the function around \code{x0}.
+#'
+#' @param x0 The left point of the grid.
+#' @param x1 The central point of the grid.
+#' @param x2 The right point if the grid.
+#' @param y0 The value of the function at \code{x0}.
+#' @param y1 The value of the function at \code{x1}.
+#' @param y2 The value of the function at \code{x2}.
+#'
+#' @return The value of the right-derivative at \code{x0}.
+
+right_derivative <- function(x0, x1, x2, y0, y1, y2) {
+    a <- -((x1 - x0) + (x2 - x0))/((x0 - x1)*(x0 - x2))
+    b <- (x2 - x0)/((x1 - x0)*(x2 - x1))
+    c <- -(x1 - x0)/((x2 - x0)*(x2 - x1))
+    return(a*y0 + b*y1 + c*y2)
+}
+
+#' @title Estimate the value of the left-derivative on an irregular grid
+#' using three points
+#'
+#' @author Thomas Blanchet
+#'
+#' @description Estimate the value of the right-derivative of a function
+#' based on three irregularly-spaced points. The method is based on a
+#' second-order Taylor expansion of the function around \code{x2}.
+#'
+#' @param x0 The left point of the grid.
+#' @param x1 The central point of the grid.
+#' @param x2 The right point if the grid.
+#' @param y0 The value of the function at \code{x0}.
+#' @param y1 The value of the function at \code{x1}.
+#' @param y2 The value of the function at \code{x2}.
+#'
+#' @return The value of the left-derivative at \code{x2}.
+
+left_derivative <- function(x0, x1, x2, y0, y1, y2) {
+    a <- (x2 - x1)/((x1 - x0)*(x2 - x0))
+    b <- -(x2 - x0)/((x1 - x0)*(x2 - x1))
+    c <- ((x2 - x0) + (x2 - x1))/((x2 - x0)*(x2 - x1))
+    return(a*y0 + b*y1 + c*y2)
+}
+
 #' @title Estimate natural quintic spline
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -476,4 +526,72 @@ natural_quintic_spline <- function(xk, yk, sk) {
     return(solve(A, b))
 }
 
+#' @title Estimate a quintic spline clamped at the last point
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Estimate a natural quintic spline from known values of the
+#' function and its derivatives: that is, estimate the second derivative of
+#' the spline at each knot to ensure a continuous third derivative and
+#' a zero third derivative at the extremities.
+#'
+#' @param xk A vector of interpolation points.
+#' @param yk A vector of values at each interpolation point.
+#' @param sk A vector of slopes at each interpolation point.
+#' @param an Second derivative at the last knot.
+#'
+#' @return The vector \code{ak} of second derivatives at each knot.
 
+clamped_quintic_spline <- function(xk, yk, sk, an) {
+    n <- length(xk)
+
+    x1 <- xk[1:(n - 2)]
+    x2 <- xk[2:(n - 1)]
+    x3 <- xk[3:(n - 0)]
+
+    y1 <- yk[1:(n - 2)]
+    y2 <- yk[2:(n - 1)]
+    y3 <- yk[3:(n - 0)]
+
+    s1 <- sk[1:(n - 2)]
+    s2 <- sk[2:(n - 1)]
+    s3 <- sk[3:(n - 0)]
+
+    # Tridiagonal matrix representing the system of equations
+    A <- matrix(data=0, nrow=n, ncol=n)
+    A[cbind(1:(n - 1), 2:n)] <- c(
+        -3/(xk[2] - xk[1]),
+        -3/(x3 - x2)
+    )
+    A[cbind(1:n, 1:n)] <- c(
+        9/(xk[2] - xk[1]),
+        9/(x2 - x1) + 9/(x3 - x2),
+        9/(xk[n] - xk[n - 1])
+    )
+    A[cbind(2:n, 1:(n - 1))] <- c(
+        -3/(x2 - x1),
+        -3/(xk[n] - xk[n - 1])
+    )
+    A[n, 1:n] <- c(rep(0, n - 1), 1)
+
+    b <- c(
+        - yk[1]*60/(xk[2] - xk[1])^3
+        + yk[2]*60/(xk[2] - xk[1])^3
+        - sk[1]*36/(xk[2] - xk[1])^2
+        - sk[2]*24/(xk[2] - xk[1])^2,
+
+        + y1*60/(x2 - x1)^3
+        - y2*60/(x2 - x1)^3
+        - y2*60/(x3 - x2)^3
+        + y3*60/(x3 - x2)^3
+        + s1*24/(x2 - x1)^2
+        + s2*36/(x2 - x1)^2
+        - s2*36/(x3 - x2)^2
+        - s3*24/(x3 - x2)^2,
+
+        an
+    )
+
+    # Solve and return solution
+    return(solve(A, b))
+}
