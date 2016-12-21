@@ -28,9 +28,30 @@ simulate_gpinter.gpinter_dist_merge <- function(dist, n, ...) {
     # Number of distribution that were merged
     k <- length(dist$ndist)
 
+    # Number of observations from each country
     d <- as.vector(rmultinom(1, n, prob=dist$relsize))
 
     return(sapply(1:k, function(i) {
         return(simulate_gpinter(dist$parent_dist[[i]], d[i]))
     }))
 }
+
+#' @export
+simulate_gpinter.gpinter_dist_indiv <- function(dist, n, ...) {
+    p <- runif(n)
+
+    # Bracket (with respect to the share of couples) in which each observation
+    # falls
+    k <- cut(p, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
+
+    # Simulate couple
+    prob_couple <- dist$ck[k]
+    couple <- (runif(n) <= prob_couple)
+
+    # Simulate parent distribution and individualize it
+    x <- simulate_gpinter(dist$parent, n)
+    x <- sort(c(x[couple]/2, x[couple]/2, x[!couple]))
+
+    return(x)
+}
+

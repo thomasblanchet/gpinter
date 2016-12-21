@@ -54,6 +54,8 @@ test_that("Individualization is consistent with Monte-Carlo", {
     q_test <- quantile(x_indiv, p_test)
     topavg_test <- sapply(q_test, function(q) mean(x_indiv[x_indiv >= q]))
     average_test <- mean(x_indiv)
+    topshare_test <- (1 - p_test)*topavg_test/average_test
+    density_test <- density(x_indiv, from=mu/2, to=1, n=100)
 
     # Test the couple is correctly interpolated
     expect_equal(
@@ -77,8 +79,26 @@ test_that("Individualization is consistent with Monte-Carlo", {
         tolerance = 1e-2
     )
     expect_equal(
-        fitted_cdf(dist_indiv2, q_test),
-        p_test,
+        fitted_density(dist_indiv1, density_test$x),
+        density_test$y,
+        check.attributes = FALSE,
+        tolerance = 1
+    )
+    expect_equal(
+        fitted_quantile(dist_indiv1, p_test),
+        q_test,
+        check.attributes = FALSE,
+        tolerance = 1e-1
+    )
+    expect_equal(
+        threshold_share(dist_indiv1, q_test),
+        topshare_test,
+        check.attributes = FALSE,
+        tolerance = 1e-2
+    )
+    expect_equal(
+        top_share(dist_indiv1, p_test),
+        topshare_test,
         check.attributes = FALSE,
         tolerance = 1e-2
     )

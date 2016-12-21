@@ -56,7 +56,7 @@ phi.gpinter_dist_orig <- function(dist, x, ...) {
 }
 
 #' @export
-phi.gpinter_dist_merge <- function(dist, x, ...) {
+phi.gpinter_dist <- function(dist, x, ...) {
     p <- 1 - exp(-x)
     return(-log(dist$average*top_share(dist, p)))
 }
@@ -112,7 +112,7 @@ deriv_phi.gpinter_dist_orig <- function(dist, x, ...) {
 }
 
 #' @export
-deriv_phi.gpinter_dist_merge <- function(dist, x, ...) {
+deriv_phi.gpinter_dist <- function(dist, x, ...) {
     p <- 1 - exp(-x)
     q <- fitted_quantile(dist, p)
     m <- dist$average*threshold_share(dist, q)/(1 - p)
@@ -147,7 +147,7 @@ fitted_quantile.gpinter_dist_orig <- function(dist, probs, ...) {
 }
 
 #' @export
-fitted_quantile.gpinter_dist_merge <- function(dist, probs, ...) {
+fitted_quantile.gpinter_dist <- function(dist, probs, ...) {
     supp <- support(dist)
     if (is.finite(supp$lower)) {
         lb <- supp$lower
@@ -163,11 +163,17 @@ fitted_quantile.gpinter_dist_merge <- function(dist, probs, ...) {
 
     # Invert the CDF
     return(sapply(probs, function(p) {
-        eq <- uniroot(function(q) {
-            return(fitted_cdf(dist, q) - p)
-        }, lower=lb, upper=ub, extendInt = "upX")
+        if (p == 0) (
+            return(supp$lower)
+        ) else if (p == 1) {
+            return(supp$upper)
+        } else {
+            eq <- uniroot(function(q) {
+                return(fitted_cdf(dist, q) - p)
+            }, lower=lb, upper=ub, extendInt = "upX")
 
-        return(eq$root)
+            return(eq$root)
+        }
     }))
 }
 
@@ -223,7 +229,7 @@ support.gpinter_dist_merge <- function(dist, ...) {
 
 #' @export
 support.gpinter_dist_indiv <- function(dist, ...) {
-    support_orig <- support(dist)
+    support_orig <- support(dist$parent)
     return(list(
         lower = min(support_orig$lower/2, support_orig$lower),
         upper = support_orig$upper
@@ -441,15 +447,14 @@ fitted_density.gpinter_dist_indiv <- function(dist, x, ...) {
     f1 <- fitted_density(dist$parent, x)
     f2 <- fitted_density(dist$parent, 2*x)
 
-    c1 <- couple_share(dist, 1 - p1)
-    c2 <- couple_share(dist, 1 - p2)
-
-    d1 <- deriv_couple_share(dist, 1 - p1)
-    d2 <- deriv_couple_share(dist, 1 - p2)
+    k1 <- cut(p1, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
+    k2 <- cut(p2, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
+    c1 <- dist$ck[k1]
+    c2 <- dist$ck[k2]
 
     c0 <- dist$couple_share
 
-    return((f1*(c1 - d1*(1 - p1) - 1) - 4*f2*(c2 + d2*(1 - p2))))
+    return(((1 - c1)*f1 + 4*c2*f2)/(1 + c0))
 }
 
 #' @title Share above a threshold
@@ -487,6 +492,35 @@ threshold_share.gpinter_dist_merge <- function(dist, q, ...) {
     }
 }
 
+#' @export
+threshold_share.gpinter_dist_indiv <- function(dist, q, ...) {
+    pk <- c(dist$pk, 1)
+    n <- length(pk)
+
+    # Income owned by singles and couples in each brackets
+    a1k <- (1 - dist$ck)*bracket_share(dist$parent, pk[1:(n - 1)], pk[2:n])
+    a2k <- dist$ck*bracket_share(dist$parent, pk[1:(n - 1)], pk[2:n])
+
+    # Income owned by singles and couples in each bracket and above
+    b1k <- c(rev(cumsum(rev(a1k))), 0)
+    b2k <- c(rev(cumsum(rev(a2k))), 0)
+
+    # Find fractile to q and 2*q
+    p1 <- fitted_cdf(dist$parent, q)
+    p2 <- fitted_cdf(dist$parent, 2*q)
+
+    # Find bracket associated to q and 2*q
+    k1 <- cut(p1, breaks=pk, include.lowest=TRUE, labels=FALSE)
+    k2 <- cut(p2, breaks=pk, include.lowest=TRUE, labels=FALSE)
+
+    # Income owned by singles above q in bracket k1
+    d1 <- (1 - dist$ck[k1])*bracket_share(dist$parent, p1, pk[k1 + 1])
+    # Income owned by couples above 2*q in bracket k2
+    d2 <- dist$ck[k2]*bracket_share(dist$parent, p2, pk[k2 + 1])
+
+    return(d1 + b1k[k1 + 1] + d2 + b2k[k2 + 1])
+}
+
 #' @title Top share for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -516,7 +550,7 @@ top_share.gpinter_dist_orig <- function(dist, p, ...) {
 }
 
 #' @export
-top_share.gpinter_dist_merge <- function(dist, p, ...) {
+top_share.gpinter_dist <- function(dist, p, ...) {
     q <- fitted_quantile(dist, p)
     return(threshold_share(dist, q))
 }
@@ -661,11 +695,6 @@ invpareto.gpinter_dist <- function(dist, p, ...) {
     x <- -log(1 - p)
     dydx <- deriv_phi(dist, x)
     b <- 1/dydx
-    # if (dist$xi_top > 0) {
-    #     b[p == 1] <- 1/(1 - dist$xi_top)
-    # } else {
-    #     b[p == 1] <- 1
-    # }
     return(b)
 }
 

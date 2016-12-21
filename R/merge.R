@@ -6,15 +6,24 @@
 #' countries, with their respective population sizes, and return an object
 #' that characterizes the combined distribution of all countries.
 #'
-#' @param dist A vector of objects of class \code{gpinter_dist}.
+#' @param dist A vector of objects of class \code{gpinter_dist_orig}.
 #' @param popsize A vector of the same length with the population associated
 #' with each distribution.
 #'
 #' @return An object of class \code{gpinter_dist_merge}.
 #'
+#' @importFrom methods is
+#'
 #' @export
 
 merge_dist <- function(dist, popsize) {
+    # Check the class of input distributions
+    lapply(dist, function(dist) {
+        if (!is(dist, "gpinter_dist_orig")) {
+            stop("'dist' objects must be of class 'gpinter_dist_orig'")
+        }
+    })
+
     ndist <- length(dist)
     if (length(popsize) != ndist) {
         stop("'dist' and 'popsize' must have the same length.")

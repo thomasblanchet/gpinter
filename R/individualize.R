@@ -6,7 +6,7 @@
 #' equal splitting among spouses, given the share of couples or singles
 #' at different points of the distribution.
 #'
-#' @param dist An object of class \code{gpinter_dist}.
+#' @param dist An object of class \code{gpinter_dist_orig}.
 #' @param p A vector of fractiles in [0, 1].
 #' @param singleshare The overall share of singles.
 #' @param coupleshare The overall share of couples.
@@ -27,6 +27,11 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
                                singletop=NULL, coupletop=NULL,
                                singlebracket=NULL, couplebracket=NULL) {
 
+    # Check the class of input distribution
+    if (!is(dist, "gpinter_dist_orig")) {
+        stop("'dist' objects must be of class 'gpinter_dist_orig'")
+    }
+
     if (any(p < 0) || any(p >= 1)) {
         stop("'p' must be between 0 and 1.")
     }
@@ -34,16 +39,12 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     ord <- order(p)
     p <- p[ord]
 
-    if (!is.null(singleshare)) {
+    if (!is.null(singleshare) && !is.na(singleshare)) {
         m <- 1 - singleshare
-    } else if (!is.null(coupleshare)) {
+    } else if (!is.null(coupleshare) && !is.na(coupleshare)) {
         m <- coupleshare
-    } else {
-        stop("You must either specify 'singleshare' or 'coupleshare'.")
-    }
-
-    if (m >= 1 || m < 0) {
-        stop("'singleshare' and 'coupleshare' must be between 0 and 1.")
+    } else if (p[1] != 0) {
+        stop("You must either specify 'singleshare' or 'coupleshare' if min(p) != 0.")
     }
 
     if (!is.null(singletop)) {
@@ -78,7 +79,11 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
             ck <- c((m - sum(ck*diff(c(p, 1))))/p[1], ck)
             p <- c(0, p)
         }
+    } else {
+        stop("You must specify one of 'singletop', 'coupletop', 'singlebracket' or 'couplebracket'.")
     }
+    # Re-calculate m in case it was not specified
+    m <- sum(ck*diff(c(p, 1)))
 
     if (any(ck >= 1) || any(ck < 0)) {
         stop("The share of couples must be between 0 and 1.")
@@ -130,7 +135,11 @@ couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
     # Mass of couples above p in the current bracket
     b <- (pk[k + 1] - p)*dist$ck[k]
 
-    return((b + a[k])/(1 - p))
+    c <- (b + a[k])/(1 - p)
+    # Extend by continuity to p = 1
+    c[p == 1] <- tail(dist$ck, n=1)
+
+    return(c)
 }
 
 #' @export

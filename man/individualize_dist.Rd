@@ -9,7 +9,7 @@ individualize_dist(dist, p, singleshare = NULL, coupleshare = NULL,
   couplebracket = NULL)
 }
 \arguments{
-\item{dist}{An object of class \code{gpinter_dist}.}
+\item{dist}{An object of class \code{gpinter_dist_orig}.}
 
 \item{p}{A vector of fractiles in [0, 1].}
 
