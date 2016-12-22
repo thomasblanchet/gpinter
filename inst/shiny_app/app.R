@@ -42,6 +42,15 @@ server <- function(input, output, session) {
     observeEvent(input$main_logo, {
         updateNavbarPage(session, "main_navbar", selected="Input data")
         clear_all()
+
+        # Reset file input
+        shinyjs::reset("file_input")
+        shinyjs::runjs("$('#file_input_progress').css('visibility', 'visible');")
+        shinyjs::removeClass("import_progress", "progress-bar-danger")
+        shinyjs::runjs(paste0("$('#import_progress').attr('aria-valuenow',", 0, ")"))
+        shinyjs::runjs(paste0("$('#import_progress').attr('style', 'width: ", 0, "%')"))
+        shinyjs::runjs(paste0("$('#import_progress').text('')"))
+        shinyjs::runjs(paste0("$('#file_input_progress .progress-bar').text('')"))
     })
 
     source(file.path("server", "import-data.R"), local=TRUE)$value

@@ -135,7 +135,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     sk <- (1 - pk)*qk/mk
 
     # Estimate the second derivative at the last point
-    an <- left_derivative(xk[n - 2], xk[n - 1], xk[n], sk[n - 2], sk[n - 1], sk[n])
+    an <- (sk[n] - sk[n - 1])/(xk[n] - xk[n - 1])
 
     # Calculate the second derivative
     ak <- clamped_quintic_spline(xk, yk, sk, an)

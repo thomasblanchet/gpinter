@@ -30,7 +30,7 @@ observeEvent(input$run, {
                             of your data. You can pick which shares, quantiles and averages
                             you want to include, and download the result to your computer."
                         ))
-                        ),
+                    ),
                     tags$tr(
                         tags$td(tags$i(class="fa fa-area-chart fa-2x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Plots"), "tab provides several plots to visualize
@@ -38,24 +38,24 @@ observeEvent(input$run, {
                             but also the density or the Lorenz curve. The interface lets you
                             adjust the range to focus on specific parts of the distribution."
                         ))
-                        ),
+                    ),
                     tags$tr(
                         tags$td(tags$i(class="fa fa-random fa-2x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Simulate"), "tab lets you simulate and download
                             new random samples of arbitrary size according to distribution
                             of your data."
                         ))
-                        ),
+                    ),
                     tags$tr(
                         tags$td(tags$i(class="fa fa-stethoscope fa-2x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Diagnostic"), "tab can help you identify pathological
                             features of your data which may indicate mistakes or inconsistencies."
                         ))
-                        ),
-                    class = "tabs-presentation"
                     ),
+                    class = "tabs-presentation"
+                ),
                 id = "success_message"
-                        ),
+            ),
             tags$div(
                 tags$p(id="error_message1"),
                 tags$div(
@@ -70,10 +70,10 @@ observeEvent(input$run, {
             actionButton("dismiss_run_failure", label="Close", icon=icon("ban"),
                 width="100%"),
             style = "padding: 5px 20px 20px 20px;"
-                        ),
+        ),
         title = NULL,
         footer = NULL
-                    ))
+    ))
 
     # Only show the different messages once the execution is over
     shinyjs::hide("dismiss_run_success")

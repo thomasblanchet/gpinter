@@ -114,91 +114,89 @@ observe({
                         ))))
                     }
                 }
-                } else if (extension %in% c("xls", "xlsx")) {
-                    # Rename the file to use the proper extension (required by readxl)
-                    newpath <- paste0(filepath, ".", extension)
-                    file.rename(filepath, newpath)
-                    filepath <- newpath
-                    # First, list the sheets of the Excel file
-                    sheets <- tryCatch(excel_sheets(filepath), error = function(e) {
-                        return(simpleError(paste0(
-                            "“", filename, "” was ignored because of the following error: ", e$message, "."
-                        )))
-                    })
-                    # In case of error, add it to the list and move on to the next file
-                    if (is.error(sheets)) {
-                        list_errors <- c(list_errors, list(sheets))
-                    } else {
-                        # Otherwise, loop over the sheets of the Excel file and import them
-                        # one by one
-                        k <- 1
-                        for (sh in sheets) {
-                            table <- tryCatch(as.data.frame(read_excel(
-                                filepath,
-                                sheet = sh,
-                                col_names = FALSE
-                            )), error = function(e) {
-                                return(simpleError(paste0(
-                                    "The sheet “", sh, "” of “", filename, "” was ignored because of the ",
-                                    "following error: ", e$message, "."
-                                )))
-                            })
-                            shinyjs::runjs(paste0("$('#import_progress').attr('aria-valuenow',", i - 1 + k/length(sheets), ")"))
-                            shinyjs::runjs(paste0("$('#import_progress').attr('style', 'width: ", 100*(i - 1 + k/length(sheets))/nfiles, "%')"))
-                            # If the sheet can't be read, move on to the next
-                            if (is.error(table)) {
-                                list_errors <- c(list_errors, list(table))
-                                k <- k + 1
-                            } else {
-                                # Otherwise, parse the content of the file
-                                parsed_input <- tryCatch(
-                                    parse_input(table, varnames, FALSE, filename, sh),
-                                    error = function(e) simpleError(e$message)
-                                )
-                                # If parsing was successful, make sure that there isn't already
-                                # a file with the same year, country and component
-                                if (!is.error(parsed_input)) {
-                                    year <- as.character(parsed_input$year)
-                                    country <- parsed_input$country
-                                    component <- parsed_input$component
-
-                                    if (!year %in% list_years) {
-                                        list_years <- c(list_years, year)
-                                        list_data[[year]] <- list()
-                                    }
-                                    if (!country %in% list_countries) {
-                                        list_countries <- c(list_countries, country)
-                                        list_data[[year]][[country]] <- list()
-                                    }
-                                    if (!component %in% list_components) {
-                                        list_components <- c(list_components, component)
-                                    }
-
-                                    if (!is.null(list_data[[year]][[country]][[component]])) {
-                                        list_errors <- c(list_errors, list(simpleError(paste0(
-                                            "The sheet “", sh, "” of “", filename, "” was ignored because there is already a tabulation with
-                                            the same year, country and component."
-                                        ))))
-                                    } else {
-                                        list_data[[year]][[country]][[component]] <- parsed_input
-                                        nb_data <- nb_data + 1
-                                    }
-                                } else {
-                                    list_errors <- c(list_errors, list(simpleError(paste0(
-                                        "The sheet “", sh, "” of “", filename, "” was ignored because of the following error: ",
-                                        parsed_input$message, "."
-                                    ))))
-                                }
-                                k <- k + 1
-                            }
-                            }
-                    }
+            } else if (extension %in% c("xls", "xlsx")) {
+                # Rename the file to use the proper extension (required by readxl)
+                newpath <- paste0(filepath, ".", extension)
+                file.rename(filepath, newpath)
+                filepath <- newpath
+                # First, list the sheets of the Excel file
+                sheets <- tryCatch(excel_sheets(filepath), error = function(e) {
+                    return(simpleError(paste0(
+                        "“", filename, "” was ignored because of the following error: ", e$message, "."
+                    )))
+                })
+                # In case of error, add it to the list and move on to the next file
+                if (is.error(sheets)) {
+                    list_errors <- c(list_errors, list(sheets))
                 } else {
-                    # Can't read the file: ignore
-                    list_errors <- c(list_errors, list(simpleError(paste0(
-                        "“", filename, "” was ignored because the extension ", extension, "is unknown."
-                    ))))
+                    # Otherwise, loop over the sheets of the Excel file and import them
+                    # one by one
+                    k <- 1
+                    for (sh in sheets) {
+                        table <- tryCatch(as.data.frame(read_excel(
+                            filepath,
+                            sheet = sh,
+                            col_names = FALSE
+                        )), error = function(e) {
+                            return(simpleError(paste0(
+                                "The sheet “", sh, "” of “", filename, "” was ignored because of the ",
+                                "following error: ", e$message, "."
+                            )))
+                        })
+                        shinyjs::runjs(paste0("$('#import_progress').attr('aria-valuenow',", i - 1 + k/length(sheets), ")"))
+                        shinyjs::runjs(paste0("$('#import_progress').attr('style', 'width: ", 100*(i - 1 + k/length(sheets))/nfiles, "%')"))
+                        # If the sheet can't be read, move on to the next
+                        if (is.error(table)) {
+                            list_errors <- c(list_errors, list(table))
+                            k <- k + 1
+                        } else {
+                            # Otherwise, parse the content of the file
+                            parsed_input <- tryCatch(
+                                parse_input(table, varnames, FALSE, filename, sh),
+                                error = function(e) simpleError(e$message)
+                            )
+                            # If parsing was successful, make sure that there isn't already
+                            # a file with the same year, country and component
+                            if (!is.error(parsed_input)) {
+                                year <- as.character(parsed_input$year)
+                                country <- parsed_input$country
+                                component <- parsed_input$component
+                                if (!year %in% list_years) {
+                                    list_years <- c(list_years, year)
+                                    list_data[[year]] <- list()
+                                }
+                                if (!country %in% list_countries) {
+                                    list_countries <- c(list_countries, country)
+                                    list_data[[year]][[country]] <- list()
+                                }
+                                if (!component %in% list_components) {
+                                    list_components <- c(list_components, component)
+                                }
+                                if (!is.null(list_data[[year]][[country]][[component]])) {
+                                    list_errors <- c(list_errors, list(simpleError(paste0(
+                                        "The sheet “", sh, "” of “", filename, "” was ignored because there is already a tabulation with
+                                        the same year, country and component."
+                                    ))))
+                                } else {
+                                    list_data[[year]][[country]][[component]] <- parsed_input
+                                    nb_data <- nb_data + 1
+                                }
+                            } else {
+                                list_errors <- c(list_errors, list(simpleError(paste0(
+                                    "The sheet “", sh, "” of “", filename, "” was ignored because of the following error: ",
+                                    parsed_input$message, "."
+                                ))))
+                            }
+                            k <- k + 1
+                        }
+                    }
                 }
+            } else {
+                # Can't read the file: ignore
+                list_errors <- c(list_errors, list(simpleError(paste0(
+                    "“", filename, "” was ignored because the extension ", extension, "is unknown."
+                ))))
+            }
         }
         shinyjs::runjs(paste0("$('#import_progress').attr('aria-valuenow',", nfiles, ")"))
         shinyjs::runjs(paste0("$('#import_progress').attr('style', 'width: 100%')"))
@@ -231,7 +229,8 @@ observeEvent(input$import_example, {
         whichavgsh = "bracketshare",
         bracketshare = c(0.13459, 0.41007, 0.10537, 0.14840, 0.19946),
         component = "n/a",
-        popsize = NA
+        popsize = NA,
+        gumbel = NA
     ))))
     data$nb_data    <- 1
     data$errors     <- list()

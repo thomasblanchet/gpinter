@@ -64,9 +64,9 @@
     color: #FFF;
 }
 
-.navbar-default .navbar-nav li.active a,
-.navbar-default .navbar-nav li.active a:focus,
-.navbar-default .navbar-nav li.active a:hover {
+.navbar-default .navbar-nav li.active > a,
+.navbar-default .navbar-nav li.active > a:focus,
+.navbar-default .navbar-nav li.active > a:hover {
     /*background-color: #005C7D;*/
     color: #FFF;
     background-color: #080808;
@@ -78,14 +78,6 @@
 }
 
 .navbar-inverse .dropdown-menu li a:hover {
-    background-color: #080808;
-}
-
-.navbar-default .navbar-nav li.active a,
-.navbar-default .navbar-nav li.active a:focus,
-.navbar-default .navbar-nav li.active a:hover {
-    /*background-color: #005C7D;*/
-    color: #FFF;
     background-color: #080808;
 }
 
