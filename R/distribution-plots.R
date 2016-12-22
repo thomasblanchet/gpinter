@@ -236,7 +236,7 @@ plot_hist.gpinter_dist <- function(dist, xlim, ...) {
 
     plot <- ggplot2::ggplot(data=df, aes_string(x="x", y="y")) +
         ggplot2::geom_bar(stat="identity", width=0.8*barwidth) +
-        ggplot2::xlim(xlim) + ggplot2::scale_y_continuous(labels = scales::percent) +
+        ggplot2::xlim(xlim) + ggplot2::scale_y_continuous(labels=scales::percent) +
         ggplot2::ylab("population share")
 
     return(plot)

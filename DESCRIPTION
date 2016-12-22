@@ -8,20 +8,25 @@ Authors@R: c(
     person("Juliette", "Fournier", email="jfournie@mit.edu", role="aut"),
     person("Thomas", "Piketty", email="thomas.piketty@psemail.eu", role="aut"))
 Description: Nonparametric estimation of distributions from tabulated data using generalized Pareto interpolation techniques.
-License: CC BY-SA 4.0
+License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
-    shiny (>= 0.14),
-    shinyBS (>= 0.61),
-    shinyjs (>= 0.7),
-    evaluate (>= 0.10),
-    readxl (>= 0.1.1),
     nloptr (>= 1.0.4),
     ggplot2 (>= 2.1.0),
-    methods (>= 3.3.1)
+    scales (>= 0.4.1),
+    methods (>= 3.3.1),
+    emdbook (>= 1.3.9),
+    randtoolbox (>= 1.17),
+    gumbel (>= 1.10)
 Suggests:
     testthat (>= 1.0.2),
     numDeriv (>= 2016.8-1),
-    xlsx (>= 0.5.7)
+    xlsx (>= 0.5.7),
+    shiny (>= 0.14),
+    shinyBS (>= 0.61),
+    shinyjs (>= 0.7),
+    readxl (>= 0.1.1),
+    evaluate (>= 0.10),
+    reldist (>= 1.6)
 RoxygenNote: 5.0.1
 Encoding: UTF-8

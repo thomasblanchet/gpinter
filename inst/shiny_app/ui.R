@@ -95,22 +95,31 @@ shinyUI(tagList(useShinyjs(), navbarPage(actionLink("main_logo", tagList(
                             class = "panel-heading"
                         ),
                         tags$div(
-                            radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
-                                "<h4 style='margin-top: 0;'>Basic interpolation</h4>
+                            withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
+                                "<h4 style='margin-top: 0;'>Interpolate only</h4>
                                 <p style='font-size: small; color: #666;'>Interpolate the distribution
                                 of your data directly, without any transformation.</p>" = "basic",
-                                "<h4 style='margin-top: 0;'>Individualize</h4>
+                                "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
                                 <p style='font-size: small; color: #666;'>Individualize the distribution of income or wealth
                                 under the assumption of equal sharing among spouses. If you select this
                                 option, you must specify the share of singles in your input files.</p>" = "individualize",
-                                "<h4 style='margin-top: 0;'>Merge countries</h4>
+                                "<h4 style='margin-top: 0;'>Interpolate and merge countries</h4>
                                 <p style='font-size: small; color: #666;'>Merge the distribution of several countries
                                 into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
-                                "<h4 style='margin-top: 0;'>Add up components</h4>
+                                "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
                                 <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example,
                                 labor and capital income), assuming that the dependence between both components
-                                is characterized by a Gumbel copula.</p>" = "addup"
-                            )),
+                                is characterized by a Gumbel copula.</p>
+                                <p style='font-size: small; color: #666; margin-bottom: 0;'>The dependence between the two components is assumed to be characterized
+                                by a Gumbel copula with parameter \\(\\theta\\). The higher
+                                \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
+                                full independence. You may specify a value for \\(\\theta\\) in each files,
+                                or set a global value below.</p>" = "addup"
+                            ))),
+                            tags$div(
+                                numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
+                                style = "margin-left: 20px;"
+                            ),
                             class = "panel-body"
                         ),
                         class = "panel panel-default"

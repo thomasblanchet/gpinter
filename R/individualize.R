@@ -92,7 +92,7 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     # Return an object with the parent distribution and the interpolated couple
     # share
     new_dist <- list()
-    class(new_dist) <- c("gpinter_dist", "gpinter_dist_indiv")
+    class(new_dist) <- c("gpinter_dist_indiv", "gpinter_dist")
 
     new_dist$average <- dist$average/(1 + m)
     new_dist$parent <- dist

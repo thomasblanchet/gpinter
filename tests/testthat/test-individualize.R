@@ -88,18 +88,18 @@ test_that("Individualization is consistent with Monte-Carlo", {
         fitted_quantile(dist_indiv1, p_test),
         q_test,
         check.attributes = FALSE,
-        tolerance = 1e-1
+        tolerance = 1e-3
     )
     expect_equal(
         threshold_share(dist_indiv1, q_test),
         topshare_test,
         check.attributes = FALSE,
-        tolerance = 1e-2
+        tolerance = 1e-3
     )
     expect_equal(
         top_share(dist_indiv1, p_test),
         topshare_test,
         check.attributes = FALSE,
-        tolerance = 1e-2
+        tolerance = 1e-3
     )
 })

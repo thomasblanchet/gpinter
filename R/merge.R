@@ -45,7 +45,7 @@ merge_dist <- function(dist, popsize) {
     average <- sum(relsize*sapply(dist, function(d) d$average))
 
     dist_merge <- list()
-    class(dist_merge) <- c("gpinter_dist", "gpinter_dist_merge")
+    class(dist_merge) <- c("gpinter_dist_merge", "gpinter_dist")
 
     dist_merge$poptotal <- poptotal
     dist_merge$popsize <- popsize

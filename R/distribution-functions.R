@@ -147,6 +147,20 @@ fitted_quantile.gpinter_dist_orig <- function(dist, probs, ...) {
 }
 
 #' @export
+fitted_quantile.gpinter_dist_qmc <- function(dist, probs, ...) {
+    k <- cut(probs, breaks=dist$cw, include.lowest=TRUE, labels=FALSE)
+    q <- dist$x[k]
+
+    if (any(probs == 0) || any(probs == 1)) {
+        supp <- support(dist)
+        q[probs == 0] <- supp$lower
+        q[probs == 1] <- supp$upper
+    }
+
+    return(q)
+}
+
+#' @export
 fitted_quantile.gpinter_dist <- function(dist, probs, ...) {
     supp <- support(dist)
     if (is.finite(supp$lower)) {
@@ -236,6 +250,17 @@ support.gpinter_dist_indiv <- function(dist, ...) {
     ))
 }
 
+#' @export
+support.gpinter_dist_addup <- function(dist, ...) {
+    supp1 <- support(dist$parent1)
+    supp2 <- support(dist$parent2)
+
+    return(list(
+        lower = supp1$lower + supp2$lower,
+        upper = supp1$upper + supp2$upper
+    ))
+}
+
 #' @title Cumulative distribution function for generalized Pareto interpolation
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
@@ -318,6 +343,14 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
                 tol = sqrt(.Machine$double.eps)
             )$root)
         }
+    }))
+}
+
+#' @export
+fitted_cdf.gpinter_dist_qmc <- function(dist, x, ...) {
+    sumw <- sum(dist$w)
+    return(sapply(x, function(q) {
+        return(sum(dist$w[dist$x <= q])/sumw)
     }))
 }
 
@@ -477,6 +510,15 @@ threshold_share <- function(dist, q, ...) UseMethod("threshold_share")
 threshold_share.gpinter_dist_orig <- function(dist, q, ...) {
     p <- fitted_cdf(dist, q)
     return(top_share(dist, p))
+}
+
+#' @export
+threshold_share.gpinter_dist_qmc <- function(dist, q, ...) {
+    total <- sum(dist$x*dist$w)
+    return(sapply(q, function(q) {
+        subset <- (dist$x >= q)
+        return(sum(dist$x[subset]*dist$w[subset])/total)
+    }))
 }
 
 #' @export
@@ -721,5 +763,15 @@ gini <- function(dist, ...) UseMethod("gini")
 gini.gpinter_dist <- function(dist, ...) {
     return(2*integrate(function(p) {
         return(p - bottom_share(dist, p))
-    }, lower=0, upper=1)$value)
+    }, lower=0, upper=1, abs.tol=1e-4)$value)
+}
+
+#' @export
+gini.gpinter_dist_qmc <- function(dist, ...) {
+    p <- dist$cw[-1]
+    l <- cumsum(dist$w * dist$x)
+    n <- length(l)
+    l <- l/l[n]
+
+    return(sum(l[-1] * p[-n]) - sum(l[-n] * p[-1]))
 }

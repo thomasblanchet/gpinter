@@ -26,15 +26,29 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
         i <- 1
         while (i <= nrow(data)) {
             if (trimws(data[i, 1]) == var$average) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
                 data_list$average <- as.numeric(data[i, 2])
             } else if (trimws(data[i, 1]) == var$year) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
                 data_list$year <- as.numeric(data[i, 2])
             } else if (trimws(data[i, 1]) == var$country) {
                 data_list$country <- data[i, 2]
             } else if (trimws(data[i, 1]) == var$component) {
                 data_list$component <- data[i, 2]
             } else if (trimws(data[i, 1]) == var$popsize) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
                 data_list$popsize <- as.numeric(data[i, 2])
+            } else if (trimws(data[i, 1]) == var$gumbel) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
+                data_list$gumbel <- as.numeric(data[i, 2])
             } else {
                 # We've reached the end of the top rows
                 break
@@ -85,6 +99,15 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
         }
         data[, var$popsize] <- as.numeric(data[, var$popsize])
         data_list$popsize <- data[1, var$popsize]
+    }
+
+    # Look for Gumbel parameter
+    if (var$gumbel %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$gumbel] <- gsub(",", ".", data[, var$gumbel])
+        }
+        data[, var$gumbel] <- as.numeric(data[, var$gumbel])
+        data_list$gumbel <- data[1, var$gumbel]
     }
 
     # Look for the average
@@ -242,6 +265,9 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     }
     if (is.null(data_list$popsize)) {
         data_list$popsize <- NA
+    }
+    if (is.null(data_list$gumbel)) {
+        data_list$gumbel <- NA
     }
 
     return(data_list)
@@ -735,6 +761,16 @@ shinyServer(function(input, output, session) {
                             is.na(data_view$popsize),
                             "color: #999;", ""
                         ))
+                    ),
+                    tags$tr(
+                        tags$th("Gumbel parameter", style="white-space: nowrap;"),
+                        tags$td(ifelse(is.na(data_view$gumbel),
+                            "n/a",
+                            data_view$gumbel
+                        ), style = ifelse(
+                            is.na(data_view$gumbel),
+                            "color: #999;", ""
+                        ))
                     )
                 ),
                 class = "table table-condensed table-striped"
@@ -765,7 +801,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$run, {
         # Determine the amount of computation to perform to properly display
         # the progress bar to the user
-        progressmax <- 2*data$nb_data
+        progressmax <- 5*data$nb_data
 
         # Show a modal dialog with a custom progress bar
         showModal(modalDialog(
@@ -851,7 +887,7 @@ shinyServer(function(input, output, session) {
         list_results <- list()
         # List to store the tables we generated
         list_tables <- list()
-        i <- 1
+        i <- 0
         for (year in data$years) {
             list_results[[year]] <- list()
             list_tables[[year]] <- list()
@@ -939,10 +975,11 @@ shinyServer(function(input, output, session) {
         results_countries <- data$countries
         results_components <- data$components
 
+        # Merge countries if required
         if (input$interpolation_options == "merge") {
             list_results_merged <- list()
             shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-                "Merging distributions')"))
+                "Merging countries')"))
             for (year in results_years) {
                 list_results_merged[[year]] <- list("merged"=list())
                 for (component in results_components) {
@@ -963,7 +1000,7 @@ shinyServer(function(input, output, session) {
                         shinyjs::show("dismiss_run_failure")
                         shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
 
-                        shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while mergeing on ", "placeholder", ". ",
+                        shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while mergeing countries.",
                             "Please check your data.')"))
                         # Sanitize & display error message
                         msg <- merged_dist$message
@@ -980,9 +1017,94 @@ shinyServer(function(input, output, session) {
                     list_results_merged[[year]][["merged"]][[component]] <- merged_dist
                 }
             }
-
             list_results <- list_results_merged
             results_countries <- "merged"
+        }
+
+        # Add up components if required
+        if (input$interpolation_options == "addup") {
+            list_results_addedup <- list()
+            shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
+                "Adding up components')"))
+            for (year in results_years) {
+                list_results_addedup[[year]] <- list()
+                for (country in results_countries) {
+                    list_dist <- list()
+                    for (component in results_components) {
+                        dist <- list_results[[year]][[country]][[component]]
+                        list_dist <- c(list_dist, list(dist))
+                    }
+                    # Error if the user has not exactly two components to add up
+                    if (length(list_dist) != 2) {
+                        shinyjs::show("failure_message")
+                        shinyjs::show("dismiss_run_failure")
+                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
+
+                        shinyjs::runjs("$('#error_message1').text('You may only add up exactly two components.')")
+                        # Sanitize & display error message
+                        msg <- paste0("Country ", country, " in year ", year, " has ", length(list_dist), " component(s).")
+                        shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
+                        shinyjs::removeClass("run_progress", "active")
+
+                        # Clear the results
+                        data$results <- NULL
+
+                        return(NULL)
+                    }
+                    # Get the Gumbel copula parameter
+                    if (!is.null(list_dist[[1]]$gumbel) && !is.null(list_dist[[2]]$gumbel)) {
+                        if (list_dist[[1]]$gumbel != list_dist[[2]]$gumbel) {
+                            shinyjs::show("failure_message")
+                            shinyjs::show("dismiss_run_failure")
+                            shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
+
+                            shinyjs::runjs("$('#error_message1').text('You may not have two values for the Gumbel parameter.')")
+                            # Sanitize & display error message
+                            msg <- paste0("There are two different values of the Gumbel parameter in country ", country, " for year ", year, ".")
+                            shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
+                            shinyjs::removeClass("run_progress", "active")
+
+                            # Clear the results
+                            data$results <- NULL
+
+                            return(NULL)
+                        } else {
+                            theta <- list_dist[[1]]$gumbel
+                        }
+                    } else if (!is.null(list_dist[[1]]$gumbel)) {
+                        theta <- list_dist[[1]]$gumbel
+                    } else if (!is.null(list_dist[[2]]$gumbel)) {
+                        theta <- list_dist[[2]]$gumbel
+                    } else {
+                        theta <- isolate(input$gumbel_param)
+                    }
+                    addedup_dist <- tryCatch(addup_dist(list_dist[[1]], list_dist[[2]], theta), error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                    if (is.error(addedup_dist)) {
+                        shinyjs::show("failure_message")
+                        shinyjs::show("dismiss_run_failure")
+                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
+
+                        shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while adding up components. ",
+                            "Please check your data.')"))
+                        # Sanitize & display error message
+                        msg <- addedup_dist$message
+                        msg <- gsub("\n", "", msg, fixed=TRUE)
+                        msg <- gsub("'", "\\'", msg, fixed=TRUE)
+                        shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
+                        shinyjs::removeClass("run_progress", "active")
+
+                        # Clear the results
+                        data$results <- NULL
+
+                        return(NULL)
+                    }
+                    list_results_addedup[[year]][[country]][["added up"]] <- addedup_dist
+                }
+            }
+            list_results <- list_results_addedup
+            results_components <- "added up"
         }
 
         # Count the number of tabulations to generate
@@ -990,6 +1112,7 @@ shinyServer(function(input, output, session) {
         for (year in results_years) {
             for (country in results_countries) {
                 for (component in results_components) {
+                    result <- list_results[[year]][[country]][[component]]
                     if (!is.null(result)) {
                         progressmax2 <- progressmax2 + 1
                     }
@@ -1010,7 +1133,7 @@ shinyServer(function(input, output, session) {
                     if (!is.null(result)) {
                         # Update the status message in the dialog
                         table_label <- c(component, country, year)
-                        table_label <- table_label[!table_label %in% c("n/a", "merged", "addedup")]
+                        table_label <- table_label[!table_label %in% c("n/a", "merged", "added up")]
                         table_label <- paste(table_label, collapse=", ")
                         shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
                             "Generating table: ", table_label, "')"))
