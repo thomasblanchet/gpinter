@@ -155,7 +155,7 @@ observeEvent(data$files_all, ignoreNULL = FALSE, handlerExpr = {
         # with two sheets or more
         if (length(sheet_select$sheet_name) > 0 && max(sapply(sheet_select$sheet_name, length)) > 1) {
             # Build the checkboxes
-            checkboxes <- tagList()
+            checkboxes <- NULL
             for (i in seq_along(sheet_select$sheet_name)) {
                 filename <- names(sheet_select$sheet_name)[i]
                 sheets <- sheet_select$sheet_name[[i]]
@@ -165,11 +165,11 @@ observeEvent(data$files_all, ignoreNULL = FALSE, handlerExpr = {
                     sh <- sheets[[j]]
                     id <- ids[[j]]
 
-                    checkboxes <- tagList(checkboxes,
-                        tags$tr(
+                    checkboxes <- c(checkboxes,
+                        list(tags$tr(
                             tags$td(checkboxInput(paste0("sheet_import_", id), label=sh, value=TRUE, width="100%"), style="width: 100%;"),
                             tags$td(filename, style="white-space: nowrap;")
-                        )
+                        ))
                     )
                 }
             }
