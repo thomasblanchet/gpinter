@@ -13,6 +13,7 @@
 #' @return A sample of size \code{n}.
 #'
 #' @importFrom stats runif rmultinom
+#' @importFrom gumbel rgumbel
 #'
 #' @export
 
@@ -55,3 +56,12 @@ simulate_gpinter.gpinter_dist_indiv <- function(dist, n, ...) {
     return(x)
 }
 
+#' @export
+simulate_gpinter.gpinter_dist_addup <- function(dist, n, ...) {
+    x <- rgumbel(n, dist$theta)
+
+    x[, 1] <- fitted_quantile(dist$parent1, x[, 1])
+    x[, 2] <- fitted_quantile(dist$parent2, x[, 2])
+
+    return(rowSums(x))
+}

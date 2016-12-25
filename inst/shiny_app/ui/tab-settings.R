@@ -8,6 +8,13 @@ tabPanel("Settings",
                         class = "panel-heading"
                     ),
                     tags$div(
+                        tags$p(
+                            "The first row of each column in your input file must correspond to one of the
+                            variables below. Those variables have predefined names, but you can change them.
+                            For example, if you input files use", tags$code("bs"), "instead of",
+                            tags$code("bracketsh"), "to designate bracket shares, you should change
+                            the text corresponding to “Bracket share” below."
+                        ),
                         tags$form(
                             tags$div(
                                 textInput("var_year", "Year", "year", width="100%"),

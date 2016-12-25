@@ -1,11 +1,9 @@
-parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
+parse_input <- function(data, var, dpcomma) {
     data_list <- list()
 
-    # For Excel files, combine the file and sheet names
-    if (!is.null(sheetname)) {
-        filename <- paste0(filename, "!", sheetname)
+    if (nrow(data) < 2 || ncol(data) < 2) {
+        return(simpleError("not enough rows or columns"))
     }
-    data_list$filename <- filename
 
     # Identify the layout of the table: look at data[1, 2]. If it is a
     # variable name, then the layout is entirely in columns. Otherwise,
@@ -38,6 +36,16 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
                     data[i, 2] <- gsub(",", ".", data[i, 2])
                 }
                 data_list$gumbel <- as.numeric(data[i, 2])
+            } else if (trimws(data[i, 1]) == var$singleshare) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
+                data_list$singleshare <- as.numeric(data[i, 2])
+            } else if (trimws(data[i, 1]) == var$coupleshare) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
+                data_list$coupleshare <- as.numeric(data[i, 2])
             } else {
                 # We've reached the end of the top rows
                 break
@@ -173,6 +181,8 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
         }
         data_list$whichavgsh <- "invpareto"
         data_list$invpareto <- data[, var$b]
+        data_list$invpareto[is.infinite(data_list$invpareto)] <- NA
+        data_list$invpareto[is.nan(data_list$invpareto)] <- NA
     } else {
         return(simpleError("no data on shares/averages/inverted Pareto coefficients"))
     }
@@ -255,9 +265,19 @@ parse_input <- function(data, var, dpcomma, filename, sheetname=NULL) {
     if (is.null(data_list$popsize)) {
         data_list$popsize <- NA
     }
+    if (is.null(data_list$singleshare)) {
+        data_list$singleshare <- NA
+    }
+    if (is.null(data_list$coupleshare)) {
+        data_list$coupleshare <- NA
+    }
     if (is.null(data_list$gumbel)) {
         data_list$gumbel <- NA
     }
 
     return(data_list)
+}
+
+is_input_consistent <- function(input) {
+    return(TRUE)
 }

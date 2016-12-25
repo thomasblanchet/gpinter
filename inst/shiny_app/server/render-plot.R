@@ -1,6 +1,6 @@
 # Generate the distribution plots
 result_plot <- reactive({
-    if (is.null(data$results)) {
+    if (is.null(data$output_dist)) {
         return(NULL)
     }
 
@@ -8,7 +8,7 @@ result_plot <- reactive({
     country <- input$output_dist_plot_country
     component <- input$output_dist_plot_component
 
-    result <- data$results[[year]][[country]][[component]]
+    result <- data$output_dist[[year]][[country]][[component]]
 
     return(result)
 })
@@ -194,15 +194,15 @@ output$plot_deriv_phi <- renderPlot({
 
 # Generate the time plots
 tables_plot_allyears <- reactive({
-    if (is.null(data$results)) {
+    if (is.null(data$output_dist)) {
         return(NULL)
     }
 
     country <- input$output_time_plot_country
     component <- input$output_time_plot_component
 
-    return(lapply(data$years, function(year) {
-        return(data$tables[[year]][[country]][[component]])
+    return(lapply(data$output_years, function(year) {
+        return(data$output_tables[[year]][[country]][[component]])
     }))
 })
 
@@ -222,8 +222,8 @@ observe({
         enable("slider_bottom_50")
         enable("slider_gini")
 
-        minyear <- min(na.omit(as.numeric(data$years)))
-        maxyear <- max(na.omit(as.numeric(data$years)))
+        minyear <- min(na.omit(as.numeric(data$output_years)))
+        maxyear <- max(na.omit(as.numeric(data$output_years)))
 
         for (id in c("slider_top_1", "slider_top_10", "slider_middle_40",
             "slider_bottom_50", "slider_gini")) {
@@ -251,7 +251,7 @@ output$plot_top_1 <- renderPlot({
     ymax <- max(input$slider_top_1)
 
     df <- data.frame(
-        year = as.numeric(data$years),
+        year = as.numeric(data$output_years),
         top1 = sapply(tables, function(tab) {
             if (!is.null(tab)) {
                 return(tab$top1)
@@ -292,7 +292,7 @@ output$plot_top_10 <- renderPlot({
     ymax <- max(input$slider_top_10)
 
     df <- data.frame(
-        year = as.numeric(data$years),
+        year = as.numeric(data$output_years),
         top10 = sapply(tables, function(tab) {
             if (!is.null(tab)) {
                 return(tab$top10)
@@ -333,7 +333,7 @@ output$plot_middle_40 <- renderPlot({
     ymax <- max(input$slider_middle_40)
 
     df <- data.frame(
-        year = as.numeric(data$years),
+        year = as.numeric(data$output_years),
         middle40 = sapply(tables, function(tab) {
             if (!is.null(tab)) {
                 return(tab$middle40)
@@ -374,7 +374,7 @@ output$plot_bottom_50 <- renderPlot({
     ymax <- max(input$slider_bottom_50)
 
     df <- data.frame(
-        year = as.numeric(data$years),
+        year = as.numeric(data$output_years),
         bottom50 = sapply(tables, function(tab) {
             if (!is.null(tab)) {
                 return(tab$bottom50)
@@ -415,7 +415,7 @@ output$plot_gini <- renderPlot({
     ymax <- max(input$slider_gini)
 
     df <- data.frame(
-        year = as.numeric(data$years),
+        year = as.numeric(data$output_years),
         gini = sapply(tables, function(tab) {
             if (!is.null(tab)) {
                 return(tab$gini)

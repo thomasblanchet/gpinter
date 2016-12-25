@@ -82,17 +82,11 @@
 }
 
 /* Improve file input widget */
-.progress-bar {
-    white-space: nowrap;
-}
-
 #file_input_progress {
-    margin-top: 15px;
     margin-bottom: 0;
-    visibility: visible;
 }
 
-#import_progress_container {
+#panel_file_input .form-group {
     margin-bottom: 0;
 }
 
@@ -190,6 +184,7 @@ code {
 
 body {
     font-family: 'Lato', sans-serif;
+    margin-top: 380px;
 }
 
 #run {
@@ -223,7 +218,30 @@ span.btn-file {
     margin-right: -2px !important;
 }
 
+#sheet_select .form-group {
+    margin: 0;
+}
+
+#sheet_select .checkbox {
+    margin: 0;
+}
+
+#sheet_select .checkbox > label {
+    display: block;
+}
+
+#sheets_unselect_all {
+    margin-top: 10px;
+}
+
+#sheets_import_selected {
+    margin-top: 10px;
+}
+
 @media (min-width: 768px) {
+    body {
+        margin-top: 180px;
+    }
     .nav-doc {
         display: block;
     }
@@ -236,12 +254,21 @@ span.btn-file {
     #synthpop_dl_excel {
         margin-top: 0;
     }
+    #sheets_unselect_all {
+        margin-top: 0;
+    }
+    #sheets_import_selected {
+        margin-top: 0;
+    }
     #run {
         margin-bottom: 0;
     }
 }
 
 @media (min-width: 992px) {
+    body {
+        margin-top: 80px;
+    }
     .nav-doc {
         display: block;
     }
@@ -254,12 +281,21 @@ span.btn-file {
     #synthpop_dl_excel {
         margin-top: 0;
     }
+    #sheets_unselect_all {
+        margin-top: 0;
+    }
+    #sheets_import_selected {
+        margin-top: 0;
+    }
     #run {
         margin-bottom: 0;
     }
 }
 
 @media (min-width: 1200px) {
+    body {
+        margin-top: 80px;
+    }
     .nav-doc {
         display: block;
     }
@@ -270,6 +306,12 @@ span.btn-file {
         visibility: hidden;
     }
     #synthpop_dl_excel {
+        margin-top: 0;
+    }
+    #sheets_unselect_all {
+        margin-top: 0;
+    }
+    #sheets_import_selected {
         margin-top: 0;
     }
     #run {

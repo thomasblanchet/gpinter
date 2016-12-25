@@ -1,71 +1,39 @@
 output$input_data_view_header <- renderUI({
-    if (is.null(data$data) & is.null(data$errors)) {
+    if (is.null(data$input_data)) {
         shinyjs::show("help_intro")
         return(NULL)
-    } else if (length(data$data) == 0 & length(data$errors) > 0) {
-        shinyjs::hide("help_intro")
-        return(tagList(tags$div(
-            tags$p("There is nothing to display because all of your files
-                generated an error during the importation. Please check
-                the format of your input data and try again."), tags$p(
-                    tags$ul(lapply(data$errors, function(e) {
-                        tags$li(tags$i(class="fa fa-li fa-times-circle"), e$message)
-                    }), class="fa-ul")
-            ),
-            class = "alert alert-danger",
-            role = "alert",
-            style = "max-height: 500px; overflow: scroll;"
-        ), actionButton("clear", "Clear data", icon=icon("eraser"), class="btn-block btn-danger")))
     } else {
         shinyjs::hide("help_intro")
-        if (length(data$errors) > 0) {
-            warning_message <- tags$div(
-                tags$button(type="button", class="close", `data-dismiss`="alert", `aria-label`="Close",
-                    tags$span(HTML("&times;"), `aria-hidden`="true")
-                ),
-                tags$p("Some of your files were ignored because of errors.
-                    You can proceed nonetheless, but you may
-                    want to check the format of some of your data."), tags$p(
-                        tags$ul(lapply(data$errors, function(e) {
-                            tags$li(tags$i(class="fa fa-li fa-exclamation-triangle"), e$message)
-                        }), class="fa-ul")),
-                style = "max-height: 150px; overflow: scroll;",
-                class = "alert alert-warning alert-dismissible",
-                role = "alert"
-            )
-        } else {
-            warning_message <- NULL
-        }
 
         # Select input menu
         select_input_menu <- tagList()
-        if (length(data$years) > 1) {
+        if (length(data$input_years) > 1) {
             select_input_menu <- tagList(select_input_menu,
-                column(4, selectInput("input_view_year", "Year", choices=data$years, width="100%"))
+                column(4, selectInput("input_view_year", "Year", choices=data$input_years, width="100%"))
             )
         } else {
             select_input_menu <- tagList(select_input_menu,
-                disabled(column(4, selectInput("input_view_year", "Year", choices=data$years, width="100%")))
+                disabled(column(4, selectInput("input_view_year", "Year", choices=data$input_years, width="100%")))
             )
         }
 
-        if (length(data$countries) > 1) {
+        if (length(data$input_countries) > 1) {
             select_input_menu <- tagList(select_input_menu,
-                column(4, selectInput("input_view_country", "Country", choices=data$countries, width="100%"))
+                column(4, selectInput("input_view_country", "Country", choices=data$input_countries, width="100%"))
             )
         } else {
             select_input_menu <- tagList(select_input_menu,
-                disabled(column(4, selectInput("input_view_country", "Country", choices=data$countries, width="100%")))
+                disabled(column(4, selectInput("input_view_country", "Country", choices=data$input_countries, width="100%")))
             )
         }
 
-        if (length(data$components) > 1) {
+        if (length(data$input_components) > 1) {
             select_input_menu <- tagList(select_input_menu,
-                column(4, selectInput("input_view_component", "Component", choices=data$components, width="100%"))
+                column(4, selectInput("input_view_component", "Component", choices=data$input_components, width="100%"))
             )
         } else {
             select_input_menu <- tagList(select_input_menu,
-                disabled(column(4, selectInput("input_view_component", "Component", choices=data$components, width="100%")))
+                disabled(column(4, selectInput("input_view_component", "Component", choices=data$input_components, width="100%")))
             )
         }
 
@@ -75,7 +43,6 @@ output$input_data_view_header <- renderUI({
                 column(6, actionButton("clear", "Clear data", icon=icon("eraser"), class="btn-block btn-danger")),
                 style = "margin-bottom: 20px;"
             ),
-            warning_message,
             fixedRow(select_input_menu)
         ))
     }
@@ -86,11 +53,11 @@ output$input_data_view <- renderUI({
     country <- input$input_view_country
     component <- input$input_view_component
 
-    if ((length(data$data) == 0) || (is.null(year)) || (is.null(country)) || (is.null(component))) {
+    if ((length(data$input_data) == 0) || (is.null(year)) || (is.null(country)) || (is.null(component))) {
         return(NULL)
     }
 
-    data_view <- data$data[[year]][[country]][[component]]
+    data_view <- data$input_data[[year]][[country]][[component]]
 
     if (is.null(data_view)) {
         return(tags$div(
@@ -144,21 +111,37 @@ output$input_data_view <- renderUI({
         tags$table(
             tags$tbody(
                 tags$tr(
-                    tags$th("file name", style="white-space: nowrap;"),
-                    tags$td(data_view$filename, style="width: 100%;")
+                    tags$th("Average", style="white-space: nowrap;"),
+                    tags$td(format(round(data_view$average), big.mark=" ", scientific=FALSE), style="text-align: right;")
                 ),
                 tags$tr(
-                    tags$th("average", style="white-space: nowrap;"),
-                    tags$td(sprintf("%.2f", data_view$average))
+                    tags$th("Overall single share", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$singleshare),
+                        "n/a",
+                        data_view$singleshare
+                    ), style = ifelse(
+                        is.na(data_view$singleshare),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
                 ),
                 tags$tr(
-                    tags$th("population size", style="white-space: nowrap;"),
+                    tags$th("Overall couple share", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$coupleshare),
+                        "n/a",
+                        data_view$coupleshare
+                    ), style = ifelse(
+                        is.na(data_view$coupleshare),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
+                ),
+                tags$tr(
+                    tags$th("Population size", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$popsize),
                         "n/a",
                         data_view$popsize
                     ), style = ifelse(
                         is.na(data_view$popsize),
-                        "color: #999;", ""
+                        "color: #999; text-align: right;", "text-align: right;"
                     ))
                 ),
                 tags$tr(
@@ -168,7 +151,7 @@ output$input_data_view <- renderUI({
                         data_view$gumbel
                     ), style = ifelse(
                         is.na(data_view$gumbel),
-                        "color: #999;", ""
+                        "color: #999; text-align: right;", "text-align: right;"
                     ))
                 )
             ),
@@ -176,6 +159,7 @@ output$input_data_view <- renderUI({
         ),
         tags$h4("Tabulation"),
         renderTable(df,
+            align = paste0("l", paste0(rep("r", ncol(df) - 1), collapse = "")),
             striped = TRUE,
             width = "100%",
             na = "n/a"
@@ -184,14 +168,5 @@ output$input_data_view <- renderUI({
 })
 
 observeEvent(input$clear, {
-    clear_all()
-
-    # Reset file input
-    shinyjs::reset("file_input")
-    shinyjs::runjs("$('#file_input_progress').css('visibility', 'visible');")
-    shinyjs::removeClass("import_progress", "progress-bar-danger")
-    shinyjs::runjs(paste0("$('#import_progress').attr('aria-valuenow',", 0, ")"))
-    shinyjs::runjs(paste0("$('#import_progress').attr('style', 'width: ", 0, "%')"))
-    shinyjs::runjs(paste0("$('#import_progress').text('')"))
-    shinyjs::runjs(paste0("$('#file_input_progress .progress-bar').text('')"))
+    reset_app()
 })

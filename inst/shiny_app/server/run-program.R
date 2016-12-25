@@ -1,7 +1,7 @@
 observeEvent(input$run, {
     # Determine the amount of computation to perform to properly display
     # the progress bar to the user
-    progressmax <- 5*data$nb_data
+    progressmax <- 5*data$input_data_size
 
     # Show a modal dialog with a custom progress bar
     showModal(modalDialog(
@@ -25,14 +25,14 @@ observeEvent(input$run, {
                     the different panels of the application with the results."),
                 tags$table(
                     tags$tr(
-                        tags$td(tags$i(class="fa fa-table fa-2x", `aria-hidden`="true")),
+                        tags$td(tags$i(class="fa fa-table fa-3x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Tables"), "tab provides detailed tabulations
                             of your data. You can pick which shares, quantiles and averages
                             you want to include, and download the result to your computer."
                         ))
                     ),
                     tags$tr(
-                        tags$td(tags$i(class="fa fa-area-chart fa-2x", `aria-hidden`="true")),
+                        tags$td(tags$i(class="fa fa-area-chart fa-3x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Plots"), "tab provides several plots to visualize
                             the distribution of your data. That includes the interpolated function,
                             but also the density or the Lorenz curve. The interface lets you
@@ -40,14 +40,14 @@ observeEvent(input$run, {
                         ))
                     ),
                     tags$tr(
-                        tags$td(tags$i(class="fa fa-random fa-2x", `aria-hidden`="true")),
+                        tags$td(tags$i(class="fa fa-random fa-3x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Simulate"), "tab lets you simulate and download
                             new random samples of arbitrary size according to distribution
                             of your data."
                         ))
                     ),
                     tags$tr(
-                        tags$td(tags$i(class="fa fa-stethoscope fa-2x", `aria-hidden`="true")),
+                        tags$td(tags$i(class="fa fa-stethoscope fa-3x", `aria-hidden`="true")),
                         tags$td(tags$p("The", tags$b("Diagnostic"), "tab can help you identify pathological
                             features of your data which may indicate mistakes or inconsistencies."
                         ))
@@ -88,14 +88,14 @@ observeEvent(input$run, {
     # List to store the tables we generated
     list_tables <- list()
     i <- 0
-    for (year in data$years) {
+    for (year in data$input_years) {
         list_results[[year]] <- list()
         list_tables[[year]] <- list()
-        for (country in data$countries) {
+        for (country in data$input_countries) {
             list_results[[year]][[country]] <- list()
             list_tables[[year]][[country]] <- list()
-            for (component in data$components) {
-                data_model <- data$data[[year]][[country]][[component]]
+            for (component in data$input_components) {
+                data_model <- data$input_data[[year]][[country]][[component]]
 
                 data_label <- c(component, country, year)
                 data_label <- data_label[data_label != "n/a"]
@@ -171,9 +171,9 @@ observeEvent(input$run, {
         }
     }
 
-    results_years <- data$years
-    results_countries <- data$countries
-    results_components <- data$components
+    results_years <- data$input_years
+    results_countries <- data$input_countries
+    results_components <- data$input_components
 
     # Merge countries if required
     if (input$interpolation_options == "merge") {
@@ -365,17 +365,17 @@ observeEvent(input$run, {
     shinyjs::show("dismiss_run_success")
 
     # Store the results
-    data$results <- list_results
-    data$tables <- list_tables
-    data$results_years <- results_years
-    data$results_countries <- results_countries
-    data$results_components <- results_components
+    data$output_dist <- list_results
+    data$output_tables <- list_tables
+    data$output_years <- results_years
+    data$output_countries <- results_countries
+    data$output_components <- results_components
 
     # Update the interface
-    updateSelectInput(session, "output_table_year", choices=data$results_years)
-    updateSelectInput(session, "output_dist_plot_year", choices=data$results_years)
-    updateSelectInput(session, "synthpop_year", choices=data$results_years)
-    if (length(data$results_years) > 1) {
+    updateSelectInput(session, "output_table_year", choices=data$output_years)
+    updateSelectInput(session, "output_dist_plot_year", choices=data$output_years)
+    updateSelectInput(session, "synthpop_year", choices=data$output_years)
+    if (length(data$output_years) > 1) {
         enable("output_table_year")
         enable("output_dist_plot_year")
         enable("synthpop_year_all")
@@ -387,11 +387,11 @@ observeEvent(input$run, {
         disable("output_dist_plot_year")
         disable("synthpop_year_all")
     }
-    updateSelectInput(session, "output_table_country", choices=data$results_countries)
-    updateSelectInput(session, "output_dist_plot_country", choices=data$results_countries)
-    updateSelectInput(session, "output_time_plot_country", choices=data$results_countries)
-    updateSelectInput(session, "synthpop_country", choices=data$results_countries)
-    if (length(data$results_countries) > 1) {
+    updateSelectInput(session, "output_table_country", choices=data$output_countries)
+    updateSelectInput(session, "output_dist_plot_country", choices=data$output_countries)
+    updateSelectInput(session, "output_time_plot_country", choices=data$output_countries)
+    updateSelectInput(session, "synthpop_country", choices=data$output_countries)
+    if (length(data$output_countries) > 1) {
         enable("output_table_country")
         enable("output_dist_plot_country")
         enable("output_time_plot_country")
@@ -405,11 +405,11 @@ observeEvent(input$run, {
         disable("output_time_plot_country")
         disable("synthpop_country_all")
     }
-    updateSelectInput(session, "output_table_component", choices=data$results_components)
-    updateSelectInput(session, "output_dist_plot_component", choices=data$results_components)
-    updateSelectInput(session, "output_time_plot_component", choices=data$results_components)
-    updateSelectInput(session, "synthpop_component", choices=data$results_components)
-    if (length(data$results_components) > 1) {
+    updateSelectInput(session, "output_table_component", choices=data$output_components)
+    updateSelectInput(session, "output_dist_plot_component", choices=data$output_components)
+    updateSelectInput(session, "output_time_plot_component", choices=data$output_components)
+    updateSelectInput(session, "synthpop_component", choices=data$output_components)
+    if (length(data$output_components) > 1) {
         enable("output_table_component")
         enable("output_dist_plot_component")
         enable("output_time_plot_component")

@@ -27,20 +27,8 @@ tabPanel("Input data",
                                 '.xlsx'
                             )
                         ),
-                        tags$div(
-                            tags$div(
-                                id = "import_progress",
-                                role = "progressbar",
-                                `aria-valuenow` = "0",
-                                `aria-valuemin` = "0",
-                                `aria-valuemax` = "100",
-                                style = "width: 0%;",
-                                class = "progress-bar progress-bar-striped"
-                            ),
-                            id = "import_progress_container",
-                            class = "progress"
-                        ),
-                        class = "panel-body"
+                        class = "panel-body",
+                        id = "panel_file_input"
                     ),
                     class = "panel panel-default"
                 ),
@@ -81,6 +69,24 @@ tabPanel("Input data",
                 )
             ),
             column(7,
+                hidden(tags$div(
+                    tags$h4(tags$i(class = "fa fa-cog"), HTML(" &nbsp; "), tags$span("", id = "import_progress_message"),
+                        style = "text-align: center; margin-top: 10px; margin-bottom: 20px;"
+                    ),
+                    tags$div(
+                        tags$div(
+                            id = "import_progress",
+                            role = "progressbar",
+                            `aria-valuenow` = "0",
+                            `aria-valuemin` = "0",
+                            `aria-valuemax` = "100",
+                            style = "width: 0%;",
+                            class = "progress-bar progress-bar-striped"
+                        ),
+                        class = "progress"
+                    ),
+                    id = "panel_import_progress"
+                )),
                 tags$div(
                     tags$div(
                         tags$p("This interface lets you reconstruct the full distribution of income or

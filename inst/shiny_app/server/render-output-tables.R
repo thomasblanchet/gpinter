@@ -1,5 +1,5 @@
 output$output_table <- renderUI({
-    if (is.null(data$results)) {
+    if (is.null(data$output_dist)) {
         return(tags$div(icon("info-circle"), HTML("&nbsp;"),
             "The results will appear here once the programs have been successfully executed.",
             class="alert alert-info", role="alert"))
@@ -9,8 +9,8 @@ output$output_table <- renderUI({
     country <- input$output_table_country
     component <- input$output_table_component
 
-    result <- data$results[[year]][[country]][[component]]
-    table <- data$tables[[year]][[country]][[component]]
+    result <- data$output_dist[[year]][[country]][[component]]
+    table <- data$output_tables[[year]][[country]][[component]]
 
     if (is.null(result)) {
         return(tags$div(icon("info-circle"), HTML("&nbsp;"),
@@ -28,6 +28,7 @@ output$output_table <- renderUI({
             "Gini" = sprintf("%.3f", table$gini),
             check.names = FALSE
         ),
+        align = "cccccc",
         striped = TRUE,
         width = "100%"
     )
@@ -60,6 +61,7 @@ output$output_table <- renderUI({
     }
 
     detailed_table <- renderTable(out_df,
+        align = paste0("l", paste0(rep("r", ncol(out_df) - 1), collapse = "")),
         striped = TRUE,
         width = "100%",
         na = "n/a"
@@ -79,13 +81,27 @@ output$dl_tables_csv <- downloadHandler(
         return(paste0("tables-", format.Date(Sys.time(), "%Y-%m-%d-%H-%M-%S"), ".zip"))
     },
     content = function(dest) {
+        var <- list(
+            year          = trimws(isolate(input$var_year)),
+            country       = trimws(isolate(input$var_country)),
+            component     = trimws(isolate(input$var_component)),
+            p             = trimws(isolate(input$var_p)),
+            q             = trimws(isolate(input$var_q)),
+            b             = trimws(isolate(input$var_b)),
+            bracketshare  = trimws(isolate(input$var_bracketshare)),
+            topshare      = trimws(isolate(input$var_topshare)),
+            bracketavg    = trimws(isolate(input$var_bracketavg)),
+            topavg        = trimws(isolate(input$var_topavg)),
+            average       = trimws(isolate(input$var_average))
+        )
+
         tmp <- tempdir()
         files <- c()
-        for (country in data$results_countries) {
-            for (component in data$results_components) {
+        for (country in data$output_countries) {
+            for (component in data$output_components) {
                 # Times series for the given country and income concept
                 series_label <- c(component, country)
-                series_label <- series_label[series_label != "n/a"]
+                series_label <- series_label[!series_label %in% c("n/a", "merged", "added up")]
                 series_label <- paste(series_label, collapse=", ")
                 if (series_label == "") {
                     series_label <- "series"
@@ -94,49 +110,49 @@ output$dl_tables_csv <- downloadHandler(
                 }
 
                 df_series <- data.frame(
-                    "Year" = data$years,
-                    "Average" = sapply(data$years, function(year) {
-                        result <- data$results[[year]][[country]][[component]]
+                    "Year" = data$output_years,
+                    "Average" = sapply(data$output_years, function(year) {
+                        result <- data$output_dist[[year]][[country]][[component]]
                         if (is.null(result)) {
                             return(NA)
                         } else {
                             return(result$average)
                         }
                     }),
-                    "Bottom 50%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Bottom 50%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$bottom50)
                         }
                     }),
-                    "Middle 40%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Middle 40%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$middle40)
                         }
                     }),
-                    "Top 10%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Top 10%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$top10)
                         }
                     }),
-                    "Top 1%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Top 1%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$top1)
                         }
                     }),
-                    "Gini" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Gini" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
@@ -160,39 +176,55 @@ output$dl_tables_csv <- downloadHandler(
                 )
                 files <- c(files, filename_series)
 
-                for (year in data$results_years) {
-                    result <- data$results[[year]][[country]][[component]]
-                    table <- data$tables[[year]][[country]][[component]]
+                for (year in data$output_years) {
+                    result <- data$output_dist[[year]][[country]][[component]]
+                    table <- data$output_tables[[year]][[country]][[component]]
                     if (is.null(result)) {
                         next
                     }
 
                     data_label <- c(component, country, year)
-                    data_label <- data_label[data_label != "n/a"]
+                    data_label <- data_label[!data_label %in% c("n/a", "merged", "added up")]
                     data_label <- paste(data_label, collapse=", ")
 
-                    out_df <- data.frame("Fractiles" = gperc)
+                    out_df <- data.frame(
+                        "year" = c(year, rep(NA, length(gperc) - 1)),
+                        "country" = c(country, rep("", length(gperc) - 1)),
+                        "component" = c(component, rep("", length(gperc) - 1)),
+                        "average" = c(result$average, rep(NA, length(gperc) - 1)),
+                        "p" = gperc
+                    )
+                    colnames(out_df) <- c(var$year, var$country, var$component, var$average, var$p)
+                    if (year == "n/a") {
+                        out_df[var$year] <- NULL
+                    }
+                    if (country == "n/a") {
+                        out_df[var$country] <- NULL
+                    }
+                    if (component == "n/a") {
+                        out_df[var$component] <- NULL
+                    }
 
                     if ("thres" %in% input$results_display) {
-                        out_df["Threshold"] <- table$threshold
+                        out_df[var$q] <- table$threshold
                     }
                     if ("topshare" %in% input$results_display) {
-                        out_df["Top share"] <- table$top_share
+                        out_df[var$topshare] <- table$top_share
                     }
                     if ("bottomshare" %in% input$results_display) {
-                        out_df["Bottom share"] <- table$bottom_share
+                        out_df[var$bottomshare] <- table$bottom_share
                     }
                     if ("bracketshare" %in% input$results_display) {
-                        out_df["Bracket share"] <- table$bracket_share
+                        out_df[var$bracketshare] <- table$bracket_share
                     }
                     if ("topavg" %in% input$results_display) {
-                        out_df["Top average"] <- table$top_average
+                        out_df[var$topavg] <- table$top_average
                     }
                     if ("bracketavg" %in% input$results_display) {
-                        out_df["Bracket average"] <- table$bracket_average
+                        out_df[var$bracketavg] <- table$bracket_average
                     }
                     if ("invpareto" %in% input$results_display) {
-                        out_df["Inverted Pareto coefficient"] <- table$invpareto
+                        out_df[var$b] <- table$invpareto
                     }
 
                     filename <- paste0(tmp, "/", data_label, ".csv")
@@ -219,17 +251,31 @@ output$dl_tables_excel <- downloadHandler(
         return(paste0("tables-", format.Date(Sys.time(), "%Y-%m-%d-%H-%M-%S"), ".xlsx"))
     },
     content = function(dest) {
+        var <- list(
+            year          = trimws(isolate(input$var_year)),
+            country       = trimws(isolate(input$var_country)),
+            component     = trimws(isolate(input$var_component)),
+            p             = trimws(isolate(input$var_p)),
+            q             = trimws(isolate(input$var_q)),
+            b             = trimws(isolate(input$var_b)),
+            bracketshare  = trimws(isolate(input$var_bracketshare)),
+            topshare      = trimws(isolate(input$var_topshare)),
+            bracketavg    = trimws(isolate(input$var_bracketavg)),
+            topavg        = trimws(isolate(input$var_topavg)),
+            average       = trimws(isolate(input$var_average))
+        )
+
         gperc <- c(
             seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
             seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
         )
         # Create the workbook
         wb <- createWorkbook()
-        for (country in data$results_countries) {
-            for (component in data$results_components) {
+        for (country in data$output_countries) {
+            for (component in data$output_components) {
                 # Times series for the given country and income concept
                 series_label <- c(component, country)
-                series_label <- series_label[series_label != "n/a"]
+                series_label <- series_label[!series_label %in% c("n/a", "merged", "added up")]
                 series_label <- paste(series_label, collapse=", ")
                 if (series_label == "") {
                     series_label <- "series"
@@ -238,49 +284,49 @@ output$dl_tables_excel <- downloadHandler(
                 }
 
                 df_series <- data.frame(
-                    "Year" = data$years,
-                    "Average" = sapply(data$years, function(year) {
-                        result <- data$results[[year]][[country]][[component]]
+                    "Year" = data$output_years,
+                    "Average" = sapply(data$output_years, function(year) {
+                        result <- data$output_dist[[year]][[country]][[component]]
                         if (is.null(result)) {
                             return(NA)
                         } else {
                             return(result$average)
                         }
                     }),
-                    "Bottom 50%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Bottom 50%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$bottom50)
                         }
                     }),
-                    "Middle 40%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Middle 40%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$middle40)
                         }
                     }),
-                    "Top 10%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Top 10%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$top10)
                         }
                     }),
-                    "Top 1%" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Top 1%" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
                             return(table$top1)
                         }
                     }),
-                    "Gini" = sapply(data$years, function(year) {
-                        table <- data$tables[[year]][[country]][[component]]
+                    "Gini" = sapply(data$output_years, function(year) {
+                        table <- data$output_tables[[year]][[country]][[component]]
                         if (is.null(table)) {
                             return(NA)
                         } else {
@@ -297,43 +343,58 @@ output$dl_tables_excel <- downloadHandler(
                 sheet <- createSheet(wb, strtrim(series_label, 31))
                 addDataFrame(df_series, sheet, row.names=FALSE)
 
-                for (year in data$results_years) {
-                    result <- data$results[[year]][[country]][[component]]
-                    table <- data$tables[[year]][[country]][[component]]
+                for (year in data$output_years) {
+                    result <- data$output_dist[[year]][[country]][[component]]
+                    table <- data$output_tables[[year]][[country]][[component]]
                     if (is.null(result)) {
                         next
                     }
 
                     data_label <- c(component, country, year)
-                    data_label <- data_label[data_label != "n/a"]
+                    data_label <- data_label[!data_label %in% c("n/a", "merged", "added up")]
                     data_label <- paste(data_label, collapse=", ")
-                    if (data_label == "") {
-                        data_label <- "no name"
-                    }
 
-                    out_df <- data.frame("Percentiles" = gperc)
+                    out_df <- data.frame(
+                        "year" = c(year, rep(NA, length(gperc) - 1)),
+                        "country" = c(country, rep("", length(gperc) - 1)),
+                        "component" = c(component, rep("", length(gperc) - 1)),
+                        "average" = c(result$average, rep(NA, length(gperc) - 1)),
+                        "p" = gperc
+                    )
+                    colnames(out_df) <- c(var$year, var$country, var$component, var$average, var$p)
+                    if (year == "n/a") {
+                        out_df[var$year] <- NULL
+                    }
+                    if (country == "n/a") {
+                        out_df[var$country] <- NULL
+                    }
+                    if (component == "n/a") {
+                        out_df[var$component] <- NULL
+                    }
 
                     if ("thres" %in% input$results_display) {
-                        out_df["Threshold"] <- table$threshold
+                        out_df[var$q] <- table$threshold
                     }
                     if ("topshare" %in% input$results_display) {
-                        out_df["Top share"] <- table$top_share
+                        out_df[var$topshare] <- table$top_share
                     }
                     if ("bottomshare" %in% input$results_display) {
-                        out_df["Bottom share"] <- table$bottom_share
+                        out_df[var$bottomshare] <- table$bottom_share
                     }
                     if ("bracketshare" %in% input$results_display) {
-                        out_df["Bracket share"] <- table$bracket_share
+                        out_df[var$bracketshare] <- table$bracket_share
                     }
                     if ("topavg" %in% input$results_display) {
-                        out_df["Top average"] <- table$top_average
+                        out_df[var$topavg] <- table$top_average
                     }
                     if ("bracketavg" %in% input$results_display) {
-                        out_df["Bracket average"] <- table$bracket_average
+                        out_df[var$bracketavg] <- table$bracket_average
                     }
                     if ("invpareto" %in% input$results_display) {
-                        out_df["Inverted Pareto coefficient"] <- table$invpareto
+                        out_df[var$b] <- table$invpareto
                     }
+
+                    print(df)
 
                     sheet <- createSheet(wb, strtrim(data_label, 31))
                     addDataFrame(out_df, sheet, row.names=FALSE)

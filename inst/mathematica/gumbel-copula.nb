@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     11605,        379]
-NotebookOptionsPosition[     10290,        326]
-NotebookOutlinePosition[     10647,        342]
-CellTagsIndexPosition[     10604,        339]
+NotebookDataLength[     11812,        383]
+NotebookOptionsPosition[     10496,        330]
+NotebookOutlinePosition[     10853,        346]
+CellTagsIndexPosition[     10810,        343]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -45,7 +45,7 @@ Cell[BoxData[
    RowBox[{"-", 
     RowBox[{"Log", "[", "t", "]"}]}], ")"}], "\[Theta]"]], "Output",
  CellChangeTimes->{3.691426450536059*^9, 3.691426685852223*^9, 
-  3.691426948129403*^9}]
+  3.691426948129403*^9, 3.6914272310131702`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -62,10 +62,10 @@ Cell[BoxData[
  TemplateBox[{
   "InverseFunction","ifun",
    "\"Inverse functions are being used. Values may be lost for multivalued \
-inverses.\"",2,10,24,24772857988899882873,"Local"},
+inverses.\"",2,17,29,24772857988899882873,"Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.691426487690577*^9, 3.691426502011957*^9}, 
-   3.6914266859518127`*^9, 3.691426948242275*^9}],
+   3.6914266859518127`*^9, 3.691426948242275*^9, 3.6914272310877447`*^9}],
 
 Cell[BoxData[
  SuperscriptBox["\[ExponentialE]", 
@@ -73,7 +73,7 @@ Cell[BoxData[
    SuperscriptBox["t", 
     FractionBox["1", "\[Theta]"]]}]]], "Output",
  CellChangeTimes->{{3.691426487693536*^9, 3.691426502027582*^9}, 
-   3.691426685988997*^9, 3.691426948263546*^9}]
+   3.691426685988997*^9, 3.691426948263546*^9, 3.691427231105769*^9}]
 }, Open  ]]
 }, Open  ]],
 
@@ -111,7 +111,8 @@ Cell[BoxData[
          RowBox[{"Log", "[", "v", "]"}]}], ")"}], "\[Theta]"]}], ")"}], 
     FractionBox["1", "\[Theta]"]]}]]], "Output",
  CellChangeTimes->{{3.6914265891753073`*^9, 3.691426599874545*^9}, 
-   3.6914266513342857`*^9, 3.69142668603745*^9, 3.6914269483135347`*^9}]
+   3.6914266513342857`*^9, 3.69142668603745*^9, 3.6914269483135347`*^9, 
+   3.6914272311525087`*^9}]
 }, Open  ]]
 }, Open  ]],
 
@@ -179,7 +180,8 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"-", "1"}], "+", 
      FractionBox["1", "\[Theta]"]}]]}], "u"]], "Output",
- CellChangeTimes->{3.691426790781225*^9, 3.691426948360653*^9}]
+ CellChangeTimes->{3.691426790781225*^9, 3.691426948360653*^9, 
+  3.691427231205893*^9}]
 }, Open  ]],
 
 Cell["Invert to get the conditional quantile:", "Text",
@@ -199,10 +201,10 @@ Cell[BoxData[
  TemplateBox[{
   "InverseFunction","ifun",
    "\"Inverse functions are being used. Values may be lost for multivalued \
-inverses.\"",2,13,25,24772857988899882873,"Local"},
+inverses.\"",2,20,30,24772857988899882873,"Local"},
   "MessageTemplate"]], "Message", "MSG",
  CellChangeTimes->{{3.691426823911531*^9, 3.691426847632119*^9}, 
-   3.691426948408908*^9}],
+   3.691426948408908*^9, 3.691427231270767*^9}],
 
 Cell[BoxData[
  SuperscriptBox["\[ExponentialE]", 
@@ -242,7 +244,7 @@ Cell[BoxData[
        "\[Theta]"]}], ")"}], 
     FractionBox["1", "\[Theta]"]]}]]], "Output",
  CellChangeTimes->{{3.691426823914981*^9, 3.691426847648402*^9}, 
-   3.691426948431263*^9}]
+   3.691426948431263*^9, 3.691427231290646*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -280,22 +282,23 @@ Cell[BoxData[
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{$CellContext`u$$ = 0.754, $CellContext`\[Theta]$$ = 5.22,
-     Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
-    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
-    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+   DynamicModuleBox[{$CellContext`u$$ = Rational[
+    1, 2], $CellContext`\[Theta]$$ = 3, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
        Hold[$CellContext`u$$], 
        Rational[1, 2]}, 0, 1}, {{
        Hold[$CellContext`\[Theta]$$], 3}, 1, 10}}, Typeset`size$$ = {
     360., {177., 182.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
-    Typeset`skipInitDone$$ = True, $CellContext`u$13208$$ = 
-    0, $CellContext`\[Theta]$13209$$ = 0}, 
+    Typeset`skipInitDone$$ = True, $CellContext`u$22860$$ = 
+    0, $CellContext`\[Theta]$22861$$ = 0}, 
     DynamicBox[Manipulate`ManipulateBoxes[
      1, StandardForm, 
       "Variables" :> {$CellContext`u$$ = 
         Rational[1, 2], $CellContext`\[Theta]$$ = 3}, "ControllerVariables" :> {
-        Hold[$CellContext`u$$, $CellContext`u$13208$$, 0], 
-        Hold[$CellContext`\[Theta]$$, $CellContext`\[Theta]$13209$$, 0]}, 
+        Hold[$CellContext`u$$, $CellContext`u$22860$$, 0], 
+        Hold[$CellContext`\[Theta]$$, $CellContext`\[Theta]$22861$$, 0]}, 
       "OtherVariables" :> {
        Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
         Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
@@ -318,8 +321,9 @@ $CellContext`\[Theta]$$], {$CellContext`v, 0, 1},
    Deployed->True,
    StripOnInput->False],
   Manipulate`InterpretManipulate[1]]], "Output",
- CellChangeTimes->{3.691426911275371*^9, 3.69142694847366*^9, 
-  3.6914272066682377`*^9}]
+ CellChangeTimes->{
+  3.691426911275371*^9, 3.69142694847366*^9, {3.6914272066682377`*^9, 
+   3.691427231396584*^9}}]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
@@ -347,37 +351,37 @@ Cell[CellGroupData[{
 Cell[703, 27, 103, 1, 64, "Section"],
 Cell[CellGroupData[{
 Cell[831, 32, 257, 7, 32, "Input"],
-Cell[1091, 41, 221, 6, 32, "Output"]
+Cell[1091, 41, 245, 6, 32, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1349, 52, 229, 6, 32, "Input"],
-Cell[1581, 60, 342, 7, 24, "Message"],
-Cell[1926, 69, 252, 6, 43, "Output"]
+Cell[1373, 52, 229, 6, 32, "Input"],
+Cell[1605, 60, 366, 7, 24, "Message"],
+Cell[1974, 69, 274, 6, 43, "Output"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2227, 81, 149, 2, 64, "Section"],
+Cell[2297, 81, 149, 2, 64, "Section"],
 Cell[CellGroupData[{
-Cell[2401, 87, 301, 8, 32, "Input"],
-Cell[2705, 97, 578, 16, 45, "Output"]
+Cell[2471, 87, 301, 8, 32, "Input"],
+Cell[2775, 97, 606, 17, 45, "Output"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3332, 119, 105, 1, 64, "Section"],
-Cell[3440, 122, 254, 9, 33, "Text"],
+Cell[3430, 120, 105, 1, 64, "Section"],
+Cell[3538, 123, 254, 9, 33, "Text"],
 Cell[CellGroupData[{
-Cell[3719, 135, 257, 7, 32, "Input"],
-Cell[3979, 144, 1141, 37, 64, "Output"]
+Cell[3817, 136, 257, 7, 32, "Input"],
+Cell[4077, 145, 1166, 38, 122, "Output"]
 }, Open  ]],
-Cell[5135, 184, 123, 1, 30, "Text"],
+Cell[5258, 186, 123, 1, 30, "Text"],
 Cell[CellGroupData[{
-Cell[5283, 189, 258, 6, 32, "Input"],
-Cell[5544, 197, 318, 7, 24, "Message"],
-Cell[5865, 206, 1278, 38, 72, "Output"]
+Cell[5406, 191, 258, 6, 32, "Input"],
+Cell[5667, 199, 340, 7, 24, "Message"],
+Cell[6010, 208, 1300, 38, 72, "Output"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7180, 249, 963, 28, 54, "Input"],
-Cell[8146, 279, 2104, 42, 529, "Output"]
+Cell[7347, 251, 963, 28, 54, "Input"],
+Cell[8313, 281, 2143, 44, 495, "Output"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
