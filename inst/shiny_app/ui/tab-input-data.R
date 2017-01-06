@@ -95,7 +95,7 @@ tabPanel("Input data",
                             on the left and choose or more file from your computer. You must have one CSV file or
                             Excel sheet per tabulation. Each must take the form of a table with the following format:"),
                         tabsetPanel(
-                            tabPanel("File 1",
+                            tabPanel("File #1",
                                 tags$table(
                                     tags$tr(
                                         tags$th("year"), tags$th("country"), tags$th("component"),
@@ -121,7 +121,7 @@ tabPanel("Input data",
                                     style = "margin-bottom: 2px;"
                                 )
                             ),
-                            tabPanel("File 2",
+                            tabPanel("File #2",
                                 tags$table(
                                     tags$tr(
                                         tags$th("year"), tags$th("country"), tags$th("component"),
@@ -146,7 +146,9 @@ tabPanel("Input data",
                                     class = "table table-bordered table-condensed",
                                     style = "margin-bottom: 2px;"
                                 )
-                            )
+                            ),
+                            id = "example_tabs",
+                            type = "pills"
                         ),
                         tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
                             "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",

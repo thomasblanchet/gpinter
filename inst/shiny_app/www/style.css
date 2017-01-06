@@ -81,6 +81,12 @@
     background-color: #080808;
 }
 
+ul#example_tabs > li > a {
+    font-size: 12px;
+    padding: 5px 10px 5px 10px;
+    margin-bottom: 5px;
+}
+
 /* Improve file input widget */
 #file_input_progress {
     margin-bottom: 0;
