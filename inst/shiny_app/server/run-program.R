@@ -109,7 +109,6 @@ observeEvent(input$run, {
                 # Update the status message in the dialog
                 shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
                     "Interpolating: ", data_label, "')"))
-
                 result_model <- tryCatch({
                     args <- list(
                         p = data_model$p,

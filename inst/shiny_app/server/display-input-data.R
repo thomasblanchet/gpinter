@@ -138,7 +138,7 @@ output$input_data_view <- renderUI({
                     tags$th("Population size", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$popsize),
                         "n/a",
-                        data_view$popsize
+                        format(data_view$popsize, scientific=FALSE, big.mark=" ")
                     ), style = ifelse(
                         is.na(data_view$popsize),
                         "color: #999; text-align: right;", "text-align: right;"

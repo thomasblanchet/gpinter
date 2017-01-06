@@ -35,3 +35,5 @@ vignettes/*.pdf
 # macOS crap
 .DS_Store
 
+
+inst/shiny_app/config.codekit3

@@ -105,6 +105,10 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
 
     # Sanity check of the data
+    # Fractiles are strictly increasing
+    if (any(diff(p) <= 0)) {
+        stop("Fractiles must be strictly increasing.")
+    }
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
         stop("Thresholds must be strictly increasing.")

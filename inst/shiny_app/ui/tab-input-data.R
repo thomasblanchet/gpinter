@@ -94,38 +94,64 @@ tabPanel("Input data",
                         tags$p("To import the tabulation files, use the “Browse” button
                             on the left and choose or more file from your computer. You must have one CSV file or
                             Excel sheet per tabulation. Each must take the form of a table with the following format:"),
-                        tags$table(
-                            tags$tr(
-                                tags$th("year"), tags$th("country"),
-                                tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketsh")
+                        tabsetPanel(
+                            tabPanel("File 1",
+                                tags$table(
+                                    tags$tr(
+                                        tags$th("year"), tags$th("country"), tags$th("component"),
+                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
+                                    ),
+                                    tags$tr(
+                                        tags$td("2010"), tags$td("US"), tags$td("labor"),
+                                        tags$td("37 208"), tags$td("0.1"), tags$td("4 130"), tags$td("12 643")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.5"), tags$td("23 686"), tags$td("43 908")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.9"), tags$td("76 252"), tags$td("108 329")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.99"), tags$td("211 861"), tags$td("471 463")
+                                    ),
+                                    class = "table table-bordered table-condensed",
+                                    style = "margin-bottom: 2px;"
+                                )
                             ),
-                            tags$tr(
-                                tags$td("2010"), tags$td("US"), tags$td("53 587"), tags$td("0.1"),
-                                tags$td("5 665"), tags$td("0.13459")
-                            ),
-                            tags$tr(
-                                tags$td(""), tags$td(""), tags$td(""), tags$td("0.5"),
-                                tags$td("31 829"), tags$td("0.41007")
-                            ),
-                            tags$tr(
-                                tags$td(""), tags$td(""), tags$td(""), tags$td("0.9"),
-                                tags$td("96 480"), tags$td("0.10537")
-                            ),
-                            tags$tr(
-                                tags$td(""), tags$td(""), tags$td(""), tags$td("0.95"),
-                                tags$td("136 910"), tags$td("0.14840")
-                            ),
-                            tags$tr(
-                                tags$td(""), tags$td(""), tags$td(""), tags$td("0.99"),
-                                tags$td("351 366"), tags$td("0.19946")
-                            ),
-                            class = "table table-bordered table-condensed",
-                            style = "margin-bottom: 2px;"
+                            tabPanel("File 2",
+                                tags$table(
+                                    tags$tr(
+                                        tags$th("year"), tags$th("country"), tags$th("component"),
+                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
+                                    ),
+                                    tags$tr(
+                                        tags$td("2010"), tags$td("US"), tags$td("capital"),
+                                        tags$td("16 370"), tags$td("0.1"), tags$td("-1 176"), tags$td("328")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.5"), tags$td("2 780"), tags$td("10 657")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.9"), tags$td("28 939"), tags$td("59 412")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.99"), tags$td("173 917"), tags$td("688 689")
+                                    ),
+                                    class = "table table-bordered table-condensed",
+                                    style = "margin-bottom: 2px;"
+                                )
+                            )
                         ),
                         tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
                             "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",
                             actionLink("import_example", "import it directly to the interface.", icon("arrow-down")),
-                            style="text-align: center; font-size: small;"),
+                            style="text-align: right; font-size: small;"),
                         tags$p("Each column of the table correspond to a variable. You need to at least specify:",
                             tags$ul(
                                 tags$li(tags$code("p"), "for fractiles"),

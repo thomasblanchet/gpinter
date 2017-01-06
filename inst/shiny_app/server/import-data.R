@@ -442,16 +442,29 @@ observeEvent(data$files_selected, ignoreNULL = TRUE, handlerExpr = {
 })
 
 observeEvent(input$import_example, {
-    data$input_data <- list("2010" = list("US" = list("n/a" = list(
-        p = c(0.10, 0.50, 0.90, 0.95, 0.99),
+    data$input_data <- list("2010" = list("US" = list("labor" = list(
+        p = c(0.10, 0.50, 0.90, 0.99),
         year = 2010,
         country = "US",
-        average = 53587,
-        threshold = c(5665, 31829, 96480, 136910, 351366),
-        whichavgsh = "bracketshare",
-        bracketshare = c(0.13459, 0.41007, 0.10537, 0.14840, 0.19946),
-        component = "n/a",
-        popsize = NA,
+        component = "labor",
+        average = 37208.059,
+        threshold = c(4130, 23686, 76252, 211861),
+        whichavgsh = "bracketavg",
+        bracketavg = c(12643.3, 43908.3, 108329.2, 471463.3),
+        popsize = 2.257e+08,
+        gumbel = NA,
+        coupleshare = NA,
+        singleshare = NA
+    ), "capital" = list(
+        p = c(0.10, 0.50, 0.90, 0.99),
+        year = 2010,
+        country = "US",
+        component = "capital",
+        average = 16370.471,
+        threshold = c(-1176, 2780, 28939, 173917),
+        whichavgsh = "bracketavg",
+        bracketavg = c(328.6372, 10657.18, 59412.08, 688689.3),
+        popsize = 2.257e+08,
         gumbel = NA,
         coupleshare = NA,
         singleshare = NA
@@ -460,6 +473,6 @@ observeEvent(input$import_example, {
     data$input_errors     <- list()
     data$input_years      <- c("2010")
     data$input_countries  <- c("US")
-    data$input_components <- c("n/a")
+    data$input_components <- c("labor", "capital")
 })
 
