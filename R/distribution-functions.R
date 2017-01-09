@@ -243,7 +243,7 @@ support.gpinter_dist_merge <- function(dist, ...) {
 
 #' @export
 support.gpinter_dist_indiv <- function(dist, ...) {
-    support_orig <- support(dist$parent)
+    support_orig <- support(dist$singles$dist)
     return(list(
         lower = min(support_orig$lower/2, support_orig$lower),
         upper = support_orig$upper
@@ -370,19 +370,11 @@ fitted_cdf.gpinter_dist_merge <- function(dist, x, ...) {
 
 #' @export
 fitted_cdf.gpinter_dist_indiv <- function(dist, x, ...) {
-    # Get the fractile associated to x and 2*x for the parent distribution
-    p1 <- fitted_cdf(dist$parent, x)
-    p2 <- fitted_cdf(dist$parent, 2*x)
-    # Get the couple share of those with income above x
-    c1 <- couple_share(dist, p1)
-    c2 <- couple_share(dist, p2)
-    # Get the overall couple share
-    c0 <- dist$couple_share
+    # Get the fractile associated to x (for singles) and 2*x (for couples)
+    p1 <- fitted_cdf(dist$singles$dist, x)
+    p2 <- fitted_cdf(dist$couples$dist, 2*x)
 
-    # Calculate the complementary of the distribution function
-    ccdf <- ((1 - c1)*(1 - p1) + 2*c2*(1 - p2))/(1 + c0)
-
-    return(1 - ccdf)
+    return(((1 - dist$couple_share)*p1 + 2*dist$couple_share*p2)/(1 + dist$couple_share))
 }
 
 #' @title Probability density function for generalized Pareto interpolation
@@ -474,20 +466,10 @@ fitted_density.gpinter_dist_merge <- function(dist, x, ...) {
 
 #' @export
 fitted_density.gpinter_dist_indiv <- function(dist, x, ...) {
-    p1 <- fitted_cdf(dist$parent, x)
-    p2 <- fitted_cdf(dist$parent, 2*x)
+    f1 <- fitted_density(dist$singles$dist, x)
+    f2 <- fitted_density(dist$couples$dist, 2*x)
 
-    f1 <- fitted_density(dist$parent, x)
-    f2 <- fitted_density(dist$parent, 2*x)
-
-    k1 <- cut(p1, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
-    k2 <- cut(p2, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
-    c1 <- dist$ck[k1]
-    c2 <- dist$ck[k2]
-
-    c0 <- dist$couple_share
-
-    return(((1 - c1)*f1 + 4*c2*f2)/(1 + c0))
+    return(((1 - dist$couple_share)*f1 + 4*dist$couple_share*f2)/(1 + dist$couple_share))
 }
 
 #' @title Share above a threshold
@@ -536,31 +518,17 @@ threshold_share.gpinter_dist_merge <- function(dist, q, ...) {
 
 #' @export
 threshold_share.gpinter_dist_indiv <- function(dist, q, ...) {
-    pk <- c(dist$pk, 1)
-    n <- length(pk)
+    # Overall singles income share
+    overall_single_share <- (1 - dist$couple_share)*dist$singles$average/((1 + dist$couple_share)*dist$average)
+    # Overall couples income share
+    overall_couple_share <- dist$couple_share*dist$couples$average/((1 + dist$couple_share)*dist$average)
 
-    # Income owned by singles and couples in each brackets
-    a1k <- (1 - dist$ck)*bracket_share(dist$parent, pk[1:(n - 1)], pk[2:n])
-    a2k <- dist$ck*bracket_share(dist$parent, pk[1:(n - 1)], pk[2:n])
+    # Share of singles income above q
+    top_single_share <- threshold_share(dist$singles$dist, q)
+    # Share of couples income above 2*q
+    top_couple_share <- threshold_share(dist$couples$dist, 2*q)
 
-    # Income owned by singles and couples in each bracket and above
-    b1k <- c(rev(cumsum(rev(a1k))), 0)
-    b2k <- c(rev(cumsum(rev(a2k))), 0)
-
-    # Find fractile to q and 2*q
-    p1 <- fitted_cdf(dist$parent, q)
-    p2 <- fitted_cdf(dist$parent, 2*q)
-
-    # Find bracket associated to q and 2*q
-    k1 <- cut(p1, breaks=pk, include.lowest=TRUE, labels=FALSE)
-    k2 <- cut(p2, breaks=pk, include.lowest=TRUE, labels=FALSE)
-
-    # Income owned by singles above q in bracket k1
-    d1 <- (1 - dist$ck[k1])*bracket_share(dist$parent, p1, pk[k1 + 1])
-    # Income owned by couples above 2*q in bracket k2
-    d2 <- dist$ck[k2]*bracket_share(dist$parent, p2, pk[k2 + 1])
-
-    return(d1 + b1k[k1 + 1] + d2 + b2k[k2 + 1])
+    return(overall_single_share*top_single_share + overall_couple_share*top_couple_share)
 }
 
 #' @title Top share for generalized Pareto interpolation

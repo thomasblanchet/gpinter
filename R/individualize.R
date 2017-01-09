@@ -18,6 +18,9 @@
 #' of singles in the matching bracket.
 #' @param couplebracket A vector with the same length as \code{p}: the share
 #' of couples in the matching bracket.
+#' @param ratio A vector with the same length as \code{p}: the ratio of
+#' singles average income over couples average income in each bracket. Default
+#' is 1 for all brackets.
 #'
 #' @return An object of class \code{gpinter_dist_indiv}.
 #'
@@ -25,7 +28,8 @@
 
 individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
                                singletop=NULL, coupletop=NULL,
-                               singlebracket=NULL, couplebracket=NULL) {
+                               singlebracket=NULL, couplebracket=NULL,
+                               ratio=NULL) {
 
     # Check the class of input distribution
     if (!is(dist, "gpinter_dist_orig")) {
@@ -89,63 +93,49 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
         stop("The share of couples must be between 0 and 1.")
     }
 
+    # Make a tabulation for singles and the couples
+    p_singles <- c(0, cumsum((1 - ck)*diff(c(p, 1))/(1 - m)))[1:length(p)]
+    p_couples <- c(0, cumsum(ck*diff(c(p, 1))/m))[1:length(p)]
+    thresholds <- fitted_quantile(dist, p)
+    if (is.null(ratio)) {
+        ratio <- rep(1, length(p))
+    }
+    if (length(ratio) != length(p) || any(ratio <= 0)) {
+        stop("invalid 'ratio'")
+    }
+    bracketavg <- bracket_average(dist, p, c(p[-1], 1))
+    bracketavg_singles <- bracketavg/(1 - ck + ck/ratio)
+    bracketavg_couples <- bracketavg/(ratio*(1 - ck) + ck)
+    average_singles <- sum(diff(c(p_singles, 1))*bracketavg_singles)
+    average_couples <- sum(diff(c(p_couples, 1))*bracketavg_couples)
+
+    # Interpolate the distribution of singles and couples
+    dist_singles <- tabulation_fit(p_singles, thresholds, average_singles, bracketavg=bracketavg_singles)
+    dist_couples <- tabulation_fit(p_couples, thresholds, average_couples, bracketavg=bracketavg_couples)
+
     # Return an object with the parent distribution and the interpolated couple
     # share
     new_dist <- list()
     class(new_dist) <- c("gpinter_dist_indiv", "gpinter_dist")
 
+    new_dist$singles <- list(
+        dist = dist_singles,
+        average = average_singles,
+        pk = p_singles,
+        threshold = thresholds,
+        bracketavg = bracketavg_singles
+    )
+    new_dist$couples <- list(
+        dist = dist_couples,
+        average = average_couples,
+        pk = p_couples,
+        thresholds = thresholds,
+        bracketavg = bracketavg_couples
+    )
     new_dist$average <- dist$average/(1 + m)
-    new_dist$parent <- dist
     new_dist$couple_share <- m
     new_dist$pk <- p
     new_dist$ck <- ck
 
     return(new_dist)
-}
-
-#' @title Share of couples above a fractile
-#'
-#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
-#'
-#' @description Give the share of couples above any fractile \code{p} of the
-#' parent distribution of an individualized distribution, interpolated
-#' with PCHIP.
-#'
-#' @param dist An object of class \code{gpinter_dist_indiv}.
-#' @param p A vector of fractiles.
-#' @param ... Ignored.
-#'
-#' @return A vector with the share of couples above each value of \code{p}.
-#'
-#' @export
-
-couple_share <- function(dist, p, ...) UseMethod("couple_share")
-deriv_couple_share <- function(dist, p, ...) UseMethod("deriv_couple_share")
-
-#' @export
-couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
-    # Find the bracket in which p falls
-    pk <- c(dist$pk, 1)
-    k <- cut(p, breaks=pk, include.lowest=TRUE, labels=FALSE)
-
-    # Mass of couples above the current bracket
-    a <- rev(cumsum(rev(dist$ck*diff(pk))))
-    a <- c(a[2:length(a)], 0)
-
-    # Mass of couples above p in the current bracket
-    b <- (pk[k + 1] - p)*dist$ck[k]
-
-    c <- (b + a[k])/(1 - p)
-    # Extend by continuity to p = 1
-    c[p == 1] <- tail(dist$ck, n=1)
-
-    return(c)
-}
-
-#' @export
-deriv_couple_share.gpinter_dist_indiv <- function(dist, p, ...) {
-    # Find the bracket in which p falls
-    k <- cut(p, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
-
-    return(-dist$ck[k])
 }

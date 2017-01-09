@@ -6,7 +6,7 @@
 \usage{
 individualize_dist(dist, p, singleshare = NULL, coupleshare = NULL,
   singletop = NULL, coupletop = NULL, singlebracket = NULL,
-  couplebracket = NULL)
+  couplebracket = NULL, ratio = NULL)
 }
 \arguments{
 \item{dist}{An object of class \code{gpinter_dist_orig}.}
@@ -28,6 +28,10 @@ of singles in the matching bracket.}
 
 \item{couplebracket}{A vector with the same length as \code{p}: the share
 of couples in the matching bracket.}
+
+\item{ratio}{A vector with the same length as \code{p}: the ratio of
+singles average income over couples average income in each bracket. Default
+is 1 for all brackets.}
 }
 \value{
 An object of class \code{gpinter_dist_indiv}.

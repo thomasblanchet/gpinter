@@ -3,8 +3,7 @@ test_that("Individualization is consistent with Monte-Carlo", {
     n <- 1e6
 
     # Parameters of the tabulation
-    p <- seq(0, 0.9, 0.1)
-    k <- length(p)
+    p <- sort(runif(10))
 
     # Parameters of a Pareto distribution
     alpha <- runif(1, min=1, max=3)
@@ -13,14 +12,20 @@ test_that("Individualization is consistent with Monte-Carlo", {
     # Simulate
     u <- runif(n)
     x <- mu/(1 - u)^(1/alpha)
-    prob_couple <- sqrt(floor(u*10)/10)
+    prob_couple <- 0.1 + 0.8*sqrt(u)
     couple <- (runif(n) <= prob_couple)
     x_indiv <- c(x[couple]/2, x[couple]/2, x[!couple])
 
     # Generate tabulation
     q <- quantile(x, p)
+    p <- c(0, p)
+    q <- c(mu, q)
+    k <- length(p)
     topavg <- sapply(q, function(q) mean(x[x >= q]))
     average <- mean(x)
+    ratio <- apply(cbind(q, c(q[-1], Inf)), 1, function(thr) {
+        return(mean(x[!couple & x > thr[1] & x <= thr[2]])/mean(x[couple & x > thr[1] & x <= thr[2]]))
+    })
     m <- mean(couple)
     lambda1 <- sapply(q, function(q) mean(couple[x >= q]))
     lambda2 <- sapply(1:k, function(i) {
@@ -32,22 +37,10 @@ test_that("Individualization is consistent with Monte-Carlo", {
     })
 
     dist <- tabulation_fit(p, q, average, topavg=topavg)
-    dist_indiv1 <- individualize_dist(dist, p, coupleshare=m, coupletop=lambda1)
-    dist_indiv2 <- individualize_dist(dist, p, coupleshare=m, couplebracket=lambda2)
+    dist_indiv1 <- individualize_dist(dist, p, coupleshare=m, coupletop=lambda1, ratio=ratio)
+    dist_indiv2 <- individualize_dist(dist, p, coupleshare=m, couplebracket=lambda2, ratio=ratio)
 
-    expect_equal(dist_indiv1, dist_indiv2, check.attributes=FALSE, tolerance=1e-6)
-    expect_equal(
-        dist_indiv1$ck,
-        lambda2,
-        check.attributes = FALSE,
-        tolerance = 1e-4
-    )
-    expect_equal(
-        dist_indiv2$ck,
-        lambda2,
-        check.attributes = FALSE,
-        tolerance = 1e-4
-    )
+    expect_equal(dist_indiv1, dist_indiv2, check.attributes=FALSE, tolerance=1e-4)
 
     # Generate test tabulation
     p_test <- seq(0, 0.99, 0.01)
@@ -55,20 +48,30 @@ test_that("Individualization is consistent with Monte-Carlo", {
     topavg_test <- sapply(q_test, function(q) mean(x_indiv[x_indiv >= q]))
     average_test <- mean(x_indiv)
     topshare_test <- (1 - p_test)*topavg_test/average_test
-    density_test <- density(x_indiv, from=mu/2, to=1, n=100)
+    density_test <- density(x_indiv, from=mu/3, to=2*mu, n=100)
 
-    # Test the couple is correctly interpolated
+    # Test that the tabulations for couples and singles are correct
     expect_equal(
-        couple_share(dist_indiv1, p_test),
-        sapply(p_test, function(p) mean(couple[u >= p])),
-        check.attributes = FALSE,
-        tolerance = 1e-3
+        dist_indiv1$singles$p, sapply(q, function(thr) mean(x[!couple] <= thr)),
+        tolerance = 1e-6
     )
     expect_equal(
-        couple_share(dist_indiv2, p_test),
-        sapply(p_test, function(p) mean(couple[u >= p])),
-        check.attributes = FALSE,
-        tolerance = 1e-3
+        dist_indiv1$singles$bracketavg, apply(cbind(q, c(q[-1], Inf)), 1, function(thr) {
+            return(mean(x[!couple & x > thr[1] & x <= thr[2]]))
+        }),
+        tolerance = 1e-5,
+        check.attributes = FALSE
+    )
+    expect_equal(
+        dist_indiv1$couples$p, sapply(q, function(thr) mean(x[couple] <= thr)),
+        tolerance = 1e-6
+    )
+    expect_equal(
+        dist_indiv1$couples$bracketavg, apply(cbind(q, c(q[-1], Inf)), 1, function(thr) {
+            return(mean(x[couple & x > thr[1] & x <= thr[2]]))
+        }),
+        tolerance = 1e-5,
+        check.attributes = FALSE
     )
 
     # Test the distribution is correctly individualized
@@ -76,13 +79,13 @@ test_that("Individualization is consistent with Monte-Carlo", {
         fitted_cdf(dist_indiv1, q_test),
         p_test,
         check.attributes = FALSE,
-        tolerance = 1e-2
+        tolerance = 1e-3
     )
     expect_equal(
         fitted_density(dist_indiv1, density_test$x),
         density_test$y,
         check.attributes = FALSE,
-        tolerance = 1
+        tolerance = 0.1
     )
     expect_equal(
         fitted_quantile(dist_indiv1, p_test),

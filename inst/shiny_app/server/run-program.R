@@ -299,11 +299,12 @@ observeEvent(input$run, {
 
                     return(NULL)
                 }
-                list_results_addedup[[year]][[country]][["added up"]] <- addedup_dist
+                list_results[[year]][[country]][["added up"]] <- addedup_dist
             }
         }
-        list_results <- list_results_addedup
-        results_components <- "added up"
+        if (!"added up" %in% results_components) {
+            results_components <- c(results_components, "added up")
+        }
     }
 
     # Count the number of tabulations to generate
