@@ -12,7 +12,7 @@
 #'
 #' @return A sample of size \code{n}.
 #'
-#' @importFrom stats runif rmultinom
+#' @importFrom stats runif rmultinom rbinom
 #' @importFrom gumbel rgumbel
 #'
 #' @export
@@ -41,17 +41,13 @@ simulate_gpinter.gpinter_dist_merge <- function(dist, n, ...) {
 simulate_gpinter.gpinter_dist_indiv <- function(dist, n, ...) {
     p <- runif(n)
 
-    # Bracket (with respect to the share of couples) in which each observation
-    # falls
-    k <- cut(p, breaks=c(dist$pk, 1), include.lowest=TRUE, labels=FALSE)
+    # Number of couples
+    nb_couples <- rbinom(1, size=n, prob=dist$couple_share)
 
-    # Simulate couple
-    prob_couple <- dist$ck[k]
-    couple <- (runif(n) <= prob_couple)
+    singles <- simulate_gpinter(dist$singles$dist, n - nb_couples)
+    couples <- simulate_gpinter(dist$couples$dist, nb_couples)
 
-    # Simulate parent distribution and individualize it
-    x <- simulate_gpinter(dist$parent, n)
-    x <- sort(c(x[couple]/2, x[couple]/2, x[!couple]))
+    x <- sort(c(couples/2, couples/2, singles))
 
     return(x)
 }

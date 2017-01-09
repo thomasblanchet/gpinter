@@ -177,6 +177,10 @@ observeEvent(data$files_all, ignoreNULL = FALSE, handlerExpr = {
             showModal(modalDialog(
                 tags$p("Your Excel workbooks have several sheets. Please select which ones you want to import."),
                 fixedRow(
+                    column(4, actionButton("sheets_import_selected", "Import selected",
+                        class = "btn-block btn-success btn-sm",
+                        icon = icon("arrow-down")
+                    )),
                     column(4, actionButton("sheets_select_all", "Select all",
                         class = "btn-block btn-primary btn-sm",
                         icon = icon("check")
@@ -184,10 +188,6 @@ observeEvent(data$files_all, ignoreNULL = FALSE, handlerExpr = {
                     column(4, actionButton("sheets_unselect_all", "Unselect all",
                         class = "btn-block btn-danger btn-sm",
                         icon = icon("times")
-                    )),
-                    column(4, actionButton("sheets_import_selected", "Import selected",
-                        class = "btn-block btn-success btn-sm",
-                        icon = icon("arrow-down")
                     ))
                 ),
                 tags$table(
@@ -469,7 +469,7 @@ observeEvent(input$import_example, {
         coupleshare = NA,
         singleshare = NA
     ))))
-    data$input_data_size  <- 1
+    data$input_data_size  <- 2
     data$input_errors     <- list()
     data$input_years      <- c("2010")
     data$input_countries  <- c("US")
