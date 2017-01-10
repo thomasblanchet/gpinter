@@ -19,7 +19,15 @@ tabPanel("Plots",
                             step = 0.01,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "The Lorenz curve shows on the y-axis the fraction of income or wealth owned by ",
+                            "the bottom x% of the population. The dashed line correspond to perfect equality. ",
+                            "The area between the curve and the dashed line corresponds to the Gini coefficient ",
+                            "and is a measure of inequality.",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Generalized Pareto curve",
                         plotOutput("plot_gpc"),
@@ -30,7 +38,15 @@ tabPanel("Plots",
                             step = 0.01,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "The generalized Pareto curve associate a fractile \\(p\\) to its ",
+                            "inverted Pareto coefficient \\(b(p)=\\frac{\\mathbb{E}[X|X > Q(p)]}{Q(p)}\\). ",
+                            "For a Pareto distribution with coefficient \\(\\alpha\\), the inverted Pareto ",
+                            "is constant and equal to \\(\\frac{\\alpha}{\\alpha - 1}\\).",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Histogram",
                         plotOutput("plot_hist"),
@@ -41,7 +57,15 @@ tabPanel("Plots",
                             step = 1,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "The histogram approximates the probability density function of the distribution. ",
+                            "The range starts either from the lower bound of the distribution ",
+                            "(if it is finite) or the 1st percentile, and ends at the 99th percentile. ",
+                            "It is divided into 100 bins of equal size.",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Cumulative distribution function",
                         plotOutput("plot_cdf"),
@@ -52,7 +76,13 @@ tabPanel("Plots",
                             step = 1,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "The cumulative distribution function represents the share of people below ",
+                            "a certain income or wealth level.",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Quantile function",
                         plotOutput("plot_quantile"),
@@ -63,7 +93,13 @@ tabPanel("Plots",
                             step = 0.01,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "The quantile function gives the income or wealth level associated to ",
+                            "a fractile.",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Top tail",
                         plotOutput("plot_tail"),
@@ -74,7 +110,14 @@ tabPanel("Plots",
                             step = 0.1,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "This plot show the top of the quantile function with a logarithmic ",
+                            "scale on both axis, so that we get a linear curve in the case of the ",
+                            "Pareto distribution: \\(x \\mapsto \\log(Q(1 - \\text{e}^{-x}))\\).",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Interpolation function",
                         plotOutput("plot_phi"),
@@ -85,7 +128,14 @@ tabPanel("Plots",
                             step = 0.1,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "This plot shows the curve that the generalized Pareto interpolation ",
+                            "method interpolates. It correspond to a logarithmic tranform of the ",
+                            "Lorenz curve: \\(x \\mapsto  -\\log\\left(\\int_{1-\\text{e}^{-x}}^\\infty Q(u) \\, \\text{d}u\\right)\\).",
+                            style = "color: #666;"
+                        )
                     ),
                     tabPanel("Derivative of interpolation function",
                         plotOutput("plot_deriv_phi"),
@@ -96,7 +146,14 @@ tabPanel("Plots",
                             step = 0.1,
                             label = NULL,
                             width = "100%"
-                        ))
+                        )),
+                        tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
+                        tags$p(
+                            "This plot shows the derivative of the interpolation function, which ",
+                            "corresponds to the inverse of the generalized Pareto curve (with ",
+                            "with a different scale on the x-axis).",
+                            style = "color: #666;"
+                        )
                     ),
                     well = FALSE
                 )

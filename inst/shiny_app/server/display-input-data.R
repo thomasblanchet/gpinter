@@ -85,7 +85,11 @@ output$input_data_view <- renderUI({
         "Fractiles" = sprintf("%1.5f", data_view$p),
         "Thresholds" = format(round(data_view$threshold), big.mark=" ", scientific=FALSE)
     )
-    df[avgsh_clean] <- sprintf("%.3f", data_view[[avgsh]])
+    if (avgsh %in% c("bracketavg", "topavg")) {
+        df[avgsh_clean] <- format(round(data_view[[avgsh]]), big.mark=" ", scientific=FALSE)
+    } else {
+        df[avgsh_clean] <- sprintf("%.3f", data_view[[avgsh]])
+    }
     df[is.na(data_view[[avgsh]]), avgsh_clean] <- NA
 
     # Couple/single share for this data

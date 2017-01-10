@@ -193,9 +193,9 @@ interpolate_only <- function() {
 
                 data_label <- c(component, country, year)
                 data_label <- data_label[data_label != "n/a"]
-                data_label <- paste(data_label, collapse=" - ")
+                data_label <- paste(data_label, collapse=" – ")
 
-                update_run_progressbar_message(paste("Interpolating:", data_label))
+                update_run_progressbar_message(paste(data_label))
 
                 result_model <- tryCatch({
                     args <- list(
@@ -224,7 +224,6 @@ interpolate_only <- function() {
                 } else {
                     list_results[[year]][[country]][[component]] <- result_model
 
-                    update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                     # Generate the tabulation
                     list_tables[[year]][[country]][[component]] <- make_tabulation(result_model)
 
@@ -275,9 +274,9 @@ interpolate_and_individualize <- function() {
 
                 data_label <- c(component, country, year)
                 data_label <- data_label[data_label != "n/a"]
-                data_label <- paste(data_label, collapse=" - ")
+                data_label <- paste(data_label, collapse=" – ")
 
-                update_run_progressbar_message(paste("Interpolating:", data_label))
+                update_run_progressbar_message(paste(data_label))
 
                 result_model <- tryCatch({
                     args <- list(
@@ -306,7 +305,6 @@ interpolate_and_individualize <- function() {
                 } else {
                     list_results[[year]][[country]][[component]] <- result_model
 
-                    update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                     # Generate the tabulation
                     table <- as.list(generate_tabulation(result, gperc))
                     table$bottom50 <- bottom_share(result, 0.5)
@@ -320,10 +318,9 @@ interpolate_and_individualize <- function() {
                 }
 
                 # Individualize the data, if possible
-                if (is.na(data_model$whichcouple)) {
+                if (is.null(data_model$whichcouple)) {
                     increase_run_progressbar_value(3/5)
                 } else {
-                    update_run_progressbar_message(paste("Individualizing:", data_label))
                     result_model <- tryCatch({
                         args <- list(
                             dist = result_model,
@@ -349,9 +346,9 @@ interpolate_and_individualize <- function() {
                         # Abandon
                         return(NULL)
                     } else {
-                        country_singles <- paste(country, "- singles")
-                        country_couples <- paste(country, "- couples")
-                        country_equalsplit <- paste(country, "- equal split")
+                        country_singles <- paste(country, "– singles")
+                        country_couples <- paste(country, "– couples")
+                        country_equalsplit <- paste(country, "– equal split")
                         if (!country_singles %in% results_countries) {
                             results_countries <- c(results_countries, country_singles)
                         }
@@ -366,12 +363,10 @@ interpolate_and_individualize <- function() {
                         list_results[[year]][[country_equalsplit]][[component]] <- result_model
 
                         # Generate the three additional tabulations
-                        update_run_progressbar_message(paste("Generate singles and couples tabulations for:", data_label))
                         list_tables[[year]][[country_singles]][[component]] <- make_tabulation(result_model$singles$dist)
                         list_tables[[year]][[country_couples]][[component]] <- make_tabulation(result_model$couples$dist)
                         increase_run_progressbar_value(1/5)
 
-                        update_run_progressbar_message(paste("Generate equal split tabulation for:", data_label))
                         list_tables[[year]][[country_equalsplit]][[component]] <- make_tabulation(result_model)
                         increase_run_progressbar_value(1/5)
                     }
@@ -398,6 +393,8 @@ interpolate_and_merge <- function() {
     show_run_modal()
     set_active(TRUE)
 
+    has_merged <- FALSE
+
     results_years <- data$input_years
     results_countries <- data$input_countries
     results_components <- data$input_components
@@ -421,9 +418,9 @@ interpolate_and_merge <- function() {
 
                 data_label <- c(component, country, year)
                 data_label <- data_label[data_label != "n/a"]
-                data_label <- paste(data_label, collapse=" - ")
+                data_label <- paste(data_label, collapse=" – ")
 
-                update_run_progressbar_message(paste("Interpolating:", data_label))
+                update_run_progressbar_message(paste(data_label))
 
                 result_model <- tryCatch({
                     args <- list(
@@ -455,7 +452,6 @@ interpolate_and_merge <- function() {
                     models_to_merge <- c(models_to_merge, list(result_model))
                     populations <- c(populations, data_model$popsize)
 
-                    update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                     # Generate the tabulation
                     list_tables[[year]][[country]][[component]] <- make_tabulation(result_model)
 
@@ -464,9 +460,9 @@ interpolate_and_merge <- function() {
             }
             data_label <- c(component, year)
             data_label <- data_label[data_label != "n/a"]
-            data_label <- paste(data_label, collapse=" - ")
+            data_label <- paste(data_label, collapse=" – ")
             # Merge the models
-            update_run_progressbar_message(paste("Merging :", data_label))
+            update_run_progressbar_message(paste("Merging:", data_label))
 
             result_model <- tryCatch(merge_dist(models_to_merge, populations), error = function(e) {
                 return(simpleError(e$message))
@@ -482,9 +478,8 @@ interpolate_and_merge <- function() {
                 # Abandon
                 return(NULL)
             } else {
+                has_merged <- TRUE
                 list_results[[year]][["merged"]][[component]] <- result_model
-
-                update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                 list_tables[[year]][["merged"]][[component]] <- make_tabulation(result_model)
             }
         }
@@ -497,7 +492,10 @@ interpolate_and_merge <- function() {
     data$output_dist <- list_results
     data$output_tables <- list_tables
     data$output_years <- results_years
-    data$output_countries <- c(results_countries, "merged")
+    if (has_merged) {
+        results_countries <- c(results_countries, "merged")
+    }
+    data$output_countries <- results_countries
     data$output_components <- results_components
 }
 
@@ -507,6 +505,8 @@ interpolate_and_addup <- function() {
 
     show_run_modal()
     set_active(TRUE)
+
+    has_added_up <- FALSE
 
     results_years <- data$input_years
     results_countries <- data$input_countries
@@ -533,9 +533,9 @@ interpolate_and_addup <- function() {
 
                 data_label <- c(component, country, year)
                 data_label <- data_label[data_label != "n/a"]
-                data_label <- paste(data_label, collapse=" - ")
+                data_label <- paste(data_label, collapse=" – ")
 
-                update_run_progressbar_message(paste("Interpolating:", data_label))
+                update_run_progressbar_message(paste(data_label))
 
                 result_model <- tryCatch({
                     args <- list(
@@ -567,7 +567,6 @@ interpolate_and_addup <- function() {
                     components_to_add_up <- c(components_to_add_up, list(result_model))
                     gumbel_parameters <- c(gumbel_parameters, data_model$gumbel)
 
-                    update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                     # Generate the tabulation
                     list_tables[[year]][[country]][[component]] <- make_tabulation(result_model)
 
@@ -577,13 +576,13 @@ interpolate_and_addup <- function() {
             # Add up components
             data_label <- c(country, year)
             data_label <- data_label[data_label != "n/a"]
-            data_label <- paste(data_label, collapse=" - ")
-
-            update_run_progressbar_message(paste("Adding up components for:", data_label))
+            data_label <- paste(data_label, collapse=" – ")
 
             if (length(components_to_add_up) < 2) {
-                # Nothing to add up
-                next
+                list_results[[year]][[country]][["added up"]] <-
+                    list_results[[year]][[country]][[component]]
+                list_tables[[year]][[country]][["added up"]] <-
+                    list_tables[[year]][[country]][[component]]
             } else if (length(components_to_add_up) > 2) {
                 set_active(FALSE)
                 show_failure(data_label, "You may only add up two components exactly.")
@@ -621,8 +620,8 @@ interpolate_and_addup <- function() {
                     # Abandon
                     return(NULL)
                 }
+                has_added_up <- TRUE
                 list_results[[year]][[country]][["added up"]] <- addedup_dist
-                update_run_progressbar_message(paste("Generating tabulation for:", data_label))
                 list_tables[[year]][[country]][["added up"]] <- make_tabulation(addedup_dist)
             }
         }
@@ -636,7 +635,10 @@ interpolate_and_addup <- function() {
     data$output_tables <- list_tables
     data$output_years <- results_years
     data$output_countries <- results_countries
-    data$output_components <- c(results_components, "added up")
+    if (has_added_up) {
+        results_components <- c(results_components, "added up")
+    }
+    data$output_components <- results_components
 }
 
 observeEvent(input$run, {
@@ -708,300 +710,6 @@ observeEvent(input$run, {
 
     enable("dl_tables_csv")
     enable("dl_tables_excel")
-
-    return()
-
-    show_running_modal(progressmax)
-
-    results_years <- data$input_years
-    results_countries <- data$input_countries
-    results_components <- data$input_components
-    # List to store the results
-    list_results <- list()
-    # List to store the tables we generated
-    list_tables <- list()
-    i <- 0
-    for (year in data$input_years) {
-        list_results[[year]] <- list()
-        list_tables[[year]] <- list()
-        for (country in data$input_countries) {
-            list_results[[year]][[country]] <- list()
-            list_tables[[year]][[country]] <- list()
-            for (component in data$input_components) {
-                data_model <- data$input_data[[year]][[country]][[component]]
-
-                data_label <- c(component, country, year)
-                data_label <- data_label[data_label != "n/a"]
-                data_label <- paste(data_label, collapse=", ")
-
-                # Move on to next loop if the data doesn't exist
-                if (is.null(data_model)) {
-                    next
-                }
-
-                # Update the status message in the dialog
-                shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-                    "Interpolating: ", data_label, "')"))
-                result_model <- tryCatch({
-                    args <- list(
-                        p = data_model$p,
-                        threshold = data_model$threshold,
-                        average = data_model$average
-                    )
-                    avgsh <- data_model$whichavgsh
-                    args[avgsh] <- data_model[avgsh]
-                    result <- do.call(tabulation_fit, args)
-                    result
-                }, error = function(e) {
-                    return(simpleError(e$message))
-                })
-                list_results[[year]][[country]][[component]] <- result_model
-
-                # If the program failed, stop and show the error to the user
-                if (is.error(result_model)) {
-
-                    # Clear the results
-                    data$results <- NULL
-
-                    return(NULL)
-                }
-
-                if (input$interpolation_options == "individualize") {
-                    result_model <- tryCatch({
-                        args <- list(
-                            dist = result_model,
-                            p = data_model$p,
-                            coupleshare = data_model$coupleshare,
-                            singleshare = data_model$singleshare
-                        )
-                        args[data_model$whichcouple] <- data_model[data_model$whichcouple]
-                        result <- do.call(individualize_dist, args)
-                        result
-                    }, error = function(e) {
-                        return(simpleError(e$message))
-                    })
-                    if (!is.error(result_model)) {
-                        country_singles <- paste(country, "- singles")
-                        country_couples <- paste(country, "- couples")
-                        country_equalsplit <- paste(country, "- equal split")
-                        if (!country_singles %in% results_countries) {
-                            results_countries <- c(results_countries, country_singles)
-                        }
-                        list_results[[year]][[country_singles]][[component]] <- result_model$singles$dist
-                        if (!country_couples %in% results_countries) {
-                            results_countries <- c(results_countries, country_couples)
-                        }
-                        list_results[[year]][[country_couples]][[component]] <- result_model$couples$dist
-                        if (!country_equalsplit %in% results_countries) {
-                            results_countries <- c(results_countries, country_equalsplit)
-                        }
-                        list_results[[year]][[country_equalsplit]][[component]] <- result_model
-                    } else {
-                        shinyjs::show("failure_message")
-                        shinyjs::show("dismiss_run_failure")
-                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
-
-                        shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while working on ", data_label, ". ",
-                            "Please check the consistency of your data.')"))
-                        # Sanitize & display error message
-                        msg <- result_model$message
-                        msg <- gsub("\n", "", msg, fixed=TRUE)
-                        msg <- gsub("'", "\\'", msg, fixed=TRUE)
-                        shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
-                        shinyjs::removeClass("run_progress", "active")
-
-                        # Clear the results
-                        data$results <- NULL
-
-                        return(NULL)
-                    }
-                }
-
-                # Update the progress bar
-                i <- i + 1
-                shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", i, ")"))
-                shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: ", 100*i/progressmax, "%')"))
-            }
-        }
-    }
-
-    # Merge countries if required
-    if (input$interpolation_options == "merge") {
-        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-            "Merging countries')"))
-        for (year in results_years) {
-            list_results_merged[[year]] <- list("merged"=list())
-            for (component in results_components) {
-                list_dist <- list()
-                popsize <- c()
-                for (country in results_countries) {
-                    dist <- list_results[[year]][[country]][[component]]
-                    if (!is.null(dist)) {
-                        list_dist <- c(list_dist, list(dist))
-                        popsize <- c(popsize, data$data[[year]][[country]][[component]]$popsize)
-                    }
-                }
-                merged_dist <- tryCatch(merge_dist(list_dist, popsize), error = function(e) {
-                    return(simpleError(e$message))
-                })
-                if (is.error(merged_dist)) {
-                    shinyjs::show("failure_message")
-                    shinyjs::show("dismiss_run_failure")
-                    shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
-
-                    shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while mergeing countries.",
-                        "Please check your data.')"))
-                    # Sanitize & display error message
-                    msg <- merged_dist$message
-                    msg <- gsub("\n", "", msg, fixed=TRUE)
-                    msg <- gsub("'", "\\'", msg, fixed=TRUE)
-                    shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
-                    shinyjs::removeClass("run_progress", "active")
-
-                    # Clear the results
-                    data$results <- NULL
-
-                    return(NULL)
-                }
-                list_results[[year]][["merged"]][[component]] <- merged_dist
-            }
-        }
-        results_countries <- c(results_countries, "merged")
-    }
-
-    # Add up components if required
-    if (input$interpolation_options == "addup") {
-        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-            "Adding up components')"))
-        for (year in results_years) {
-            for (country in results_countries) {
-                list_dist <- list()
-                for (component in results_components) {
-                    dist <- list_results[[year]][[country]][[component]]
-                    list_dist <- c(list_dist, list(dist))
-                }
-                # Error if the user has not exactly two components to add up
-                if (length(list_dist) != 2) {
-                    shinyjs::show("failure_message")
-                    shinyjs::show("dismiss_run_failure")
-                    shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
-
-                    shinyjs::runjs("$('#error_message1').text('You may only add up exactly two components.')")
-                    # Sanitize & display error message
-                    msg <- paste0("Country ", country, " in year ", year, " has ", length(list_dist), " component(s).")
-                    shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
-                    shinyjs::removeClass("run_progress", "active")
-
-                    # Clear the results
-                    data$results <- NULL
-
-                    return(NULL)
-                }
-                # Get the Gumbel copula parameter
-                if (!is.null(list_dist[[1]]$gumbel) && !is.null(list_dist[[2]]$gumbel)) {
-                    if (list_dist[[1]]$gumbel != list_dist[[2]]$gumbel) {
-                        shinyjs::show("failure_message")
-                        shinyjs::show("dismiss_run_failure")
-                        shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
-
-                        shinyjs::runjs("$('#error_message1').text('You may not have two values for the Gumbel parameter.')")
-                        # Sanitize & display error message
-                        msg <- paste0("There are two different values of the Gumbel parameter in country ", country, " for year ", year, ".")
-                        shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
-                        shinyjs::removeClass("run_progress", "active")
-
-                        # Clear the results
-                        data$results <- NULL
-
-                        return(NULL)
-                    } else {
-                        theta <- list_dist[[1]]$gumbel
-                    }
-                } else if (!is.null(list_dist[[1]]$gumbel)) {
-                    theta <- list_dist[[1]]$gumbel
-                } else if (!is.null(list_dist[[2]]$gumbel)) {
-                    theta <- list_dist[[2]]$gumbel
-                } else {
-                    theta <- isolate(input$gumbel_param)
-                }
-                addedup_dist <- tryCatch(addup_dist(list_dist[[1]], list_dist[[2]], theta), error = function(e) {
-                    return(simpleError(e$message))
-                })
-                if (is.error(addedup_dist)) {
-                    shinyjs::show("failure_message")
-                    shinyjs::show("dismiss_run_failure")
-                    shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-frown-o\" aria-hidden=\"true\"></i> Something went wrong.')"))
-
-                    shinyjs::runjs(paste0("$('#error_message1').text('An error occurred while adding up components. ",
-                        "Please check your data.')"))
-                    # Sanitize & display error message
-                    msg <- addedup_dist$message
-                    msg <- gsub("\n", "", msg, fixed=TRUE)
-                    msg <- gsub("'", "\\'", msg, fixed=TRUE)
-                    shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
-                    shinyjs::removeClass("run_progress", "active")
-
-                    # Clear the results
-                    data$results <- NULL
-
-                    return(NULL)
-                }
-                list_results[[year]][[country]][["added up"]] <- addedup_dist
-            }
-        }
-        results_components <- c(results_components, "added up")
-    }
-
-    # Count the number of tabulations to generate
-    progressmax2 <- 0
-    for (year in results_years) {
-        for (country in results_countries) {
-            for (component in results_components) {
-                result <- list_results[[year]][[country]][[component]]
-                if (!is.null(result)) {
-                    progressmax2 <- progressmax2 + 1
-                }
-            }
-        }
-    }
-    # At each step, we now increase the progress bar by:
-    progress_step <- (progressmax - i)/progressmax2
-
-    # Create the tabulations
-    list_tables <- list()
-    for (year in results_years) {
-        list_tables[[year]] <- list()
-        for (country in results_countries) {
-            list_tables[[year]][[country]] <- list()
-            for (component in results_components) {
-                result <- list_results[[year]][[country]][[component]]
-                if (!is.null(result)) {
-                    # Update the status message in the dialog
-                    table_label <- c(component, country, year)
-                    table_label <- table_label[!table_label %in% c("n/a", "merged", "added up")]
-                    table_label <- paste(table_label, collapse=", ")
-                    shinyjs::runjs(paste0("$('#run_status').html('<i class=\"fa fa-cog fa-spin fa-fw\"></i> ",
-                        "Generating table: ", table_label, "')"))
-
-                    table <- as.list(generate_tabulation(result, gperc))
-                    table$bottom50 <- bottom_share(result, 0.5)
-                    table$middle40 <- bracket_share(result, 0.5, 0.9)
-                    table$top10 <- top_share(result, 0.9)
-                    table$top1 <- top_share(result, 0.99)
-                    table$gini <- gini(result)
-                    list_tables[[year]][[country]][[component]] <- table
-
-                    # Update the progress bar
-                    i <- i + progress_step
-                    shinyjs::runjs(paste0("$('#run_progress').attr('aria-valuenow',", i, ")"))
-                    shinyjs::runjs(paste0("$('#run_progress').attr('style', 'width: ", 100*i/progressmax, "%')"))
-                }
-            }
-        }
-    }
-
-    # Update the status message to show success
-
 })
 
 observeEvent(input$dismiss_run_success, {
