@@ -147,6 +147,48 @@ tabPanel("Input data",
                                     style = "margin-bottom: 2px;"
                                 )
                             ),
+                            tabPanel("File #3",
+                                tags$table(
+                                    tags$tr(
+                                        tags$th("year"), tags$th("country"), tags$th("component"),
+                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
+                                    ),
+                                    tags$tr(
+                                        tags$td("2010"), tags$td("FR"), tags$td("labor"),
+                                        tags$td("27 094"), tags$td("0"), tags$td("0"), tags$td("5 263")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.26"), tags$td("11 416"), tags$td("12 575")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.33"), tags$td("13 699"), tags$td("15 519")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.43"), tags$td("17 123"), tags$td("19 784")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.59"), tags$td("22 831"), tags$td("28 079")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.76"), tags$td("34 247"), tags$td("43 436")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.92"), tags$td("57 078"), tags$td("74 824")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.98"), tags$td("114 155"), tags$td("221 089")
+                                    ),
+                                    class = "table table-bordered table-condensed",
+                                    style = "margin-bottom: 2px;"
+                                )
+                            ),
                             id = "example_tabs",
                             type = "pills"
                         ),

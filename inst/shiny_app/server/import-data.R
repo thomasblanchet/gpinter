@@ -442,37 +442,57 @@ observeEvent(data$files_selected, ignoreNULL = TRUE, handlerExpr = {
 })
 
 observeEvent(input$import_example, {
-    data$input_data <- list("2010" = list("US" = list("labor" = list(
-        p = c(0.10, 0.50, 0.90, 0.99),
-        year = 2010,
-        country = "US",
-        component = "labor",
-        average = 37208.059,
-        threshold = c(4130, 23686, 76252, 211861),
-        whichavgsh = "bracketavg",
-        bracketavg = c(12643.3, 43908.3, 108329.2, 471463.3),
-        popsize = 2.257e+08,
-        gumbel = NA,
-        coupleshare = NA,
-        singleshare = NA
-    ), "capital" = list(
-        p = c(0.10, 0.50, 0.90, 0.99),
-        year = 2010,
-        country = "US",
-        component = "capital",
-        average = 16370.471,
-        threshold = c(-1176, 2780, 28939, 173917),
-        whichavgsh = "bracketavg",
-        bracketavg = c(328.6372, 10657.18, 59412.08, 688689.3),
-        popsize = 2.257e+08,
-        gumbel = NA,
-        coupleshare = NA,
-        singleshare = NA
-    ))))
+    data$input_data <- list("2010" = list(
+        "US" = list("labor" = list(
+                p = c(0.10, 0.50, 0.90, 0.99),
+                year = 2010,
+                country = "US",
+                component = "labor",
+                average = 37208.059,
+                threshold = c(4130, 23686, 76252, 211861),
+                whichavgsh = "bracketavg",
+                bracketavg = c(12643.3, 43908.3, 108329.2, 471463.3),
+                popsize = 2.257e+08,
+                gumbel = NA,
+                coupleshare = NA,
+                singleshare = NA
+            ), "capital" = list(
+                p = c(0.10, 0.50, 0.90, 0.99),
+                year = 2010,
+                country = "US",
+                component = "capital",
+                average = 16370.471,
+                threshold = c(-1176, 2780, 28939, 173917),
+                whichavgsh = "bracketavg",
+                bracketavg = c(328.6372, 10657.18, 59412.08, 688689.3),
+                popsize = 2.257e+08,
+                gumbel = NA,
+                coupleshare = NA,
+                singleshare = NA
+            )
+        ),
+        "FR" = list("labor" = list(
+            p = c(0, 0.26386523, 0.32899058, 0.43231946, 0.58923674, 0.76089203, 0.91522479, 0.98419398),
+            year = 2010,
+            country = "FR",
+            component = "labor",
+            average = 27727.8037383178,
+            threshold = c(0, 10000, 12000, 15000, 20000, 30000, 50000, 100000)/0.856,
+            whichavgsh = "bracketavg",
+            bracketavg = c(4611, 11015, 13595, 17331, 24597, 38050, 65546, 193674)/0.856,
+            popsize = 36962517,
+            gumbel = NA,
+            coupleshare = NA,
+            singleshare = 0.64423762,
+            whichcouple = "singlebracket",
+            singlebracket = c(0.87221801, 0.87220490, 0.87220490, 0.75579684,
+                0.55689047, 0.26108370, 0.14955399, 0.14955399)
+        ))
+    ))
     data$input_data_size  <- 2
     data$input_errors     <- list()
     data$input_years      <- c("2010")
-    data$input_countries  <- c("US")
+    data$input_countries  <- c("US", "FR")
     data$input_components <- c("labor", "capital")
 })
 

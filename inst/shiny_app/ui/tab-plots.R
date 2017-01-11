@@ -114,7 +114,7 @@ tabPanel("Plots",
                         tags$h4(icon("info-circle"), HTML(" &nbsp; "), "About this plot"),
                         tags$p(
                             "This plot show the top of the quantile function with a logarithmic ",
-                            "scale on both axis, so that we get a linear curve in the case of the ",
+                            "scale on both axes, so that we get a linear curve in the case of the ",
                             "Pareto distribution: \\(x \\mapsto \\log(Q(1 - \\text{e}^{-x}))\\).",
                             style = "color: #666;"
                         )
