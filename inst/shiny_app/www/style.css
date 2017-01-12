@@ -81,6 +81,10 @@
     background-color: #080808;
 }
 
+.example-preview {
+    font-size: 12px;
+}
+
 ul#example_tabs > li > a {
     font-size: 12px;
     padding: 5px 10px 5px 10px;

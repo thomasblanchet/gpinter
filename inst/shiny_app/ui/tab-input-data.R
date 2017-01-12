@@ -98,94 +98,94 @@ tabPanel("Input data",
                             tabPanel("File #1",
                                 tags$table(
                                     tags$tr(
-                                        tags$th("year"), tags$th("country"), tags$th("component"),
+                                        tags$th("year"), tags$th("country"), tags$th("component"), tags$th("popsize"),
                                         tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("US"), tags$td("labor"),
+                                        tags$td("2010"), tags$td("US"), tags$td("labor"), tags$td("225 700 000"),
                                         tags$td("37 208"), tags$td("0.1"), tags$td("4 130"), tags$td("12 643")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.5"), tags$td("23 686"), tags$td("43 908")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.9"), tags$td("76 252"), tags$td("108 329")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.99"), tags$td("211 861"), tags$td("471 463")
                                     ),
-                                    class = "table table-bordered table-condensed",
+                                    class = "table table-bordered table-condensed example-preview",
                                     style = "margin-bottom: 2px;"
                                 )
                             ),
                             tabPanel("File #2",
                                 tags$table(
                                     tags$tr(
-                                        tags$th("year"), tags$th("country"), tags$th("component"),
+                                        tags$th("year"), tags$th("country"), tags$th("component"), tags$th("popsize"),
                                         tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("US"), tags$td("capital"),
+                                        tags$td("2010"), tags$td("US"), tags$td("capital"), tags$td("225 700 000"),
                                         tags$td("16 370"), tags$td("0.1"), tags$td("-1 176"), tags$td("328")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.5"), tags$td("2 780"), tags$td("10 657")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.9"), tags$td("28 939"), tags$td("59 412")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
                                         tags$td("0.99"), tags$td("173 917"), tags$td("688 689")
                                     ),
-                                    class = "table table-bordered table-condensed",
+                                    class = "table table-bordered table-condensed example-preview",
                                     style = "margin-bottom: 2px;"
                                 )
                             ),
                             tabPanel("File #3",
                                 tags$table(
                                     tags$tr(
-                                        tags$th("year"), tags$th("country"), tags$th("component"),
-                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
+                                        tags$th("year"), tags$th("country"), tags$th("component"), tags$th("popsize"),
+                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg"), tags$th("s")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("FR"), tags$td("labor"),
-                                        tags$td("27 094"), tags$td("0"), tags$td("0"), tags$td("5 263")
+                                        tags$td("2010"), tags$td("FR"), tags$td("labor"), tags$td("36 962 517"),
+                                        tags$td("27 094"), tags$td("0"), tags$td("0"), tags$td("5 263"), tags$td("0.872")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.26"), tags$td("11 416"), tags$td("12 575")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.26"), tags$td("11 416"), tags$td("12 575"), tags$td("0.872")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.33"), tags$td("13 699"), tags$td("15 519")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.33"), tags$td("13 699"), tags$td("15 519"), tags$td("0.872")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.43"), tags$td("17 123"), tags$td("19 784")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.43"), tags$td("17 123"), tags$td("19 784"), tags$td("0.756")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.59"), tags$td("22 831"), tags$td("28 079")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.59"), tags$td("22 831"), tags$td("28 079"), tags$td("0.557")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.76"), tags$td("34 247"), tags$td("43 436")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.76"), tags$td("34 247"), tags$td("43 436"), tags$td("0.261")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.92"), tags$td("57 078"), tags$td("74 824")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.92"), tags$td("57 078"), tags$td("74 824"), tags$td("0.150")
                                     ),
                                     tags$tr(
-                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""),
-                                        tags$td("0.98"), tags$td("114 155"), tags$td("221 089")
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.98"), tags$td("114 155"), tags$td("221 089"), tags$td("0.150")
                                     ),
-                                    class = "table table-bordered table-condensed",
+                                    class = "table table-bordered table-condensed example-preview",
                                     style = "margin-bottom: 2px;"
                                 )
                             ),
