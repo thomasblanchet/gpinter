@@ -1,4 +1,6 @@
-<p>This application is an interface to the R package <code>gpinter</code>. It provides a set of tools to estimate and manipulate distributions of income and wealth based on tabulations of the data such as those provided by tax authorities. This program rely on the so-called “generalized Pareto interpolation” methods.</p>
+<p>This application is an interface to the R package <code>gpinter</code>. It provides a set of tools to estimate and manipulate distributions of income and wealth on the basis of simple tabulated data files (such as those provided by tax administrations and statistical institutes) and generalized Pareto interpolation methods.</p>
+
+<p>The traditional Pareto interpolation method &mdash; first used by V.&nbsp;Pareto (1896) and then followed by S.&nbsp;Kuznets (1953), A.&nbsp;Atkinson and A.&nbsp;Harrison (1978), T.&nbsp;Piketty (2001, 2003) and the subsequent research literature on top income and wealth shares until recently &mdash; assumes that the distribution of income and wealth follows a Pareto distribution (or power law) with a constant exponent above a certain threshold. Typically, the inverted Pareto coefficient \(b(p)=\mathbb{E}[y|y>y(p)]/y(p)\) (where \(y(p)\) is the income or wealth quantile threshold corresping to fractile \(p\)) is assumed to be constant within the top 10% or top 1% of the distribution. This approximation is acceptable for some purposes but is generally not entirely correct. In addition, it cannot be used to interpolate the entire distribution.</p>
 
 <a class="anchor" id="functionalities"></a>
 <h2>Functionalities</h2>
@@ -8,14 +10,15 @@
     <li>Estimate an entire distribution based on the values of the quantiles and the top shares at a few points.</li>
     <li>Estimate an entire distribution based on the values of the top shares at a few points.</li>
     <li>Individualize the household distribution under equal sharing of income among spouses.</li>
-    <li>Add up two components of income (say, labor and capital) assuming that the dependance between those two variables is characterized by a Gumbel copula.</li>
     <li>Merge the distribution between several countries.</li>
-    <li>Simulate a random sample from the estimated distribution.</li>
+    <li>Add up two components of income (say, labor income and capital income, housing wealth and financial wealth, male earnings and female earnings ) assuming that the dependance between those two variables is characterized by a Gumbel copula.</li>
+    <li>Simulate a representative sample from the estimated distribution.</li>
 </ul>
 
 <a class="anchor" id="usage"></a>
-<h2>Usage</h2>
+<h2>How to use the interface</h2>
 
+<!--
 <p>The navigation bar at the top of the window gives you access to the different parts of the application.</p>
 
 <p><img src="img/navbar.png" alt="Navigation bar" class="img-responsive img-thumbnail" height="51" width="983"></p>
@@ -32,3 +35,10 @@
 
 <a class="anchor" id="input-format"></a>
 <h3>Input data format</h3>
+-->
+
+<a class="anchor" id="contact"></a>
+<h2>Contact us</h2>
+
+<p>This interface was conceived and developped by T.&nbsp;Blanchet, J.&nbsp;Fournier and T.&nbsp;Piketty. In case you have questions, do not hesitate to contact us (<a href="mailto:thomas.blanchet@wid.world">thomas.blanchet@wid.world</a> or <a href="mailto:juliette.fournier@wid.world">juliette.fournier@wid.world</a>).</p>
+

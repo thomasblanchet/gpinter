@@ -1,7 +1,7 @@
 output$output_table <- renderUI({
     if (is.null(data$output_dist)) {
         return(tags$div(icon("info-circle"), HTML("&nbsp;"),
-            "The results will appear here once the programs have been successfully executed.",
+            "Tables of output results will appear here once the programs have been successfully executed.",
             class="alert alert-info", role="alert"))
     }
 

@@ -1,5 +1,6 @@
 tabPanel("Sample",
     fixedPage(
+        uiOutput("message_sample"),
         fixedRow(
             column(4,
                 tags$form(
@@ -24,7 +25,7 @@ tabPanel("Sample",
             )
         ),
         numericInput("synthpop_size", "Sample size",
-            value = 1e3,
+            value = 1e6,
             min = 1,
             width = "100%"
         ),

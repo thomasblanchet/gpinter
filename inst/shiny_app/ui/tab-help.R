@@ -1,4 +1,4 @@
-tabPanel("Usage",
+tabPanel("Help",
     fixedPage(
         fixedRow(
             column(8,
@@ -9,14 +9,13 @@ tabPanel("Usage",
                     tags$ul(
                         tags$li(a("Introduction", href="#")),
                         tags$li(a("Functionalities", href="#functionalities")),
-                        tags$li(a("Usage", href="#usage"), tags$ul(
-                            tags$li(a("Input data format", href="#input-format"))
-                        ))
+                        tags$li(a("How to use the interface", href="#usage")),
+                        tags$li(a("Contact us", href="#contact"))
                     ),
                     class = "nav-doc"
                 )
             )
         )
     ),
-    icon = icon("wrench")
+    icon = icon("life-ring")
 )

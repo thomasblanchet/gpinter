@@ -443,10 +443,10 @@ observeEvent(data$files_selected, ignoreNULL = TRUE, handlerExpr = {
 
 observeEvent(input$import_example, {
     data$input_data <- list("2010" = list(
-        "US" = list("labor" = list(
+        "US 1" = list("labor" = list(
                 p = c(0.10, 0.50, 0.90, 0.99),
                 year = 2010,
-                country = "US",
+                country = "US 1",
                 component = "labor",
                 average = 37208.059,
                 threshold = c(4130, 23686, 76252, 211861),
@@ -459,7 +459,7 @@ observeEvent(input$import_example, {
             ), "capital" = list(
                 p = c(0.10, 0.50, 0.90, 0.99),
                 year = 2010,
-                country = "US",
+                country = "US 1",
                 component = "capital",
                 average = 16370.471,
                 threshold = c(-1176, 2780, 28939, 173917),
@@ -471,11 +471,25 @@ observeEvent(input$import_example, {
                 singleshare = NA
             )
         ),
-        "FR" = list("labor" = list(
+        "US 2" = list("total" = list(
+            p = c(0.10, 0.50, 0.90, 0.99),
+            year = 2010,
+            country = "US 1",
+            component = "total",
+            average = 53587.59,
+            threshold = c(5665, 31829, 96480, 351366),
+            whichavgsh = "bracketavg",
+            bracketavg = c(18030.88, 54936.66, 151099.1, 1068912),
+            popsize = 2.257e+08,
+            gumbel = NA,
+            coupleshare = NA,
+            singleshare = NA
+        )),
+        "FR" = list("total" = list(
             p = c(0, 0.26386523, 0.32899058, 0.43231946, 0.58923674, 0.76089203, 0.91522479, 0.98419398),
             year = 2010,
             country = "FR",
-            component = "labor",
+            component = "total",
             average = 27727.8037383178,
             threshold = c(0, 10000, 12000, 15000, 20000, 30000, 50000, 100000)/0.856,
             whichavgsh = "bracketavg",
@@ -492,7 +506,7 @@ observeEvent(input$import_example, {
     data$input_data_size  <- 2
     data$input_errors     <- list()
     data$input_years      <- c("2010")
-    data$input_countries  <- c("US", "FR")
-    data$input_components <- c("labor", "capital")
+    data$input_countries  <- c("US 1", "US 2", "FR")
+    data$input_components <- c("labor", "capital", "total")
 })
 

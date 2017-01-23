@@ -1,5 +1,6 @@
 tabPanel("Plots",
     fixedPage(
+        uiOutput("message_plots"),
         tabsetPanel(
             tabPanel("Distribution",
                 fixedRow(

@@ -82,7 +82,12 @@
 }
 
 .example-preview {
+    white-space: nowrap;
     font-size: 12px;
+}
+
+ul#example_tabs + .tab-content {
+    overflow: scroll;
 }
 
 ul#example_tabs > li > a {

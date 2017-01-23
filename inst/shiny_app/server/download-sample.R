@@ -1,3 +1,15 @@
+output$message_sample <- renderUI({
+    if (is.null(data$output_dist)) {
+        return(
+            return(tags$div(icon("info-circle"), HTML("&nbsp;"),
+                "Here you can generate a representative sample of the distribution once the programs have been successfully executed.",
+                class="alert alert-info", role="alert"))
+        )
+    } else {
+        return(NULL)
+    }
+})
+
 # Disable select inputs if the checkbox "Use all" is checked
 observeEvent(input$synthpop_year_all, {
     if (input$synthpop_year_all) {

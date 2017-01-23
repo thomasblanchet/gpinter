@@ -2,7 +2,8 @@
 % Please edit documentation in R/quintic-spline.R
 \name{clamped_quintic_spline}
 \alias{clamped_quintic_spline}
-\title{Estimate a quintic spline clamped at the last point}
+\title{Estimate a quintic spline known first derivatives with second
+derivative clamped at the last point}
 \usage{
 clamped_quintic_spline(xk, yk, sk, an)
 }

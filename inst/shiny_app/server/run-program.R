@@ -78,12 +78,12 @@ show_run_modal <- function() {
                             of your data."
                         ))
                     ),
-                    tags$tr(
-                        tags$td(tags$i(class="fa fa-stethoscope fa-3x", `aria-hidden`="true")),
-                        tags$td(tags$p("The", tags$b("Diagnostic"), "tab can help you identify pathological
-                            features of your data which may indicate mistakes or inconsistencies."
-                        ))
-                    ),
+                    #tags$tr(
+                    #    tags$td(tags$i(class="fa fa-stethoscope fa-3x", `aria-hidden`="true")),
+                    #    tags$td(tags$p("The", tags$b("Diagnostic"), "tab can help you identify pathological
+                    #        features of your data which may indicate mistakes or inconsistencies."
+                    #    ))
+                    #),
                     class = "tabs-presentation"
                     ),
                 id = "success_message"
@@ -197,19 +197,34 @@ interpolate_only <- function() {
 
                 update_run_progressbar_message(paste(data_label))
 
-                result_model <- tryCatch({
-                    args <- list(
-                        p = data_model$p,
-                        threshold = data_model$threshold,
-                        average = data_model$average
-                    )
-                    avgsh <- data_model$whichavgsh
-                    args[avgsh] <- data_model[avgsh]
-                    result <- do.call(tabulation_fit, args)
-                    result
-                }, error = function(e) {
-                    return(simpleError(e$message))
-                })
+                if (is.na(data_model$threshold[1])) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(shares_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                } else {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(tabulation_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                }
                 increase_run_progressbar_value(1/2)
 
                 if (is.error(result_model)) {
@@ -278,19 +293,34 @@ interpolate_and_individualize <- function() {
 
                 update_run_progressbar_message(paste(data_label))
 
-                result_model <- tryCatch({
-                    args <- list(
-                        p = data_model$p,
-                        threshold = data_model$threshold,
-                        average = data_model$average
-                    )
-                    avgsh <- data_model$whichavgsh
-                    args[avgsh] <- data_model[avgsh]
-                    result <- do.call(tabulation_fit, args)
-                    result
-                }, error = function(e) {
-                    return(simpleError(e$message))
-                })
+                if (is.na(data_model$threshold[1])) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(shares_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                } else {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(tabulation_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                }
                 increase_run_progressbar_value(1/5)
 
                 if (is.error(result_model)) {
@@ -422,19 +452,34 @@ interpolate_and_merge <- function() {
 
                 update_run_progressbar_message(paste(data_label))
 
-                result_model <- tryCatch({
-                    args <- list(
-                        p = data_model$p,
-                        threshold = data_model$threshold,
-                        average = data_model$average
-                    )
-                    avgsh <- data_model$whichavgsh
-                    args[avgsh] <- data_model[avgsh]
-                    result <- do.call(tabulation_fit, args)
-                    result
-                }, error = function(e) {
-                    return(simpleError(e$message))
-                })
+                if (is.na(data_model$threshold[1])) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(shares_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                } else {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(tabulation_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                }
                 increase_run_progressbar_value(1/2)
 
                 if (is.error(result_model)) {
@@ -537,19 +582,34 @@ interpolate_and_addup <- function() {
 
                 update_run_progressbar_message(paste(data_label))
 
-                result_model <- tryCatch({
-                    args <- list(
-                        p = data_model$p,
-                        threshold = data_model$threshold,
-                        average = data_model$average
-                    )
-                    avgsh <- data_model$whichavgsh
-                    args[avgsh] <- data_model[avgsh]
-                    result <- do.call(tabulation_fit, args)
-                    result
-                }, error = function(e) {
-                    return(simpleError(e$message))
-                })
+                if (is.na(data_model$threshold[1])) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(shares_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                } else {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average
+                        )
+                        avgsh <- data_model$whichavgsh
+                        args[avgsh] <- data_model[avgsh]
+                        result <- do.call(tabulation_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
+                }
                 increase_run_progressbar_value(1/2)
 
                 if (is.error(result_model)) {
@@ -607,6 +667,12 @@ interpolate_and_addup <- function() {
                 } else {
                     theta <- min(gumbel_parameters, na.rm=TRUE)
                 }
+                data_label <- c(country, year)
+                data_label <- data_label[data_label != "n/a"]
+                data_label <- paste(data_label, collapse=" – ")
+                # Merge the models
+                update_run_progressbar_message(paste("Adding up:", data_label))
+
                 addedup_dist <- tryCatch(addup_dist(components_to_add_up[[1]], components_to_add_up[[2]], theta), error = function(e) {
                     return(simpleError(e$message))
                 })

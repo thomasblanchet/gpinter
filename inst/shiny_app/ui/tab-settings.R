@@ -1,6 +1,10 @@
 tabPanel("Settings",
     fixedPage(
         fixedRow(
+            column(12, tags$div(icon("info-circle"), HTML("&nbsp;"),
+                "Here you can change the format of the input tabulated data.",
+                class="alert alert-info", role="alert"
+            )),
             column(6,
                 tags$div(
                     tags$div(
@@ -55,12 +59,12 @@ tabPanel("Settings",
                         "Comma" = ",",
                         "Tabs" = "\t",
                         "Semicolon" = ";"
-                    ), selected = ";"),
+                    ), selected = ","),
                     tags$h4("Decimal separator"),
                     radioButtons('csv_input_dec_separator', NULL, list(
                         "Point" = ".",
                         "Comma" = ","
-                    ), selected = ","),
+                    ), selected = "."),
                     class = "panel-body"
                 ),
                 class = "panel panel-default"
@@ -76,12 +80,12 @@ tabPanel("Settings",
                             "Comma" = ",",
                             "Tabs" = "\t",
                             "Semicolon" = ";"
-                        ), selected = ";"),
+                        ), selected = ","),
                         tags$h4("Decimal separator"),
                         radioButtons('csv_output_dec_separator', NULL, list(
                             "Point" = ".",
                             "Comma" = ","
-                        ), selected = ","),
+                        ), selected = "."),
                         class = "panel-body"
                     ),
                     class = "panel panel-default"

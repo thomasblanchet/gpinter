@@ -171,7 +171,7 @@ test_that("Quintic spline interpolation function and its derivatives are valid",
     }
 })
 
-test_that("Natural quintic spline for some simple cases", {
+test_that("Natural quintic spline with known derivative for some simple cases", {
     set.seed(19920902)
     for (i in 1:10) {
         # Constant function
@@ -241,6 +241,55 @@ test_that("Natural quintic spline for some simple cases", {
             (6*(x1 - x2)^2*(x1 - x3)*(x2 - x3)^2)
 
         expect_equal(natural_quintic_spline(xk, yk, sk), c(a1, a2, a3))
+    }
+})
+
+
+test_that("Natural quintic spline with unknown derivative for some simple cases", {
+    set.seed(19920902)
+    for (i in 1:10) {
+        # Constant function
+        xk <- cumsum(exp(rnorm(10)))
+        yk <- rep(1, 10)
+        sk <- rep(0, 10)
+        ak <- rep(0, 10)
+        expect_equal(natural_quintic_spline_noderiv(xk, yk), list(sk=sk, ak=ak))
+
+        # Linear function
+        xk <- cumsum(exp(rnorm(10)))
+        a <- rnorm(1)
+        b <- rnorm(1)
+        yk <- a*xk + b
+        sk <- rep(a, 10)
+        ak <- rep(0, 10)
+        expect_equal(natural_quintic_spline_noderiv(xk, yk), list(sk=sk, ak=ak))
+
+        # Compare with explicit solution for three points only
+        xk <- cumsum(exp(rnorm(3)))
+        yk <- rnorm(3)
+
+        x1 <- xk[1]
+        x2 <- xk[2]
+        x3 <- xk[3]
+
+        y1 <- yk[1]
+        y2 <- yk[2]
+        y3 <- yk[3]
+
+        s1 <- (x3^2*(y1 - y2) + 2*x1*(x3*(-y1 + y2) + x2*(y1 - y3)) + x2^2*(-y1 + y3) +
+                x1^2*(-y2 + y3))/((x1 - x2)*(x1 - x3)*(x2 - x3))
+        s2 <- (x3^2*(y1 - y2) - 2*x2*(x3*(y1 - y2) + x1*(y2 - y3)) + x2^2*(y1 - y3) +
+                x1^2*(y2 - y3))/((x1 - x2)*(x1 - x3)*(x2 - x3))
+        s3 <- (x3^2*(-y1 + y2) + 2*x2*x3*(y1 - y3) + x1^2*(y2 - y3) + x2^2*(-y1 + y3) +
+                2*x1*x3*(-y2 + y3))/((x1 - x2)*(x1 - x3)*(x2 - x3))
+        a1 <- (2*(x3*(-y1 + y2) + x2*(y1 - y3) + x1*(-y2 + y3)))/
+            ((x1 - x2)*(x1 - x3)*(x2 - x3))
+        a2 <- (2*(x3*(-y1 + y2) + x2*(y1 - y3) + x1*(-y2 + y3)))/
+            ((x1 - x2)*(x1 - x3)*(x2 - x3))
+        a3 <- (2*(x3*(-y1 + y2) + x2*(y1 - y3) + x1*(-y2 + y3)))/
+            ((x1 - x2)*(x1 - x3)*(x2 - x3))
+
+        expect_equal(natural_quintic_spline_noderiv(xk, yk), list(sk=c(s1, s2, s3), ak=c(a1, a2, a3)))
     }
 })
 

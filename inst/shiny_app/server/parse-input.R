@@ -127,7 +127,7 @@ parse_input <- function(data, var, dpcomma) {
         }
         data_list$threshold <- data[, var$q]
     } else {
-        return(simpleError("no data on thresholds"))
+        data_list$threshold <- NA
     }
 
     # Look for the averages/shares

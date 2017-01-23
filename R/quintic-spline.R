@@ -405,7 +405,7 @@ tension_grad <- function(xk, yk, sk, ak) {
     return(c(grad_a0k, 0) + c(0, grad_a1k))
 }
 
-#' @title Estimate natural quintic spline
+#' @title Estimate natural quintic spline with known first derivatives
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
@@ -476,7 +476,344 @@ natural_quintic_spline <- function(xk, yk, sk) {
     return(solve(A, b))
 }
 
-#' @title Estimate a quintic spline clamped at the last point
+#' @title Estimate natural quintic spline with unknown first derivatives
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Estimate a natural quintic spline from known values of the
+#' function only. That is, it estimates the first and second derivatives at
+#' each point by ensuring that the third and fourth derivatives are
+#' continuous at each knot, and equal to zero at the first and the last point.
+#'
+#' @param xk A vector of interpolation points.
+#' @param yk A vector of values at each interpolation point.
+#'
+#' @return A list with two components:
+#' \itemize{
+#'     \item{\code{sk}} A vector of first derivatives at each point.
+#'     \item{\code{ak}} A vector of second derivatives at each point.
+#' }
+
+natural_quintic_spline_noderiv <- function(xk, yk) {
+    n <- length(xk)
+
+    x1 <- xk[1:(n - 2)]
+    x2 <- xk[2:(n - 1)]
+    x3 <- xk[3:(n - 0)]
+
+    y1 <- yk[1:(n - 2)]
+    y2 <- yk[2:(n - 1)]
+    y3 <- yk[3:(n - 0)]
+
+    # Matrix representing the system of equations
+    A <- matrix(data=0, nrow=2*n, ncol=2*n)
+
+    # sk, third derivative
+    A[cbind(1:(n - 1), 2:n)] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind(1:n, 1:n)] <- c(
+        -36/(xk[2] - xk[1])^2,
+        36/(x3 - x2)^2 - 36/(x2 - x1)^2,
+        -36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind(2:n, 1:(n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    # ak, third derivative
+    A[cbind(1:(n - 1), (n + 2):(2*n))] <- c(
+        3/(xk[2] - xk[1]),
+        -3/(x3 - x2)
+    )
+    A[cbind(1:n, (n + 1):(2*n))] <- c(
+        -9/(xk[2] - xk[1]),
+        9/(x2 - x1) + 9/(x3 - x2),
+        9/(xk[n] - xk[n - 1])
+    )
+    A[cbind(2:n, (n + 1):(2*n - 1))] <- c(
+        -3/(x2 - x1),
+        -3/(xk[n] - xk[n - 1])
+    )
+
+    # sk, fourth derivative
+    A[cbind((n + 1):(2*n - 1), 2:n)] <- c(
+        168/(xk[2] - xk[1])^3,
+        -168/(x3 - x2)^3
+    )
+    A[cbind((n + 1):(2*n), 1:n)] <- c(
+        192/(xk[2] - xk[1])^3,
+        -192/(x2 - x1)^3 - 192/(x3 - x2)^3,
+        -192/(xk[n] - xk[n - 1])^3
+    )
+    A[cbind((n + 2):(2*n), 1:(n - 1))] <- c(
+        -168/(x2 - x1)^3,
+        -168/(xk[n] - xk[n - 1])^3
+    )
+
+    # ak, fourth derivative
+    A[cbind((n + 1):(2*n - 1), (n + 2):(2*n))] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind((n + 1):(2*n), (n + 1):(2*n))] <- c(
+        36/(xk[2] - xk[1])^2,
+        36/(x2 - x1)^2 - 36/(x3 - x2)^2,
+        36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind((n + 2):(2*n), (n + 1):(2*n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    b <- c(
+        -60*(yk[2] - yk[1])/(xk[2] - xk[1])^3,
+        (60*y1)/(x2 - x1)^3 - (60/(x2 - x1)^3 + 60/(x3 - x2)^3)*y2 + (60*y3)/(x3 - x2)^3,
+        -60*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^3,
+        360*(yk[2] - yk[1])/(xk[2] - xk[1])^4,
+        (360*y1)/(x2 - x1)^4 - (360/(x2 - x1)^4 - 360/(x3 - x2)^4)*y2 - (360*y3)/(x3 - x2)^4,
+        -360*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^4
+    )
+
+    v <- solve(A, b)
+
+    # Solve and return solution
+    return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
+}
+
+#' @title Estimate natural quintic spline with unknown first derivatives
+#' with second derivative clamped at the last point
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Estimate a natural quintic spline from known values of the
+#' function and the value of the first derivative at the first knot. That is,
+#' it estimates the first and second derivatives at each point by ensuring
+#' that the third and fourth derivatives are continuous at each knot.
+#'
+#' @param xk A vector of interpolation points.
+#' @param yk A vector of values at each interpolation point.
+#' @param an The value of the second derivative at the last point.
+#'
+#' @return A list with two components:
+#' \itemize{
+#'     \item{\code{sk}} A vector of first derivatives at each point.
+#'     \item{\code{ak}} A vector of second derivatives at each point.
+#' }
+
+clamped1_quintic_spline_noderiv <- function(xk, yk, an) {
+    n <- length(xk)
+
+    x1 <- xk[1:(n - 2)]
+    x2 <- xk[2:(n - 1)]
+    x3 <- xk[3:(n - 0)]
+
+    y1 <- yk[1:(n - 2)]
+    y2 <- yk[2:(n - 1)]
+    y3 <- yk[3:(n - 0)]
+
+    # Matrix representing the system of equations
+    A <- matrix(data=0, nrow=2*n, ncol=2*n)
+
+    # sk, third derivative
+    A[cbind(1:(n - 1), 2:n)] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind(1:n, 1:n)] <- c(
+        -36/(xk[2] - xk[1])^2,
+        36/(x3 - x2)^2 - 36/(x2 - x1)^2,
+        -36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind(2:n, 1:(n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    # ak, third derivative
+    A[cbind(1:(n - 1), (n + 2):(2*n))] <- c(
+        3/(xk[2] - xk[1]),
+        -3/(x3 - x2)
+    )
+    A[cbind(1:n, (n + 1):(2*n))] <- c(
+        -9/(xk[2] - xk[1]),
+        9/(x2 - x1) + 9/(x3 - x2),
+        9/(xk[n] - xk[n - 1])
+    )
+    A[cbind(2:n, (n + 1):(2*n - 1))] <- c(
+        -3/(x2 - x1),
+        -3/(xk[n] - xk[n - 1])
+    )
+
+    # sk, fourth derivative
+    A[cbind((n + 1):(2*n - 1), 2:n)] <- c(
+        168/(xk[2] - xk[1])^3,
+        -168/(x3 - x2)^3
+    )
+    A[cbind((n + 1):(2*n), 1:n)] <- c(
+        192/(xk[2] - xk[1])^3,
+        -192/(x2 - x1)^3 - 192/(x3 - x2)^3,
+        -192/(xk[n] - xk[n - 1])^3
+    )
+    A[cbind((n + 2):(2*n), 1:(n - 1))] <- c(
+        -168/(x2 - x1)^3,
+        -168/(xk[n] - xk[n - 1])^3
+    )
+
+    # ak, fourth derivative
+    A[cbind((n + 1):(2*n - 1), (n + 2):(2*n))] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind((n + 1):(2*n), (n + 1):(2*n))] <- c(
+        36/(xk[2] - xk[1])^2,
+        36/(x2 - x1)^2 - 36/(x3 - x2)^2,
+        36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind((n + 2):(2*n), (n + 1):(2*n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    # Clamping
+    A[2*n, 1:(2*n)] <- c(rep(0, 2*n - 1), 1)
+
+    b <- c(
+        -60*(yk[2] - yk[1])/(xk[2] - xk[1])^3,
+        (60*y1)/(x2 - x1)^3 - (60/(x2 - x1)^3 + 60/(x3 - x2)^3)*y2 + (60*y3)/(x3 - x2)^3,
+        -60*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^3,
+        360*(yk[2] - yk[1])/(xk[2] - xk[1])^4,
+        (360*y1)/(x2 - x1)^4 - (360/(x2 - x1)^4 - 360/(x3 - x2)^4)*y2 - (360*y3)/(x3 - x2)^4,
+        an
+    )
+
+    v <- solve(A, b)
+
+    # Solve and return solution
+    return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
+}
+
+#' @title Estimate natural quintic spline with unknown first derivatives
+#' with first derivative clamped at the first point and second derivative
+#' clamped at the last
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Estimate a natural quintic spline from known values of the
+#' function and the value of the first derivative at the first knot. That is,
+#' it estimates the first and second derivatives at each point (except the first,
+#' for which only the second derivative is estimated) by ensuring
+#' that the third and fourth derivatives are continuous at each knot, and equal
+#' to zero at the first and the last point.
+#'
+#' @param xk A vector of interpolation points.
+#' @param yk A vector of values at each interpolation point.
+#' @param s1 The value of the first derivative at the first point.
+#' @param an The value of the second derivative at the last point.
+#'
+#' @return A list with two components:
+#' \itemize{
+#'     \item{\code{sk}} A vector of first derivatives at each point.
+#'     \item{\code{ak}} A vector of second derivatives at each point.
+#' }
+
+clamped2_quintic_spline_noderiv <- function(xk, yk, s1, an) {
+    n <- length(xk)
+
+    x1 <- xk[1:(n - 2)]
+    x2 <- xk[2:(n - 1)]
+    x3 <- xk[3:(n - 0)]
+
+    y1 <- yk[1:(n - 2)]
+    y2 <- yk[2:(n - 1)]
+    y3 <- yk[3:(n - 0)]
+
+    # Matrix representing the system of equations
+    A <- matrix(data=0, nrow=2*n, ncol=2*n)
+
+    # sk, third derivative
+    A[cbind(1:(n - 1), 2:n)] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind(1:n, 1:n)] <- c(
+        -36/(xk[2] - xk[1])^2,
+        36/(x3 - x2)^2 - 36/(x2 - x1)^2,
+        -36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind(2:n, 1:(n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    # ak, third derivative
+    A[cbind(1:(n - 1), (n + 2):(2*n))] <- c(
+        3/(xk[2] - xk[1]),
+        -3/(x3 - x2)
+    )
+    A[cbind(1:n, (n + 1):(2*n))] <- c(
+        -9/(xk[2] - xk[1]),
+        9/(x2 - x1) + 9/(x3 - x2),
+        9/(xk[n] - xk[n - 1])
+    )
+    A[cbind(2:n, (n + 1):(2*n - 1))] <- c(
+        -3/(x2 - x1),
+        -3/(xk[n] - xk[n - 1])
+    )
+
+    # sk, fourth derivative
+    A[cbind((n + 1):(2*n - 1), 2:n)] <- c(
+        168/(xk[2] - xk[1])^3,
+        -168/(x3 - x2)^3
+    )
+    A[cbind((n + 1):(2*n), 1:n)] <- c(
+        192/(xk[2] - xk[1])^3,
+        -192/(x2 - x1)^3 - 192/(x3 - x2)^3,
+        -192/(xk[n] - xk[n - 1])^3
+    )
+    A[cbind((n + 2):(2*n), 1:(n - 1))] <- c(
+        -168/(x2 - x1)^3,
+        -168/(xk[n] - xk[n - 1])^3
+    )
+
+    # ak, fourth derivative
+    A[cbind((n + 1):(2*n - 1), (n + 2):(2*n))] <- c(
+        -24/(xk[2] - xk[1])^2,
+        24/(x3 - x2)^2
+    )
+    A[cbind((n + 1):(2*n), (n + 1):(2*n))] <- c(
+        36/(xk[2] - xk[1])^2,
+        36/(x2 - x1)^2 - 36/(x3 - x2)^2,
+        36/(xk[n] - xk[n - 1])^2
+    )
+    A[cbind((n + 2):(2*n), (n + 1):(2*n - 1))] <- c(
+        -24/(x2 - x1)^2,
+        -24/(xk[n] - xk[n - 1])^2
+    )
+
+    # Clamping
+    A[n + 1, 1:(2*n)] <- c(1, rep(0, 2*n - 1))
+    A[2*n, 1:(2*n)] <- c(rep(0, 2*n - 1), 1)
+
+    b <- c(
+        -60*(yk[2] - yk[1])/(xk[2] - xk[1])^3,
+        (60*y1)/(x2 - x1)^3 - (60/(x2 - x1)^3 + 60/(x3 - x2)^3)*y2 + (60*y3)/(x3 - x2)^3,
+        -60*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^3,
+        s1,
+        (360*y1)/(x2 - x1)^4 - (360/(x2 - x1)^4 - 360/(x3 - x2)^4)*y2 - (360*y3)/(x3 - x2)^4,
+        an
+    )
+
+    v <- solve(A, b)
+
+    # Solve and return solution
+    return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
+}
+
+#' @title Estimate a quintic spline known first derivatives with second
+#' derivative clamped at the last point
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'

@@ -1,3 +1,15 @@
+output$message_plots <- renderUI({
+    if (is.null(data$output_dist)) {
+        return(
+            return(tags$div(icon("info-circle"), HTML("&nbsp;"),
+                "Plots of output results will appear here once the programs have been successfully executed.",
+                class="alert alert-info", role="alert"))
+        )
+    } else {
+        return(NULL)
+    }
+})
+
 # Generate the distribution plots
 result_plot <- reactive({
     if (is.null(data$output_dist)) {

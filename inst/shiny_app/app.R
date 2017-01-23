@@ -38,6 +38,10 @@ server <- function(input, output, session) {
         output_components = NULL  # Components in the output data
     )
 
+    observeEvent(input$go_to_help, {
+        updateNavbarPage(session, "main_navbar", selected="Help")
+    })
+
     source(file.path("server", "reset-clear.R"), local=TRUE)$value
     source(file.path("server", "import-data.R"), local=TRUE)$value
     source(file.path("server", "display-input-data.R"), local=TRUE)$value
@@ -58,13 +62,9 @@ ui <- tagList(
         source(file.path("ui", "tab-output-tables.R"), local=TRUE)$value,
         source(file.path("ui", "tab-plots.R"), local=TRUE)$value,
         source(file.path("ui", "tab-sample.R"), local=TRUE)$value,
-        source(file.path("ui", "tab-diagnostic.R"), local=TRUE)$value,
+        #source(file.path("ui", "tab-diagnostic.R"), local=TRUE)$value,
         source(file.path("ui", "tab-settings.R"), local=TRUE)$value,
-        navbarMenu("Help",
-            source(file.path("ui", "tab-usage.R"), local=TRUE)$value,
-            source(file.path("ui", "tab-about.R"), local=TRUE)$value,
-            icon = icon("question-circle")
-        ),
+        source(file.path("ui", "tab-help.R"), local=TRUE)$value,
         id = "main_navbar",
         selected = "Input data",
         position = "fixed-top",

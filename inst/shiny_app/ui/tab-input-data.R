@@ -39,7 +39,7 @@ tabPanel("Input data",
                     ),
                     tags$div(
                         withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
-                            "<h4 style='margin-top: 0;'>Interpolate only</h4>
+                            "<h4 style='margin-top: 0;'>Simple Pareto interpolation</h4>
                             <p style='font-size: small; color: #666;'>Interpolate the distribution
                             of your data directly, without any transformation.</p>" = "basic",
                             "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
@@ -50,14 +50,16 @@ tabPanel("Input data",
                             <p style='font-size: small; color: #666;'>Merge the distribution of several countries
                             into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
                             "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
-                            <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example,
-                            labor and capital income), assuming that the dependence between both components
-                            is characterized by a Gumbel copula.</p>
-                            <p style='font-size: small; color: #666; margin-bottom: 0;'>The dependence between the two components is assumed to be characterized
-                            by a Gumbel copula with parameter \\(\\theta\\). The higher
+                            <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example, labor and capital income,
+                            housing wealth and financial wealth, male earnings and female earnings, etc.), assuming that the dependence between both
+                            components is characterized by a Gumbel copula.</p>
+                            <p style='font-size: small; color: #666; margin-bottom: 0;'>The dependence between the two components is assumed
+                            to be characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
                             \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
-                            full independence. You may specify a value for \\(\\theta\\) in each files,
-                            or set a global value below.</p>" = "addup"
+                            full independence, and \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
+                            You may specify a value for \\(\\theta\\) in each files,
+                            or set a global value below (the default value \\(\\theta = 3\\) corresponds to the typical
+                            dependance between labor and capital income).</p>" = "addup"
                         ))),
                         tags$div(
                             numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
@@ -89,11 +91,14 @@ tabPanel("Input data",
                 )),
                 tags$div(
                     tags$div(
-                        tags$p("This interface lets you reconstruct the full distribution of income or
-                            wealth based on tabulated data files such as those provided by tax autorities."),
-                        tags$p("To import the tabulation files, use the “Browse” button
-                            on the left and choose or more file from your computer. You must have one CSV file or
-                            Excel sheet per tabulation. Each must take the form of a table with the following format:"),
+                        tags$p("This interface allows you interpolate the full distribution
+                            of income or wealth on the basis of simple tabulated data files
+                            (such as those provided by tax administrations and statistical
+                            institutes) and", actionLink("go_to_help", "generalized Pareto interpolation methods.")),
+                        tags$p("To import the tabulation files, use the “Browse” button and
+                            choose one or more files from your computer (in CSV or Excel format).
+                            You must have one CSV file or one Excel sheet per tabulation.
+                            Each must take the form of a table with the following format:"),
                         tabsetPanel(
                             tabPanel("File #1",
                                 tags$table(
@@ -102,7 +107,7 @@ tabPanel("Input data",
                                         tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("US"), tags$td("labor"), tags$td("225 700 000"),
+                                        tags$td("2010"), tags$td("US 1"), tags$td("labor"), tags$td("225 700 000"),
                                         tags$td("37 208"), tags$td("0.1"), tags$td("4 130"), tags$td("12 643")
                                     ),
                                     tags$tr(
@@ -128,7 +133,7 @@ tabPanel("Input data",
                                         tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("US"), tags$td("capital"), tags$td("225 700 000"),
+                                        tags$td("2010"), tags$td("US 1"), tags$td("capital"), tags$td("225 700 000"),
                                         tags$td("16 370"), tags$td("0.1"), tags$td("-1 176"), tags$td("328")
                                     ),
                                     tags$tr(
@@ -151,10 +156,36 @@ tabPanel("Input data",
                                 tags$table(
                                     tags$tr(
                                         tags$th("year"), tags$th("country"), tags$th("component"), tags$th("popsize"),
+                                        tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg")
+                                    ),
+                                    tags$tr(
+                                        tags$td("2010"), tags$td("US 2"), tags$td("total"), tags$td("225 700 000"),
+                                        tags$td("53 587"), tags$td("0.1"), tags$td("5 665"), tags$td("18 030")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.5"), tags$td("31 829"), tags$td("54 936")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.9"), tags$td("96 480"), tags$td("151 099")
+                                    ),
+                                    tags$tr(
+                                        tags$td(""), tags$td(""), tags$td(""), tags$td(""), tags$td(""),
+                                        tags$td("0.99"), tags$td("351 366"), tags$td("1 068 911")
+                                    ),
+                                    class = "table table-bordered table-condensed example-preview",
+                                    style = "margin-bottom: 2px;"
+                                )
+                            ),
+                            tabPanel("File #4",
+                                tags$table(
+                                    tags$tr(
+                                        tags$th("year"), tags$th("country"), tags$th("component"), tags$th("popsize"),
                                         tags$th("average"), tags$th("p"), tags$th("thr"), tags$th("bracketavg"), tags$th("s")
                                     ),
                                     tags$tr(
-                                        tags$td("2010"), tags$td("FR"), tags$td("labor"), tags$td("36 962 517"),
+                                        tags$td("2010"), tags$td("FR"), tags$td("total"), tags$td("36 962 517"),
                                         tags$td("27 094"), tags$td("0"), tags$td("0"), tags$td("5 263"), tags$td("0.872")
                                     ),
                                     tags$tr(
@@ -198,8 +229,8 @@ tabPanel("Input data",
                             style="text-align: right; font-size: small;"),
                         tags$p("Each column of the table correspond to a variable. You need to at least specify:",
                             tags$ul(
-                                tags$li(tags$code("p"), "for fractiles"),
-                                tags$li(tags$code("thr"), "for matching quantiles"),
+                                tags$li(tags$code("p"), "for fractiles between 0 and 1 (in ascending order: p = 0.01 corresponds to the bottom 1% and p = 0.99 to te top 1%)"),
+                                tags$li(tags$code("thr"), "for matching quantiles (income or wealth thresholds corresponding to the fractiles)"),
                                 tags$li(tags$code("average"), "for the overall average")
                             )
                         ),
@@ -218,6 +249,12 @@ tabPanel("Input data",
                                 tags$li(tags$code("year"), "for the period covered by the tabulation"),
                                 tags$li(tags$code("country"), "for the country or region"),
                                 tags$li(tags$code("component"), "for the component (for example labor or capital income)")
+                            )
+                        ),
+                        tags$p("Finally with the individualize and add-up options you can also specify the following fields:",
+                            tags$ul(
+                                tags$li(tags$code("s"), "share of singles in the bracket"),
+                                tags$li(tags$code("gumbel"), "(= 3 or other selected global value if not specified)")
                             )
                         ),
                         class = "panel-body"

@@ -72,7 +72,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         bracketshare <- bracketshare[ord]
         m <- rev(cumsum(rev(bracketshare*average)))
     } else if (!is.null(topshare)) {
-        if (length(bracketshare) != n) {
+        if (length(topshare) != n) {
             stop("'p' and 'topshare' must have the same length.")
         }
         topshare <- topshare[ord]

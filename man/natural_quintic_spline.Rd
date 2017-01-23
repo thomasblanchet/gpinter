@@ -2,7 +2,7 @@
 % Please edit documentation in R/quintic-spline.R
 \name{natural_quintic_spline}
 \alias{natural_quintic_spline}
-\title{Estimate natural quintic spline}
+\title{Estimate natural quintic spline with known first derivatives}
 \usage{
 natural_quintic_spline(xk, yk, sk)
 }

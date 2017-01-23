@@ -85,6 +85,9 @@ output$input_data_view <- renderUI({
         "Fractiles" = sprintf("%1.5f", data_view$p),
         "Thresholds" = format(round(data_view$threshold), big.mark=" ", scientific=FALSE)
     )
+    if (is.na(data_view$threshold[1])) {
+        df[, "Thresholds"] <- NA
+    }
     if (avgsh %in% c("bracketavg", "topavg")) {
         df[avgsh_clean] <- format(round(data_view[[avgsh]]), big.mark=" ", scientific=FALSE)
     } else {
