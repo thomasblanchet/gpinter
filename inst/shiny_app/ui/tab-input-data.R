@@ -39,7 +39,7 @@ tabPanel("Input data",
                     ),
                     tags$div(
                         withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
-                            "<h4 style='margin-top: 0;'>Simple Pareto interpolation</h4>
+                            "<h4 style='margin-top: 0;'>Generalized Pareto interpolation</h4>
                             <p style='font-size: small; color: #666;'>Interpolate the distribution
                             of your data directly, without any transformation.</p>" = "basic",
                             "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
