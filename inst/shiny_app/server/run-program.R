@@ -206,7 +206,11 @@ interpolate_only <- function() {
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
                         if (!is.na(data_model$lowerbound)) {
-                            args["first_threshold"] <- data_model$lowerbound
+                            if (min(data_model$p) == 0) {
+                                args["first_threshold"] <- data_model$lowerbound
+                            } else {
+                                args["hist_lower_bound"] <- data_model$lowerbound
+                            }
                         }
                         result <- do.call(shares_fit, args)
                         result
@@ -308,7 +312,11 @@ interpolate_and_individualize <- function() {
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
                         if (!is.na(data_model$lowerbound)) {
-                            args["first_threshold"] <- data_model$lowerbound
+                            if (min(data_model$p) == 0) {
+                                args["first_threshold"] <- data_model$lowerbound
+                            } else {
+                                args["hist_lower_bound"] <- data_model$lowerbound
+                            }
                         }
                         result <- do.call(shares_fit, args)
                         result
@@ -473,7 +481,11 @@ interpolate_and_merge <- function() {
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
                         if (!is.na(data_model$lowerbound)) {
-                            args["first_threshold"] <- data_model$lowerbound
+                            if (min(data_model$p) == 0) {
+                                args["first_threshold"] <- data_model$lowerbound
+                            } else {
+                                args["hist_lower_bound"] <- data_model$lowerbound
+                            }
                         }
                         result <- do.call(shares_fit, args)
                         result
@@ -609,7 +621,11 @@ interpolate_and_addup <- function() {
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
                         if (!is.na(data_model$lowerbound)) {
-                            args["first_threshold"] <- data_model$lowerbound
+                            if (min(data_model$p) == 0) {
+                                args["first_threshold"] <- data_model$lowerbound
+                            } else {
+                                args["hist_lower_bound"] <- data_model$lowerbound
+                            }
                         }
                         result <- do.call(shares_fit, args)
                         result
