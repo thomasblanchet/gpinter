@@ -40,6 +40,7 @@ tabPanel("Settings",
                                 textInput("var_average", "Average", "average", width="100%"),
                                 textInput("var_popsize", "Population size", "popsize", width="100%"),
                                 textInput("var_gumbel", "Gumbel copula parameter", "gumbel", width="100%"),
+                                textInput("var_lowerbound", "Distribution lower bound", "lowerbound", width="100%"),
                                 class = "form-group"
                             )
                         ),

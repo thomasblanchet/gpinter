@@ -46,6 +46,11 @@ parse_input <- function(data, var, dpcomma) {
                     data[i, 2] <- gsub(",", ".", data[i, 2])
                 }
                 data_list$coupleshare <- as.numeric(data[i, 2])
+            } else if (trimws(data[i, 1]) == var$lowerbound) {
+                if (dpcomma) {
+                    data[i, 2] <- gsub(",", ".", data[i, 2])
+                }
+                data_list$coupleshare <- as.numeric(data[i, 2])
             } else {
                 # We've reached the end of the top rows
                 break
@@ -105,6 +110,15 @@ parse_input <- function(data, var, dpcomma) {
         }
         data[, var$gumbel] <- as.numeric(data[, var$gumbel])
         data_list$gumbel <- data[1, var$gumbel]
+    }
+
+    # Look for lower bound
+    if (var$lowerbound %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$lowerbound] <- gsub(",", ".", data[, var$lowerbound])
+        }
+        data[, var$lowerbound] <- as.numeric(data[, var$lowerbound])
+        data_list$lowerbound <- data[1, var$lowerbound]
     }
 
     # Look for the average
@@ -273,6 +287,9 @@ parse_input <- function(data, var, dpcomma) {
     }
     if (is.null(data_list$gumbel)) {
         data_list$gumbel <- NA
+    }
+    if (is.null(data_list$lowerbound)) {
+        data_list$lowerbound <- NA
     }
 
     return(data_list)

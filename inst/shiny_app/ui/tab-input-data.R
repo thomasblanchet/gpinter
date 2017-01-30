@@ -52,9 +52,7 @@ tabPanel("Input data",
                             "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
                             <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example, labor and capital income,
                             housing wealth and financial wealth, male earnings and female earnings, etc.), assuming that the dependence between both
-                            components is characterized by a Gumbel copula.</p>
-                            <p style='font-size: small; color: #666; margin-bottom: 0;'>The dependence between the two components is assumed
-                            to be characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
+                            components is characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
                             \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
                             full independence, and \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
                             You may specify a value for \\(\\theta\\) in each files,

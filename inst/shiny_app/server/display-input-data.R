@@ -160,6 +160,16 @@ output$input_data_view <- renderUI({
                         is.na(data_view$gumbel),
                         "color: #999; text-align: right;", "text-align: right;"
                     ))
+                ),
+                tags$tr(
+                    tags$th("Distribution lower bound", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$lowerbound),
+                        "n/a",
+                        data_view$lowerbound
+                    ), style = ifelse(
+                        is.na(data_view$lowerbound),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
                 )
             ),
             class = "table table-condensed table-striped"

@@ -282,7 +282,8 @@ observeEvent(data$files_selected, ignoreNULL = TRUE, handlerExpr = {
         coupletop     = trimws(isolate(input$var_coupletop)),
         average       = trimws(isolate(input$var_average)),
         popsize       = trimws(isolate(input$var_popsize)),
-        gumbel        = trimws(isolate(input$var_gumbel))
+        gumbel        = trimws(isolate(input$var_gumbel)),
+        lowerbound    = trimws(isolate(input$var_lowerbound))
     )
 
     # Number of files to process
@@ -455,7 +456,8 @@ observeEvent(input$import_example, {
                 popsize = 2.257e+08,
                 gumbel = NA,
                 coupleshare = NA,
-                singleshare = NA
+                singleshare = NA,
+                lowerbound = NA
             ), "capital" = list(
                 p = c(0.10, 0.50, 0.90, 0.99),
                 year = 2010,
@@ -468,7 +470,8 @@ observeEvent(input$import_example, {
                 popsize = 2.257e+08,
                 gumbel = NA,
                 coupleshare = NA,
-                singleshare = NA
+                singleshare = NA,
+                lowerbound = NA
             )
         ),
         "US 2" = list("total" = list(
@@ -483,7 +486,8 @@ observeEvent(input$import_example, {
             popsize = 2.257e+08,
             gumbel = NA,
             coupleshare = NA,
-            singleshare = NA
+            singleshare = NA,
+            lowerbound = NA
         )),
         "FR" = list("total" = list(
             p = c(0, 0.26386523, 0.32899058, 0.43231946, 0.58923674, 0.76089203, 0.91522479, 0.98419398),
@@ -498,6 +502,7 @@ observeEvent(input$import_example, {
             gumbel = NA,
             coupleshare = NA,
             singleshare = 0.64423762,
+            lowerbound = NA,
             whichcouple = "singlebracket",
             singlebracket = c(0.87221801, 0.87220490, 0.87220490, 0.75579684,
                 0.55689047, 0.26108370, 0.14955399, 0.14955399)
