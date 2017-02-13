@@ -27,8 +27,9 @@ tabulation_fit(p, threshold, average, bracketshare = NULL, topshare = NULL,
 
 \item{bottom_model}{Which model to use at the bottom of the distribution?
 Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
-Pareto distribution, or \code{"hist"} for histogram density. Default is
-\code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.}
+Pareto distribution, \code{"hist"} for histogram density, or \code{"dirac"}.
+Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
+\code{min(threshold) == 0} and \code{"gpd"} otherwise.}
 
 \item{hist_lower_bound}{Lower bound of the histogram in the bottom of the
 distribution. Only relevant if \code{min(p) > 0} and

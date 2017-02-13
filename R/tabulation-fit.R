@@ -20,8 +20,9 @@
 #' @param invpareto The inverted Pareto coefficient.
 #' @param bottom_model Which model to use at the bottom of the distribution?
 #' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
-#' Pareto distribution, or \code{"hist"} for histogram density. Default is
-#' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
+#' Pareto distribution, \code{"hist"} for histogram density, or \code{"dirac"}.
+#' Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
+#' \code{min(threshold) == 0} and \code{"gpd"} otherwise.
 #' @param hist_lower_bound Lower bound of the histogram in the bottom of the
 #' distribution. Only relevant if \code{min(p) > 0} and
 #' \code{bottom_model == "hist"}. Default is \code{0}.
@@ -53,12 +54,14 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     if (p[1] > 0 && is.null(bottom_model)) {
         if (threshold[1] > 0) {
             bottom_model <- "hist"
+        } else if (threshold[1] == 0) {
+            bottom_model <- "dirac"
         } else {
             bottom_model <- "gpd"
         }
     }
-    if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd")) {
-        stop("'bottom_model' must be one of 'hist' or 'gpd', or NULL.")
+    if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
+        stop("'bottom_model' must be one of 'hist', 'gpd', 'dirac', or NULL.")
     }
     if (!is.null(bottom_model) && bottom_model == "hist" && hist_lower_bound > threshold[1]) {
         stop("'hist_lower_bound' must be smaller than min(threshold).")
@@ -319,6 +322,9 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
                 param_bottom$xi_bottom <- 1 - sk[n]
                 param_bottom$sigma_bottom <- param_bottom$mu_top*param_bottom$xi_top
             }
+            param_bottom$delta <- NA
+        } else if (bottom_model == "dirac") {
+            param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=p[1])
         } else if (bottom_model == "hist") {
             # Estimate the average in the bottom
             bracketavg <- (average - mk_cns[1])/pk_cns[1]
@@ -342,10 +348,10 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             sk_cns <- c(hist_lower_bound/average, NA, sk_cns)
             ak_cns <- c(NA, NA, ak_cns)
 
-            param_bottom <- list(mu=NA, sigma=NA, xi=NA)
+            param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=NA)
         }
     } else {
-        param_bottom <- list(mu=NA, sigma=NA, xi=NA)
+        param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=NA)
     }
 
     # Object to return
@@ -392,6 +398,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     result$mu_bottom    <- param_bottom$mu
     result$sigma_bottom <- param_bottom$sigma
     result$xi_bottom    <- param_bottom$xi
+    result$delta_bottom <- param_bottom$delta
 
     return(result)
 }

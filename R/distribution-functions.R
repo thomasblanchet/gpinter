@@ -38,7 +38,11 @@ phi.gpinter_dist_orig <- function(dist, x, ...) {
     return(ifelse(x > xn, {
         gpd_top_phi(x, 1 - exp(-xn), dist$mu_top, dist$sigma_top, dist$xi_top)
     }, ifelse(x < x1, {
-        gpd_bottom_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+        if (is.na(dist$delta_bottom)) {
+            gpd_bottom_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+        } else {
+            y1
+        }
     }, ifelse(dist$use_hist[k], {
         hist_phi(x,
             dist$pk[k], dist$pk[k + 1],
@@ -94,7 +98,11 @@ deriv_phi.gpinter_dist_orig <- function(dist, x, ...) {
     return(ifelse(x > xn, {
         gpd_top_deriv_phi(x, 1 - exp(-xn), dist$mu_top, dist$sigma_top, dist$xi_top)
     }, ifelse(x < x1, {
-        gpd_bottom_deriv_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+        if (is.na(dist$delta_bottom)) {
+            gpd_bottom_deriv_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+        } else {
+            0
+        }
     }, ifelse(dist$use_hist[k], {
         hist_deriv_phi(x,
             dist$pk[k], dist$pk[k + 1],
@@ -217,6 +225,8 @@ support.gpinter_dist_orig <- function(dist, ...) {
     # The generalized Pareto distribution has finite support if xi < 0
     if (dist$pk[1] == 0) {
         lower <- dist$qk[1]
+    } else if (!is.na(dist$delta_bottom)) {
+        lower <- 0
     } else if (dist$xi_bottom < 0) {
         lower <- dist$mu_bottom + dist$sigma_bottom/dist$xi_bottom
     } else {
