@@ -184,7 +184,7 @@ fitted_quantile.gpinter_dist <- function(dist, probs, ...) {
         } else {
             eq <- uniroot(function(q) {
                 return(fitted_cdf(dist, q) - p)
-            }, lower=lb, upper=ub, extendInt = "upX")
+            }, lower=lb, upper=ub, extendInt="upX", tol=sqrt(.Machine$double.eps))
 
             return(eq$root)
         }

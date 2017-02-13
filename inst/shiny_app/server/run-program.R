@@ -400,15 +400,15 @@ interpolate_and_individualize <- function() {
                         country_couples <- paste(country, "– couples")
                         country_equalsplit <- paste(country, "– equal split")
                         if (!country_singles %in% results_countries) {
-                            results_countries <- c(results_countries, country_singles)
+                            results_countries <- c(country_singles, results_countries)
                         }
                         list_results[[year]][[country_singles]][[component]] <- result_model$singles$dist
                         if (!country_couples %in% results_countries) {
-                            results_countries <- c(results_countries, country_couples)
+                            results_countries <- c(country_couples, results_countries)
                         }
                         list_results[[year]][[country_couples]][[component]] <- result_model$couples$dist
                         if (!country_equalsplit %in% results_countries) {
-                            results_countries <- c(results_countries, country_equalsplit)
+                            results_countries <- c(country_equalsplit, results_countries)
                         }
                         list_results[[year]][[country_equalsplit]][[component]] <- result_model
 

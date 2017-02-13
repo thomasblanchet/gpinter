@@ -113,21 +113,27 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     if (any(diff(threshold) <= 0)) {
         stop("Thresholds must be strictly increasing.")
     }
-    # Truncated mean function is concave
-    for (i in 2:(n - 1)) {
-        chord <- m[i - 1] + (m[i + 1] - m[i - 1])*(p[i] - p[i - 1])/(p[i +1] - p[i - 1])
-        if (m[i] < chord) {
-            stop("Truncated average must be concave.")
-        }
-    }
     # Percentiles between 0 and 1
     if (any(p >= 1) | any(p < 0)) {
         stop("The elements of 'p' must be >=0 and <1.")
     }
     # The average between each bracket is within the bracket
     bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
-    if (any(bracketavg <= threshold) | any(bracketavg[1:(n - 1)] >= threshold[2:n])) {
-        stop("Input data on quantiles and moments is inconsistent.")
+    for (i in 1:(n - 1)) {
+        if (bracketavg[i] <= threshold[i] || bracketavg[i] >= threshold[i + 1]) {
+            stop(sprintf(paste(
+                "Input data is inconsistent between p=%.4f and p=%.4f. The bracket",
+                "average (%.2f) is not strictly within the bracket thresholds (%.2f and %.2f)."
+            ), p[i], p[i + 1], bracketavg[i], threshold[i], threshold[i + 1]))
+        }
+    }
+    # Total average consistent with bracket averages
+    if (p[1] == 0) {
+        if (abs((average - m[1])/average) > 1e-2) {
+            stop(sprintf(paste("The average you specified (%.2f) is inconsistent with the average",
+                "implied by the brackets (%.2f)."), average, m[1]))
+        }
+        average <- m[1]
     }
 
     # Log-transform of the data
@@ -137,6 +143,8 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     xk <- -log(1 - pk)
     yk <- -log(mk)
     sk <- (1 - pk)*qk/mk
+
+    #browser()
 
     # Estimate the second derivative at the last point
     an <- (sk[n] - sk[n - 1])/(xk[n] - xk[n - 1])
