@@ -100,7 +100,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         m <- (1 - p)*threshold*invpareto
 
         # The inverted Pareto may not be defined for the first threshold
-        if (is.na(invpareto[1]) & p[1] == 0) {
+        if (is.na(invpareto[1]) & (p[1] == 0 || threshold[1] == 0)) {
             m[1] <- average
         }
     } else {

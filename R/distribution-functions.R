@@ -314,8 +314,12 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
             # We are above the support: CDF is one by definition
             return(1)
         } else if (q <= dist$qk[1]) {
-            # GPD model for the bottom part
-            return(gpd_bottom_cdf(q, dist$pk[1], dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom))
+            # Model for the bottom part
+            if (is.na(dist$delta_bottom)) {
+                return(pk[1])
+            } else {
+                return(gpd_bottom_cdf(q, dist$pk[1], dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom))
+            }
         } else if (q >= dist$qk[n]) {
             # GPD model for the top part
             return(gpd_top_cdf(q, dist$pk[n], dist$mu_top, dist$sigma_top, dist$xi_top))
