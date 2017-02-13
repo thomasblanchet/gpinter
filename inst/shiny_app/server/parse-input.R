@@ -190,7 +190,7 @@ parse_input <- function(data, var, dpcomma) {
             data[, var$b] <- gsub(",", ".", data[, var$b])
         }
         data[, var$b] <- as.numeric(data[, var$b])
-        if (anyNA(data[data_list$p != 0, var$b])) {
+        if (anyNA(data[data_list$threshold != 0, var$b])) {
             return(simpleError("inverted Pareto coefficients contain missing values"))
         }
         data_list$whichavgsh <- "invpareto"
