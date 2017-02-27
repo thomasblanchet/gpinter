@@ -262,19 +262,19 @@ parse_input <- function(data, var, dpcomma) {
         return(simpleError("average is missing"))
     }
     if (is.null(data_list$year)) {
-        data_list$year <- "n/a"
+        data_list$year <- "n.a."
     } else if (is.na(data_list$year)) {
-        data_list$year <- "n/a"
+        data_list$year <- "n.a."
     }
     if (is.null(data_list$country)) {
-        data_list$country <- "n/a"
+        data_list$country <- "n.a."
     } else if (is.na(data_list$country)) {
-        data_list$country <- "n/a"
+        data_list$country <- "n.a."
     }
     if (is.null(data_list$component)) {
-        data_list$component <- "n/a"
+        data_list$component <- "n.a."
     } else if (is.na(data_list$component)) {
-        data_list$component <- "n/a"
+        data_list$component <- "n.a."
     }
     if (is.null(data_list$popsize)) {
         data_list$popsize <- NA

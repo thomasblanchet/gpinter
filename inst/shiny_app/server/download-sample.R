@@ -56,7 +56,7 @@ generate_samples <- function() {
         for (country in countries) {
             for (component in components) {
                 data_label <- c(component, country, year)
-                data_label <- data_label[data_label != "n/a"]
+                data_label <- data_label[data_label != "n.a."]
                 data_label <- paste(data_label, collapse=", ")
 
                 res <- data$output_dist[[year]][[country]][[component]]

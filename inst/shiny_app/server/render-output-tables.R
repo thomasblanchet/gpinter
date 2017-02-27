@@ -64,7 +64,7 @@ output$output_table <- renderUI({
         align = paste0("l", paste0(rep("r", ncol(out_df) - 1), collapse = "")),
         striped = TRUE,
         width = "100%",
-        na = "n/a"
+        na = "n.a."
     )
 
     return(tagList(
@@ -101,7 +101,7 @@ output$dl_tables_csv <- downloadHandler(
             for (component in data$output_components) {
                 # Times series for the given country and income concept
                 series_label <- c(component, country)
-                series_label <- series_label[!series_label %in% c("n/a", "merged", "added up")]
+                series_label <- series_label[!series_label %in% c("n.a.", "merged", "added up")]
                 series_label <- paste(series_label, collapse=", ")
                 if (series_label == "") {
                     series_label <- "series"
@@ -184,7 +184,7 @@ output$dl_tables_csv <- downloadHandler(
                     }
 
                     data_label <- c(component, country, year)
-                    data_label <- data_label[!data_label %in% c("n/a", "merged", "added up")]
+                    data_label <- data_label[!data_label %in% c("n.a.", "merged", "added up")]
                     data_label <- paste(data_label, collapse=", ")
 
                     out_df <- data.frame(
@@ -195,13 +195,13 @@ output$dl_tables_csv <- downloadHandler(
                         "p" = gperc
                     )
                     colnames(out_df) <- c(var$year, var$country, var$component, var$average, var$p)
-                    if (year == "n/a") {
+                    if (year == "n.a.") {
                         out_df[var$year] <- NULL
                     }
-                    if (country == "n/a") {
+                    if (country == "n.a.") {
                         out_df[var$country] <- NULL
                     }
-                    if (component == "n/a") {
+                    if (component == "n.a.") {
                         out_df[var$component] <- NULL
                     }
 
@@ -275,7 +275,7 @@ output$dl_tables_excel <- downloadHandler(
             for (component in data$output_components) {
                 # Times series for the given country and income concept
                 series_label <- c(component, country)
-                series_label <- series_label[!series_label %in% c("n/a", "merged", "added up")]
+                series_label <- series_label[!series_label %in% c("n.a.", "merged", "added up")]
                 series_label <- paste(series_label, collapse=", ")
                 if (series_label == "") {
                     series_label <- "series"
@@ -351,7 +351,7 @@ output$dl_tables_excel <- downloadHandler(
                     }
 
                     data_label <- c(component, country, year)
-                    data_label <- data_label[!data_label %in% c("n/a", "merged", "added up")]
+                    data_label <- data_label[!data_label %in% c("n.a.", "merged", "added up")]
                     data_label <- paste(data_label, collapse=", ")
 
                     out_df <- data.frame(
@@ -362,13 +362,13 @@ output$dl_tables_excel <- downloadHandler(
                         "p" = gperc
                     )
                     colnames(out_df) <- c(var$year, var$country, var$component, var$average, var$p)
-                    if (year == "n/a") {
+                    if (year == "n.a.") {
                         out_df[var$year] <- NULL
                     }
-                    if (country == "n/a") {
+                    if (country == "n.a.") {
                         out_df[var$country] <- NULL
                     }
-                    if (component == "n/a") {
+                    if (component == "n.a.") {
                         out_df[var$component] <- NULL
                     }
 
@@ -393,8 +393,6 @@ output$dl_tables_excel <- downloadHandler(
                     if ("invpareto" %in% input$results_display) {
                         out_df[var$b] <- table$invpareto
                     }
-
-                    print(df)
 
                     sheet <- createSheet(wb, strtrim(data_label, 31))
                     addDataFrame(out_df, sheet, row.names=FALSE)
