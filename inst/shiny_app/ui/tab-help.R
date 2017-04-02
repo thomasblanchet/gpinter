@@ -10,6 +10,7 @@ tabPanel("Help",
                         tags$li(a("Introduction", href="#")),
                         tags$li(a("Functionalities", href="#functionalities")),
                         tags$li(a("Adding up income or wealth components", href="#copula")),
+                        tags$li(a("Source code", href="#source")),
                         tags$li(a("Contact us", href="#contact"))
                     ),
                     class = "nav-doc"
