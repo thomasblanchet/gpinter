@@ -2,7 +2,7 @@
 
 <p>The traditional Pareto interpolation method &mdash; first used by V.&nbsp;Pareto (1896) and then followed by S.&nbsp;Kuznets (1953), A.&nbsp;Atkinson and A.&nbsp;Harrison (1978), T.&nbsp;Piketty (2001, 2003) and the subsequent research literature on top income and wealth shares until recently &mdash; assumes that the distribution of income and wealth follows a Pareto distribution (or power law) with a constant exponent above a certain threshold. Typically, the inverted Pareto coefficient \(b(p)=\mathbb{E}[y|y>y(p)]/y(p)\) (where \(y(p)\) is the income or wealth quantile threshold corresping to fractile \(p\)) is assumed to be constant within the top 10% or top 1% of the distribution. This approximation is acceptable for some purposes but is generally not entirely correct. In addition, it cannot be used to interpolate the entire distribution.</p>
 
-<p>In contrast, the “generalized Pareto interpolation” method is a flexible non-parametric method based upon the interpolation of a transformation of the full “Pareto curve” \(b(p)\), which does not need to be constant and can follow any shape. Providing that the input tabulation contains sufficiently many data points, the method provides very precise estimates of the full distribution. For a detailed presentation of the notion of “Pareto curves” and of the “generalized Pareto interpolation” method, see T.&nbsp;Blanchet, J.&nbsp;Fournier and T.&nbsp;Piketty, “Generalized Pareto curves: theory and applications”, 2017.</p>
+<p>In contrast, the <em>generalized Pareto interpolation</em> method is a flexible non-parametric method based upon the interpolation of a transformation of the full <em>Pareto curve</em> \(b(p)\), which does not need to be constant and can follow any shape. Providing that the input tabulation contains sufficiently many data points, the method provides very precise estimates of the full distribution. For a detailed presentation of the notion of Pareto curves and of the generalized Pareto interpolation method, <a href="http://wid.world/document/blanchet-t-fournier-j-piketty-t-generalized-pareto-curves-theory-applications-2017/" target="_blank">see T.&nbsp;Blanchet, J.&nbsp;Fournier and T.&nbsp;Piketty, “Generalized Pareto curves: theory and applications”, 2017</a>.</p>
 
 <a class="anchor" id="functionalities"></a>
 <h2>Functionalities</h2>
@@ -17,8 +17,14 @@
     <li>Simulate a representative sample from the estimated distribution.</li>
 </ul>
 
-<a class="anchor" id="usage"></a>
-<h2>How to use the interface</h2>
+<a class="anchor" id="copula"></a>
+<h2>Adding up income or wealth components using Gumbel copulas</h2>
+<p>The interface has an option to add up components of income or wealth (for example, labor and capital income) with the assumption that the dependance between labor and capital income is characterized by a Gumbel copula. This option can be useful in countries where tabulations of the distribution of labor and capital incomes are available separately, but not jointly.</p>
+<p>The Gumbel copula assumption means that the joint distribution of the rank in the first and the second components has the density:
+\[
+f(u,v)=\exp\left[-\left((-\log u)^{\theta}+(-\log v)^{\theta}\right)^{1/\theta}\right]
+\]
+where \(\theta \in [1,+\infty[\).The higher \(\theta\), the stronger the dependence, with \(\theta = 1\) meaning full independence, and \(\theta = +\infty\) meaning perfect correlation of the ranks. In practice, a value of \(\theta=3\) approximates the dependance between labor and capital income quite well. For more information, see T.&nbsp;Blanchet, “Copulas and the joint distribution of incomes”, 2017 (forthcoming).</p>
 
 <!--
 <p>The navigation bar at the top of the window gives you access to the different parts of the application.</p>
@@ -42,5 +48,5 @@
 <a class="anchor" id="contact"></a>
 <h2>Contact us</h2>
 
-<p>This interface was conceived and developped by T.&nbsp;Blanchet, J.&nbsp;Fournier and T.&nbsp;Piketty. In case you have questions, do not hesitate to contact us (<a href="mailto:thomas.blanchet@wid.world">thomas.blanchet@wid.world</a> or <a href="mailto:juliette.fournier@wid.world">juliette.fournier@wid.world</a>).</p>
+<p>This interface was conceived and developped by T.&nbsp;Blanchet, J.&nbsp;Fournier and T.&nbsp;Piketty. If you have questions, or think you found a bug, do not hesitate to contact us at <a href="mailto:thomas.blanchet@wid.world">thomas.blanchet@wid.world</a>.</p>
 

@@ -316,7 +316,7 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
         } else if (q <= dist$qk[1]) {
             # Model for the bottom part
             if (is.na(dist$delta_bottom)) {
-                return(pk[1])
+                return(dist$pk[1])
             } else {
                 return(gpd_bottom_cdf(q, dist$pk[1], dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom))
             }
@@ -354,7 +354,8 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
                 },
                 lower = dist$pk[j],
                 upper = dist$pk[j + 1],
-                tol = sqrt(.Machine$double.eps)
+                tol = sqrt(.Machine$double.eps),
+                extendInt = "upX"
             )$root)
         }
     }))
@@ -422,7 +423,7 @@ fitted_density.gpinter_dist_orig <- function(dist, x, ...) {
     supp <- support(dist)
 
     # Identify the bracket for each value of x
-    k <- cut(x, breaks=dist$qk, labels=FALSE, include.lowest=TRUE)
+    k <- cut(x, breaks=dist$qk, labels=FALSE, include.lowest=TRUE, right=FALSE)
 
     # Calculate the density
     return(ifelse((x <= supp$lower) | (x >= supp$upper), {

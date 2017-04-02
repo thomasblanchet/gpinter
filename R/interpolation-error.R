@@ -15,14 +15,12 @@
 #' @aliases kernel deriv_kernel
 
 kernel <- function(x, t) {
-    y <- (x - t)^2
-    y[x <= t] <- 0
+    y <- pmax(x - t, 0)^2
     return(y)
 }
 
 deriv_kernel <- function(x, t) {
-    y <- 2*(x - t)
-    y[x <= t] <- 0
+    y <- 2*pmax(x - t, 0)
     return(y)
 }
 
@@ -122,33 +120,26 @@ interpolation_deriv_error_bound <- function(x, xk, norm_deriv3) {
 #'
 #' @param x A vector of points at which to estimate the error.
 #' @param xk The position of the interpolation points.
-#' @param deriv3 The third derivative of the interpolated function.
-#' @param discont Discontinuity points, if any.
+#' @param phid3 The third derivative of the interpolated function.
 #'
 #' @return The bound for each value of \code{x}.
 
-interpolation_value_error <- function(x, xk, deriv3_steps, deriv3_values) {
-    if (min(deriv3_steps) != min(xk) || max(deriv3_steps) != max(xk)) {
-        stop("discountinuity points do not match the domain")
-    }
-
+interpolation_value_error <- function(x, xk, phid3) {
     return(sapply(x, function(x) {
-        return(sum(sapply(seq_along(deriv3_values), function(i) {
-            f <- Vectorize(function(u) kernel_value_error(xk, x, u)*deriv3_values[i]/2)
-            return(integrate(f, lower=deriv3_steps[i], upper=deriv3_steps[i + 1])$value)
+        f <- Vectorize(function(u) kernel_value_error(xk, x, u)*phid3(u)/2)
+        n <- length(xk)
+        return(sum(sapply(1:(n - 1), function(i) {
+            return(integrate(f, lower=xk[i], upper=xk[i + 1], stop.on.error=FALSE)$value)
         })))
     }))
 }
 
-interpolation_deriv_error <- function(x, xk, deriv3_steps, deriv3_values) {
-    if (min(deriv3_steps) != min(xk) || max(deriv3_steps) != max(xk)) {
-        stop("discountinuity points do not match the domain")
-    }
-
+interpolation_deriv_error <- function(x, xk, phid3) {
     return(sapply(x, function(x) {
-        return(sum(sapply(seq_along(deriv3_values), function(i) {
-            f <- Vectorize(function(u) kernel_deriv_error(xk, x, u)*deriv3_values[i]/2)
-            return(integrate(f, lower=deriv3_steps[i], upper=deriv3_steps[i + 1])$value)
+        f <- Vectorize(function(u) kernel_deriv_error(xk, x, u)*phid3(u)/2)
+        n <- length(xk)
+        return(sum(sapply(1:(n - 1), function(i) {
+            return(integrate(f, lower=xk[i], upper=xk[i + 1], stop.on.error=FALSE)$value)
         })))
     }))
 }

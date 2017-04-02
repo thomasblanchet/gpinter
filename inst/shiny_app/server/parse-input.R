@@ -258,7 +258,7 @@ parse_input <- function(data, var, dpcomma) {
         data_list$coupleshare <- data[1, var$coupleshare]
     }
 
-    if (is.na(data_list$average) | is.null(data_list$average)) {
+    if (is.null(data_list$average) || is.na(data_list$average)) {
         return(simpleError("average is missing"))
     }
     if (is.null(data_list$year)) {

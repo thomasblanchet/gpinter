@@ -147,8 +147,6 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     yk <- -log(mk)
     sk <- (1 - pk)*qk/mk
 
-    #browser()
-
     # Estimate the second derivative at the last point
     an <- (sk[n] - sk[n - 1])/(xk[n] - xk[n - 1])
 
@@ -313,8 +311,9 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     }
 
     # Estimate the parameters of the model for the bottom
+    bracketavg <- (average - mk_cns[1])/pk_cns[1] # Estimate the average in the bottom
     if (p[1] > 0) {
-        if (bottom_model == "gpd") {
+        if (bottom_model == "gpd" || bracketavg <= 0) {
             param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
             # Same thing as for the top if xi >= 1 or sigma <= 0
             if (param_bottom$sigma <= 0 || param_bottom$xi >= 1) {
@@ -326,9 +325,6 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
         } else if (bottom_model == "dirac") {
             param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=p[1])
         } else if (bottom_model == "hist") {
-            # Estimate the average in the bottom
-            bracketavg <- (average - mk_cns[1])/pk_cns[1]
-
             use_hist <- c(TRUE, TRUE, use_hist)
             hist <- hist_interpol(0, pk_cns[1], hist_lower_bound, qk_cns[1], bracketavg)
             fk_cns <- c(hist$f0, hist$f1, fk_cns)
