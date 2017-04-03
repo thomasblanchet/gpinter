@@ -60,6 +60,7 @@ ui <- tagList(
                     icon("arrow-circle-o-left"),
                     HTML("&nbsp;Go back to WID.world main site")
                 ),
+                target = "_top",
                 href = "http://wid.world"
             ),
             class = "container"
