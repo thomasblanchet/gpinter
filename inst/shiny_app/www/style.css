@@ -66,27 +66,26 @@
 }
 
 .navbar {
-    /*background-color: #0b6685;*/
+    background-color: #0b6685;
     border-bottom: none;
-    /*text-transform: uppercase;*/
+    text-transform: uppercase;
 }
 
 .navbar-default .navbar-nav li a {
-    /*background-color: #0b6685;*/
+    background-color: #0b6685;
     color: #FFF;
 }
 
 .navbar-default .navbar-nav li a:hover {
-    /*background-color: #005C7D;*/
+    background-color: #005C7D;
     color: #FFF;
 }
 
 .navbar-default .navbar-nav li.active > a,
 .navbar-default .navbar-nav li.active > a:focus,
 .navbar-default .navbar-nav li.active > a:hover {
-    /*background-color: #005C7D;*/
+    background-color: #005C7D;
     color: #FFF;
-    background-color: #080808;
 }
 
 .navbar-inverse .dropdown-menu {
