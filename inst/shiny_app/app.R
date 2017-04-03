@@ -53,6 +53,19 @@ server <- function(input, output, session) {
 
 ui <- tagList(
     useShinyjs(),
+    tags$div(
+        tags$div(
+            tags$a(
+                tags$span(
+                    icon("arrow-circle-o-left"),
+                    HTML("&nbsp;Go back to WID.world main site")
+                ),
+                href = "http://wid.world"
+            ),
+            class = "container"
+        ),
+        id = "back-wid-world"
+    ),
     navbarPage(
         title = actionLink("main_logo", tagList(
             tags$p("WID.WORLD"),
