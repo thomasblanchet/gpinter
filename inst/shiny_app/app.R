@@ -53,24 +53,9 @@ server <- function(input, output, session) {
 
 ui <- tagList(
     useShinyjs(),
-    tags$div(
-        tags$div(
-            tags$a(
-                tags$span(
-                    icon("arrow-circle-o-left"),
-                    HTML("&nbsp;Go back to WID.world main site")
-                ),
-                target = "_top",
-                href = "http://wid.world"
-            ),
-            class = "container"
-        ),
-        id = "back-wid-world"
-    ),
     navbarPage(
         title = actionLink("main_logo", tagList(
-            tags$p("WID.WORLD"),
-            tags$p("generalized Pareto interpolation")
+            tags$span("generalized Pareto interpolation")
         )),
         source(file.path("ui", "tab-input-data.R"), local=TRUE)$value,
         source(file.path("ui", "tab-output-tables.R"), local=TRUE)$value,
@@ -81,7 +66,6 @@ ui <- tagList(
         source(file.path("ui", "tab-help.R"), local=TRUE)$value,
         id = "main_navbar",
         selected = "Input data",
-        position = "fixed-top",
         inverse = TRUE,
         theme = "style.css",
         windowTitle = "WID - Generalized Pareto interpolation"
