@@ -2,6 +2,12 @@ name: gpinter
 account: world-wealth-and-income-database
 server: shinyapps.io
 appId: 140626
+<<<<<<< HEAD
 bundleId: 776391
 url: https://world-wealth-and-income-database.shinyapps.io/gpinter/
 when: 1491314430.40054
+=======
+bundleId: 774730
+url: https://world-wealth-and-income-database.shinyapps.io/gpinter/
+when: 1491220148.38358
+>>>>>>> parent of fa05232... Improved visual integration with WID.world's website
