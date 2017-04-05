@@ -1,73 +1,6 @@
 tabPanel("Input data",
     fixedPage(
         fixedRow(
-            column(5,
-                tags$div(
-                    tags$div(
-                        tags$h3(icon("files-o"), HTML("&nbsp;"), "Import file(s)", class="panel-title"),
-                        class = "panel-heading"
-                    ),
-                    tags$div(
-                        tags$p("Supports CSV and Excel formats."),
-                        fileInput("file_input",
-                            width = "100%",
-                            label = NULL,
-                            multiple = TRUE,
-                            accept = c(
-                                'text/csv',
-                                'text/comma-separated-values',
-                                'text/tab-separated-values',
-                                'text/plain',
-                                'application/vnd.ms-excel',
-                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                '.txt',
-                                '.csv',
-                                '.tsv',
-                                '.xls',
-                                '.xlsx'
-                            )
-                        ),
-                        class = "panel-body",
-                        id = "panel_file_input"
-                    ),
-                    class = "panel panel-default"
-                ),
-                tags$div(
-                    tags$div(
-                        tags$h3(icon("cogs"), HTML("&nbsp;"), "Interpolation options", class="panel-title"),
-                        class = "panel-heading"
-                    ),
-                    tags$div(
-                        withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
-                            "<h4 style='margin-top: 0;'>Generalized Pareto interpolation</h4>
-                            <p style='font-size: small; color: #666;'>Interpolate the distribution
-                            of your data directly, without any transformation.</p>" = "basic",
-                            "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
-                            <p style='font-size: small; color: #666;'>Individualize the distribution of income or wealth
-                            under the assumption of equal sharing among spouses. If you select this
-                            option, you must specify the share of singles in your input files.</p>" = "individualize",
-                            "<h4 style='margin-top: 0;'>Interpolate and merge countries</h4>
-                            <p style='font-size: small; color: #666;'>Merge the distribution of several countries
-                            into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
-                            "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
-                            <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example, labor and capital income,
-                            housing wealth and financial wealth, male earnings and female earnings, etc.), assuming that the dependence between both
-                            components is characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
-                            \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
-                            full independence, and \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
-                            You may specify a value for \\(\\theta\\) in each files,
-                            or set a global value below (the default value \\(\\theta = 3\\) corresponds to the typical
-                            dependance between labor and capital income).</p>" = "addup"
-                        ))),
-                        tags$div(
-                            numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
-                            style = "margin-left: 20px;"
-                        ),
-                        class = "panel-body"
-                    ),
-                    class = "panel panel-default"
-                )
-            ),
             column(7,
                 hidden(tags$div(
                     tags$h4(tags$i(class = "fa fa-cog"), HTML(" &nbsp; "), tags$span("", id = "import_progress_message"),
@@ -256,15 +189,82 @@ tabPanel("Input data",
                             )
                         ),
                         class = "panel-body"
-                        ),
-                        class = "panel panel-default",
-                        style = "box-shadow: none; border-style: dashed; color: #666;",
-                        id = "help_intro"
                     ),
-                    uiOutput("input_data_view_header"),
-                    uiOutput("input_data_view")
+                    class = "panel panel-default",
+                    style = "box-shadow: none; border-style: dashed; color: #666;",
+                    id = "help_intro"
+                ),
+                uiOutput("input_data_view_header"),
+                uiOutput("input_data_view")
+            ),
+            column(5,
+                tags$div(
+                    tags$div(
+                        tags$h3(icon("files-o"), HTML("&nbsp;"), "Import file(s)", class="panel-title"),
+                        class = "panel-heading"
+                    ),
+                    tags$div(
+                        tags$p("Supports CSV and Excel formats."),
+                        fileInput("file_input",
+                            width = "100%",
+                            label = NULL,
+                            multiple = TRUE,
+                            accept = c(
+                                'text/csv',
+                                'text/comma-separated-values',
+                                'text/tab-separated-values',
+                                'text/plain',
+                                'application/vnd.ms-excel',
+                                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                '.txt',
+                                '.csv',
+                                '.tsv',
+                                '.xls',
+                                '.xlsx'
+                            )
+                        ),
+                        class = "panel-body",
+                        id = "panel_file_input"
+                    ),
+                    class = "panel panel-default"
+                ),
+                tags$div(
+                    tags$div(
+                        tags$h3(icon("cogs"), HTML("&nbsp;"), "Interpolation options", class="panel-title"),
+                        class = "panel-heading"
+                    ),
+                    tags$div(
+                        withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
+                            "<h4 style='margin-top: 0;'>Generalized Pareto interpolation</h4>
+                            <p style='font-size: small; color: #666;'>Interpolate the distribution
+                            of your data directly, without any transformation.</p>" = "basic",
+                            "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
+                            <p style='font-size: small; color: #666;'>Individualize the distribution of income or wealth
+                            under the assumption of equal sharing among spouses. If you select this
+                            option, you must specify the share of singles in your input files.</p>" = "individualize",
+                            "<h4 style='margin-top: 0;'>Interpolate and merge countries</h4>
+                            <p style='font-size: small; color: #666;'>Merge the distribution of several countries
+                            into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
+                            "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
+                            <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example, labor and capital income,
+                            housing wealth and financial wealth, male earnings and female earnings, etc.), assuming that the dependence between both
+                            components is characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
+                            \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
+                            full independence, and \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
+                            You may specify a value for \\(\\theta\\) in each files,
+                            or set a global value below (the default value \\(\\theta = 3\\) corresponds to the typical
+                            dependance between labor and capital income).</p>" = "addup"
+                        ))),
+                        tags$div(
+                            numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
+                            style = "margin-left: 20px;"
+                        ),
+                        class = "panel-body"
+                    ),
+                    class = "panel panel-default"
                 )
             )
-        ),
+        )
+    ),
     icon = icon("arrow-down")
 )

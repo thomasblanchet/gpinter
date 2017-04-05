@@ -1,7 +1,0 @@
-name: shiny_app
-account: world-wealth-and-income-database
-server: shinyapps.io
-appId: 140615
-bundleId: 627760
-url: https://world-wealth-and-income-database.shinyapps.io/shiny_app/
-when: 1480355550.1932
