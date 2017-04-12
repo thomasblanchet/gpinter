@@ -20,9 +20,9 @@
 <a class="anchor" id="copula"></a>
 <h2>Adding up income or wealth components using Gumbel copulas</h2>
 <p>The interface has an option to add up components of income or wealth (for example, labor and capital income) with the assumption that the dependance between labor and capital income is characterized by a Gumbel copula. This option can be useful in countries where tabulations of the distribution of labor and capital incomes are available separately, but not jointly.</p>
-<p>The Gumbel copula assumption means that the joint distribution of the rank in the first and the second components has the density:
+<p>The Gumbel copula assumption means that the joint distribution of the rank in the first and the second components has the cumulative distribution function:
 \[
-f(u,v)=\exp\left[-\left((-\log u)^{\theta}+(-\log v)^{\theta}\right)^{1/\theta}\right]
+F(u,v)=\exp\left[-\left((-\log u)^{\theta}+(-\log v)^{\theta}\right)^{1/\theta}\right]
 \]
 where \(\theta \in [1,+\infty[\).The higher \(\theta\), the stronger the dependence, with \(\theta = 1\) meaning full independence, and \(\theta = +\infty\) meaning perfect correlation of the ranks. In practice, a value of \(\theta=3\) approximates the dependance between labor and capital income quite well. For more information, see T.&nbsp;Blanchet, “Copulas and the joint distribution of incomes”, 2017 (forthcoming).</p>
 
