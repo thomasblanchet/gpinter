@@ -1,5 +1,29 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
+/* Adjust colors to match WID.world style */
+a {
+    color: #0b6685;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    background-color: #0b6685;
+}
+
+.btn-primary {
+    background-color: #0b6685;
+    border-color: #084c62;
+}
+
+.btn-primary:hover {
+    background-color: #084c62;
+}
+
+.alert-info {
+    color: #1f4f4b;
+    background-color: #f0f1eb;
+    border: none;
+}
+
 #back-wid-world {
     margin-bottom: 20px;
     background-color: #f5f5f5;
@@ -32,23 +56,32 @@
     opacity: 0.3;
 }
 
+.navbar-default {
+    border-top: 2px solid #005C7D;
+    min-height: 30px;
+}
+
 .navbar-default .navbar-brand {
-    padding-top: 8px;
     text-transform: uppercase;
+    padding: 2.5px 10px 7.5px 10px;
+    height: 20px;
+    line-height: 20px;
 }
 
-.navbar-default .navbar-brand a p:first-child {
-    font-size: 20px;
-    color: #FFF;
-    margin-bottom: 0;
-    margin-top: 0;
+.navbar-header {
+    margin-bottom: 10px;
 }
 
-.navbar-default .navbar-brand a p:last-child {
-    font-size: 10px;
+.navbar-default .navbar-brand a span {
+    font-size: 12px;
     color: #FFF;
     margin-bottom: 0;
     margin-top: -3px;
+}
+
+.navbar-nav > li > a {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .navbar-default .navbar-brand a,
@@ -216,7 +249,6 @@ code {
 
 body {
     font-family: 'Lato', sans-serif;
-    margin-top: 305px;
 }
 
 #run {
@@ -271,9 +303,6 @@ span.btn-file {
 }
 
 @media (min-width: 768px) {
-    body {
-        margin-top: 100px;
-    }
     .nav-doc {
         display: block;
     }
@@ -298,11 +327,11 @@ span.btn-file {
 }
 
 @media (min-width: 992px) {
-    body {
-        margin-top: 50px;
-    }
     .nav-doc {
         display: block;
+    }
+    .navbar-nav {
+        float: right;
     }
     .anchor {
         display: block;
@@ -325,11 +354,11 @@ span.btn-file {
 }
 
 @media (min-width: 1200px) {
-    body {
-        margin-top: 50px;
-    }
     .nav-doc {
         display: block;
+    }
+    .navbar-nav {
+        float: right;
     }
     .anchor {
         display: block;
