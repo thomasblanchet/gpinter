@@ -51,8 +51,8 @@ plot_lorenz.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y"), na.rm=TRUE) +
         ggplot2::geom_abline(slope=1, linetype="dashed") +
         ggplot2::xlab("fraction of the population") +
         ggplot2::ylab("cumulative share")
@@ -81,7 +81,7 @@ plot_lorenz.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::geom_abline(slope=1, linetype="dashed") +
         ggplot2::xlab("fraction of the population") +
         ggplot2::ylab("cumulative share")
@@ -127,8 +127,8 @@ plot_gpc.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y"), na.rm=TRUE) +
         ggplot2::xlab("p") +
         ggplot2::ylab("inverted Pareto coefficient")
 
@@ -148,7 +148,7 @@ plot_gpc.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("p") +
         ggplot2::ylab("inverted Pareto coefficient")
 
@@ -183,7 +183,7 @@ plot_density.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("density")
 
@@ -278,8 +278,8 @@ plot_cdf.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y"), na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("cumulative distribution function")
 
@@ -298,7 +298,7 @@ plot_cdf.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("cumulative distribution function")
 
@@ -349,8 +349,8 @@ plot_quantile.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="p", y="y"), na.rm=TRUE) +
         ggplot2::xlab("p") +
         ggplot2::ylab("quantile")
 
@@ -369,7 +369,7 @@ plot_quantile.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="p", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("p") +
         ggplot2::ylab("quantile")
 
@@ -408,12 +408,12 @@ plot_tail.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
     df_point <- data.frame(
         x = x_point,
-        y = log(fitted_quantile(dist, 1 - exp(-x_point)))
+        y = suppressWarnings(log(fitted_quantile(dist, 1 - exp(-x_point))))
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y"), na.rm=TRUE) +
         ggplot2::xlab("-log(1 - p)") +
         ggplot2::ylab("log(Q(p))")
 
@@ -428,11 +428,11 @@ plot_tail.gpinter_dist <- function(dist, xlim, ...) {
 
     df_curve <- data.frame(
         x = x_curve,
-        y = log(fitted_quantile(dist, 1 - exp(-x_curve)))
+        y = suppressWarnings(log(fitted_quantile(dist, 1 - exp(-x_curve))))
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("-log(1 - p)") +
         ggplot2::ylab("log(Q(p))")
 
@@ -475,8 +475,8 @@ plot_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y"), na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("interpolation function")
 
@@ -495,7 +495,7 @@ plot_phi.gpinter_dist <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("interpolation function")
 
@@ -538,8 +538,8 @@ plot_deriv_phi.gpinter_dist_orig <- function(dist, xlim, ...) {
     )
 
     plot <- ggplot2::ggplot() +
-        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid") +
-        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y")) +
+        ggplot2::geom_line(data=df_curve, ggplot2::aes_string(x="x", y="y"), linetype="solid", na.rm=TRUE) +
+        ggplot2::geom_point(data=df_point, ggplot2::aes_string(x="x", y="y"), na.rm=TRUE) +
         ggplot2::xlab("x") +
         ggplot2::ylab("derivative of interpolation function")
 

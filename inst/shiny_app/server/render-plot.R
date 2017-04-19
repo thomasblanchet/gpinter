@@ -234,16 +234,20 @@ observe({
         enable("slider_bottom_50")
         enable("slider_gini")
 
-        minyear <- min(na.omit(as.numeric(data$output_years)))
-        maxyear <- max(na.omit(as.numeric(data$output_years)))
+        num_years <- suppressWarnings(na.omit(as.numeric(data$output_years)))
 
-        for (id in c("slider_top_1", "slider_top_10", "slider_middle_40",
-            "slider_bottom_50", "slider_gini")) {
-            updateSliderInput(session, id,
-                min = minyear,
-                max = maxyear,
-                value = c(minyear, maxyear)
-            )
+        if (length(num_years) > 0) {
+            minyear <- min(num_years)
+            maxyear <- max(num_years)
+
+            for (id in c("slider_top_1", "slider_top_10", "slider_middle_40",
+                "slider_bottom_50", "slider_gini")) {
+                updateSliderInput(session, id,
+                    min = minyear,
+                    max = maxyear,
+                    value = c(minyear, maxyear)
+                )
+            }
         }
     }
 })

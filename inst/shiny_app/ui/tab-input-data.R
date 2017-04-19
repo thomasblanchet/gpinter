@@ -154,7 +154,7 @@ tabPanel("Input data",
                             id = "example_tabs",
                             type = "pills"
                         ),
-                        tags$p("Download this sample file as", tags$a(icon("download"), "CSV", href="sample.csv"),
+                        tags$p("Download these sample files as", tags$a(icon("download"), "CSV", href="sample.zip"),
                             "/", tags$a(icon("download"), "Excel", href="sample.xlsx"), "or",
                             actionLink("import_example", "import it directly to the interface.", icon("arrow-down")),
                             style="text-align: right; font-size: small;"),

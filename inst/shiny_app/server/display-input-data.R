@@ -66,21 +66,6 @@ output$input_data_view <- renderUI({
         ))
     }
 
-    # Average/share variable for this data
-    avgsh <- data_view$whichavgsh
-    # Clean name for average/share variable
-    if (avgsh == "bracketshare") {
-        avgsh_clean <- "Bracket share"
-    } else if (avgsh == "topshare") {
-        avgsh_clean <- "Top share"
-    } else if (avgsh == "bracketavg") {
-        avgsh_clean <- "Bracket average"
-    } else if (avgsh == "topavg") {
-        avgsh_clean <- "Top average"
-    } else if (avgsh == "invpareto") {
-        avgsh_clean <- "Inverted Pareto coefficient"
-    }
-
     df <- data.frame(
         "Fractiles" = sprintf("%1.5f", data_view$p),
         "Thresholds" = format(round(data_view$threshold), big.mark=" ", scientific=FALSE)
@@ -88,12 +73,30 @@ output$input_data_view <- renderUI({
     if (is.na(data_view$threshold[1])) {
         df[, "Thresholds"] <- NA
     }
-    if (avgsh %in% c("bracketavg", "topavg")) {
-        df[avgsh_clean] <- format(round(data_view[[avgsh]]), big.mark=" ", scientific=FALSE)
-    } else {
-        df[avgsh_clean] <- sprintf("%.3f", data_view[[avgsh]])
+
+    if (!is.na(data_view$whichavgsh)) {
+        # Average/share variable for this data
+        avgsh <- data_view$whichavgsh
+        # Clean name for average/share variable
+        if (avgsh == "bracketshare") {
+            avgsh_clean <- "Bracket share"
+        } else if (avgsh == "topshare") {
+            avgsh_clean <- "Top share"
+        } else if (avgsh == "bracketavg") {
+            avgsh_clean <- "Bracket average"
+        } else if (avgsh == "topavg") {
+            avgsh_clean <- "Top average"
+        } else if (avgsh == "invpareto") {
+            avgsh_clean <- "Inverted Pareto coefficient"
+        }
+
+        if (avgsh %in% c("bracketavg", "topavg")) {
+            df[avgsh_clean] <- format(round(data_view[[avgsh]]), big.mark=" ", scientific=FALSE)
+        } else {
+            df[avgsh_clean] <- sprintf("%.3f", data_view[[avgsh]])
+        }
+        df[is.na(data_view[[avgsh]]), avgsh_clean] <- NA
     }
-    df[is.na(data_view[[avgsh]]), avgsh_clean] <- NA
 
     # Couple/single share for this data
     if (!is.null(data_view$whichcouple)) {

@@ -134,7 +134,7 @@ gpd_top_mean <- function(p, pn, mu, sigma, xi) {
 
 gpd_top_phi <- function(x, pn, mu, sigma, xi) {
     p <- 1 - exp(-x)
-    return(-log(gpd_top_mean(p, pn, mu, sigma, xi)))
+    return(suppressWarnings(-log(gpd_top_mean(p, pn, mu, sigma, xi))))
 }
 
 #' @title Derivative of the interpolation function in the last bracket

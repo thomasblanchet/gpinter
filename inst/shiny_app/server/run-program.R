@@ -217,6 +217,21 @@ interpolate_only <- function() {
                     }, error = function(e) {
                         return(simpleError(e$message))
                     })
+                } else if (is.na(data_model$whichavgsh)) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average
+                        )
+                        if (!is.na(data_model$lowerbound)) {
+                            args["hist_lower_bound"] <- data_model$lowerbound
+                        }
+                        result <- do.call(thresholds_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
                 } else {
                     result_model <- tryCatch({
                         args <- list(

@@ -198,7 +198,7 @@ parse_input <- function(data, var, dpcomma) {
         data_list$invpareto[is.infinite(data_list$invpareto)] <- NA
         data_list$invpareto[is.nan(data_list$invpareto)] <- NA
     } else {
-        return(simpleError("no data on shares/averages/inverted Pareto coefficients"))
+        data_list$whichavgsh <- NA
     }
 
     # Look for single/couple share
