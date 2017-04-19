@@ -315,7 +315,7 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
             return(1)
         } else if (q <= dist$qk[1]) {
             # Model for the bottom part
-            if (is.na(dist$delta_bottom)) {
+            if (!is.na(dist$delta_bottom)) {
                 return(dist$pk[1])
             } else {
                 return(gpd_bottom_cdf(q, dist$pk[1], dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom))

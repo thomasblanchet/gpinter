@@ -154,3 +154,55 @@ deriv_cubic_spline <- function(x, xk, yk, sk) {
     ))
 }
 
+
+#' @title Estimate a natural cubic spline with first derivative clamped at the last point
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Estimate a natural cubic spline from known values of the
+#' function: that is, estimate the first derivative of the spline at each knot
+#' to ensure a continuous second derivative, a zero second derivative
+#' at the first point, and a given first derivative at the last point.
+#'
+#' @param xk A vector of interpolation points.
+#' @param yk A vector of values at each interpolation point.
+#' @param sn Derivative at the last knot.
+#'
+#' @return The vector \code{sk} of first derivatives at each knot.
+
+clamped_cubic_spline <- function(xk, yk, sn) {
+    n <- length(xk)
+
+    x1 <- xk[1:(n - 2)]
+    x2 <- xk[2:(n - 1)]
+    x3 <- xk[3:(n - 0)]
+
+    y1 <- yk[1:(n - 2)]
+    y2 <- yk[2:(n - 1)]
+    y3 <- yk[3:(n - 0)]
+
+    # Tridiagonal matrix representing the system of equations
+    A <- matrix(data=0, nrow=n, ncol=n)
+    A[cbind(1:(n - 1), 2:n)] <- c(
+        -2/(xk[2] - xk[1]),
+        2/(x3 - x2)
+    )
+    A[cbind(1:n, 1:n)] <- c(
+        -4/(xk[2] - xk[1]),
+        4/(x2 - x1) + 4/(x3 - x2),
+        1
+    )
+    A[cbind(2:n, 1:(n - 1))] <- c(
+        2/(x2 - x1),
+        0
+    )
+
+    b <- c(
+        -6*(yk[2] - yk[1])/(xk[2] - xk[1])^2,
+        6*(y2 - y1)/(x2 - x1)^2 + 6*(y3 - y2)/(x3 - x2)^2,
+        sn
+    )
+
+    # Solve and return solution
+    return(solve(A, b))
+}

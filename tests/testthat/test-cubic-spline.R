@@ -85,3 +85,50 @@ test_that("Cubic spline interpolation function and its derivatives are valid", {
         expect_equal(deriv_cubic_spline(xk, xk, yk, sk), sk)
     }
 })
+
+test_that("Natural/clampled cubic spline function for simple cases", {
+    set.seed(19920902)
+    for (i in 1:10) {
+        # Constant function
+        xk <- cumsum(exp(rnorm(10)))
+        yk <- rep(rnorm(1), 10)
+        sn <- (yk[10] - yk[9])/(xk[10] - xk[9])
+        sk <- rep(0, 10)
+        expect_equal(clamped_cubic_spline(xk, yk, sn), sk)
+
+        # Linear function
+        xk <- cumsum(exp(rnorm(10)))
+        a <- rnorm(1)
+        b <- rnorm(1)
+        yk <- a*xk + b
+        sn <- (yk[10] - yk[9])/(xk[10] - xk[9])
+        sk <- rep(a, 10)
+        expect_equal(clamped_cubic_spline(xk, yk, sn), sk)
+
+        # Compare with explicit solution for three points only
+        xk <- cumsum(exp(rnorm(3)))
+        yk <- rnorm(3)
+        sk <- rnorm(3)
+
+        x1 <- xk[1]
+        x2 <- xk[2]
+        x3 <- xk[3]
+
+        y1 <- yk[1]
+        y2 <- yk[2]
+        y3 <- yk[3]
+
+        sn <- (yk[3] - yk[2])/(xk[3] - xk[2])
+
+        s1 <- (3*x3^2*(y1 - y2) - 2*x1^2*(y2 - y3) + x2^2*(-3*y1 + y2 + 2*y3) -
+            2*x1*(3*x3*(y1 - y2) + x2*(-3*y1 + y2 + 2*y3)))/((x1 - x2)*(4*x1 - x2 - 3*x3)*
+            (x2 - x3))
+        s2 <- (3*x3^2*(y1 - y2) + x2^2*(3*y1 + y2 - 4*y3) + 4*x1^2*(y2 - y3) +
+            x2*(-6*x3*y1 - 8*x1*y2 + 6*x3*y2 + 8*x1*y3))/((x1 - x2)*(4*x1 - x2 - 3*x3)*
+            (x2 - x3))
+        s3 <- (y2 - y3)/(x2 - x3)
+
+        expect_equal(clamped_cubic_spline(xk, yk, sn), c(s1, s2, s3))
+    }
+})
+
