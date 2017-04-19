@@ -25,6 +25,8 @@
 #' estimated value implies infinite mean). Default is \code{NULL}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
+#'
+#' @export
 
 thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
                            hist_lower_bound=0, binf=NULL) {
