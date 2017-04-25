@@ -81,7 +81,7 @@ kernel_deriv_error <- function(xk, x, t) {
     return(deriv_quintic_spline(x, param$xk, param$yk, param$sk, param$ak) - deriv_kernel(x, t))
 }
 
-#' @title Bound on the interpolation error
+#' @title Bound on the interpolation error for a constant phi'''
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
@@ -95,22 +95,24 @@ kernel_deriv_error <- function(xk, x, t) {
 #' interpolated function.
 #'
 #' @return The bound for each value of \code{x}.
+#'
+#' @export
 
-interpolation_value_error_bound <- function(x, xk, norm_deriv3) {
+interpolation_value_error_bound_cons <- function(x, xk, norm_deriv3) {
     return(sapply(x, function(x) {
         f <- Vectorize(function(u) abs(kernel_value_error(xk, x, u)*norm_deriv3/2))
         return(integrate(f, lower=min(xk), upper=max(xk))$value)
     }))
 }
-
-interpolation_deriv_error_bound <- function(x, xk, norm_deriv3) {
+ #' @export
+interpolation_deriv_error_bound_cons <- function(x, xk, norm_deriv3) {
     return(sapply(x, function(x) {
         f <- Vectorize(function(u) abs(kernel_deriv_error(xk, x, u)*norm_deriv3/2))
         return(integrate(f, lower=min(xk), upper=max(xk))$value)
     }))
 }
 
-#' @title Value of the interpolation error
+#' @title Bound on the interpolation error for a non constant phi'''
 #'
 #' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
 #'
@@ -123,8 +125,47 @@ interpolation_deriv_error_bound <- function(x, xk, norm_deriv3) {
 #' @param phid3 The third derivative of the interpolated function.
 #'
 #' @return The bound for each value of \code{x}.
+#'
+#' @export
 
-interpolation_value_error <- function(x, xk, phid3) {
+interpolation_value_error_bound_noncons <- function(x, xk, phid3) {
+    return(sapply(x, function(x) {
+        f <- Vectorize(function(u) abs(kernel_value_error(xk, x, u)*phid3(u)/2))
+        n <- length(xk)
+        return(sum(sapply(1:(n - 1), function(i) {
+            return(integrate(f, lower=xk[i], upper=xk[i + 1], stop.on.error=FALSE)$value)
+        })))
+    }))
+}
+
+#' @export
+interpolation_deriv_error_bound_noncons <- function(x, xk, phid3) {
+    return(sapply(x, function(x) {
+        f <- Vectorize(function(u) abs(kernel_deriv_error(xk, x, u)*phid3(u)/2))
+        n <- length(xk)
+        return(sum(sapply(1:(n - 1), function(i) {
+            return(integrate(f, lower=xk[i], upper=xk[i + 1], stop.on.error=FALSE)$value)
+        })))
+    }))
+}
+
+#' @title Value of the interpolation error for a non constant phi'''
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Give the value of the error for the interpolation and
+#' its derivative, given the third derivative of the
+#' interpolated function.
+#'
+#' @param x A vector of points at which to estimate the error.
+#' @param xk The position of the interpolation points.
+#' @param phid3 The third derivative of the interpolated function.
+#'
+#' @return The bound for each value of \code{x}.
+#'
+#' @export
+
+interpolation_value_error_noncons <- function(x, xk, phid3) {
     return(sapply(x, function(x) {
         f <- Vectorize(function(u) kernel_value_error(xk, x, u)*phid3(u)/2)
         n <- length(xk)
@@ -134,7 +175,8 @@ interpolation_value_error <- function(x, xk, phid3) {
     }))
 }
 
-interpolation_deriv_error <- function(x, xk, phid3) {
+#' @export
+interpolation_deriv_error_noncons <- function(x, xk, phid3) {
     return(sapply(x, function(x) {
         f <- Vectorize(function(u) kernel_deriv_error(xk, x, u)*phid3(u)/2)
         n <- length(xk)

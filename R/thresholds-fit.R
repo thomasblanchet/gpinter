@@ -102,8 +102,8 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
         }
     }
     # Re-add the non positive points
-    xk <- c(xk[threshold <= 0], xk)
-    yk <- c(yk[threshold <= 0], yk)
+    xk <- c(rep(NA, sum(threshold <= 0)), xk)
+    yk <- c(rep(NA, sum(threshold <= 0)), yk)
     sk <- c(rep(NA, sum(threshold <= 0)), sk)
     n <- length(xk)
 
@@ -112,7 +112,7 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
     use_hist <- NULL
     fk <- NULL
     for (i in 1:(n - 1)) {
-        if (qk[i + 1] <= 0) {
+        if (qk[i] <= 0) {
             fk <- c(fk, (qk[i + 1] - qk[i])/(pk[i + 1] - pk[i]))
             use_hist <- c(use_hist, TRUE)
         } else {
