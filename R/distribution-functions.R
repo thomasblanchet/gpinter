@@ -192,7 +192,7 @@ fitted_quantile.gpinter_dist <- function(dist, probs, ...) {
         } else {
             eq <- uniroot(function(q) {
                 return(fitted_cdf(dist, q) - p)
-            }, lower=lb, upper=ub, extendInt="upX", tol=sqrt(.Machine$double.eps))
+            }, lower=lb, upper=ub, extendInt="upX", tol=.Machine$double.eps^(3/4))
 
             return(eq$root)
         }
@@ -354,7 +354,7 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
                 },
                 lower = dist$pk[j],
                 upper = dist$pk[j + 1],
-                tol = sqrt(.Machine$double.eps),
+                tol = .Machine$double.eps^(3/4),
                 extendInt = "upX"
             )$root)
         }
@@ -538,9 +538,9 @@ threshold_share.gpinter_dist_indiv <- function(dist, q, ...) {
     # Overall couples income share
     overall_couple_share <- dist$couple_share*dist$couples$average/((1 + dist$couple_share)*dist$average)
 
-    # Share of singles income above q
+    # Share of singles with income above q
     top_single_share <- threshold_share(dist$singles$dist, q)
-    # Share of couples income above 2*q
+    # Share of couples with income above 2*q
     top_couple_share <- threshold_share(dist$couples$dist, 2*q)
 
     return(overall_single_share*top_single_share + overall_couple_share*top_couple_share)
