@@ -1,0 +1,16 @@
+citHeader("To cite gpinter in publications use:")
+
+citEntry(entry = "Article",
+  title        = "Generalized Pareto Curves: Theory and Applications",
+  author       = personList(as.person("Thomas Blanchet"),
+                   as.person("Juliette Fournier"), as.person("Thomas Piketty")),
+  journal      = "WID.world Working Paper Series",
+  year         = "2017",
+  url          = "http://wid.world/document/blanchet-t-fournier-j-piketty-t-generalized-pareto-curves-theory-applications-2017/",
+
+  textVersion  =
+  paste("Thomas Blanchet, Juliette Fournier, Thomas Piketty (2017).",
+        "Generalized Pareto Curves: Theory and Applications.",
+        "WID.world Working Paper Series.",
+        "URL http://wid.world/document/blanchet-t-fournier-j-piketty-t-generalized-pareto-curves-theory-applications-2017/.")
+)
