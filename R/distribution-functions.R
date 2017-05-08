@@ -350,6 +350,7 @@ fitted_cdf.gpinter_dist_orig <- function(dist, x, ...) {
                         dist$sk[j], dist$sk[j + 1],
                         dist$ak[j], dist$ak[j + 1]
                     )
+                    print(exp(x - y)*dydx - q)
                     return(exp(x - y)*dydx - q)
                 },
                 lower = dist$pk[j],

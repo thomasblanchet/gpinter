@@ -51,6 +51,7 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
         stop("You must either specify 'singleshare' or 'coupleshare' if min(p) != 0.")
     }
 
+    has_zero <- (p[1] == 0)
     if (!is.null(singletop)) {
         singletop <- singletop[ord]
         ck <- 1 - singletop
@@ -110,8 +111,13 @@ individualize_dist <- function(dist, p, singleshare=NULL, coupleshare=NULL,
     average_couples <- sum(diff(c(p_couples, 1))*bracketavg_couples)
 
     # Interpolate the distribution of singles and couples
-    dist_singles <- tabulation_fit(p_singles, thresholds, average_singles, bracketavg=bracketavg_singles)
-    dist_couples <- tabulation_fit(p_couples, thresholds, average_couples, bracketavg=bracketavg_couples)
+    if (has_zero) {
+        dist_singles <- tabulation_fit(p_singles, thresholds, average_singles, bracketavg=bracketavg_singles)
+        dist_couples <- tabulation_fit(p_couples, thresholds, average_couples, bracketavg=bracketavg_couples)
+    } else {
+        dist_singles <- tabulation_fit(p_singles[-1], thresholds[-1], average_singles, bracketavg=bracketavg_singles[-1])
+        dist_couples <- tabulation_fit(p_couples[-1], thresholds[-1], average_couples, bracketavg=bracketavg_couples[-1])
+    }
 
     # Return an object with the parent distribution and the interpolated couple
     # share

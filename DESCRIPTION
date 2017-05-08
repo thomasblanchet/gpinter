@@ -19,12 +19,12 @@ Imports:
     randtoolbox (>= 1.17),
     gumbel (>= 1.10),
     parallel (>= 3.2.5),
-    pbapply (>= 1.3)
+    pbapply (>= 1.3),
+    shiny (>= 0.14)
 Suggests:
     testthat (>= 1.0.2),
     numDeriv (>= 2016.8-1),
     xlsx (>= 0.5.7),
-    shiny (>= 0.14),
     shinyBS (>= 0.61),
     shinyjs (>= 0.7),
     readxl (>= 0.1.1),

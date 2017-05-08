@@ -9,3 +9,12 @@ You can install this package using the following R code:
 install.packages("devtools")
 devtools::install_github("thomasblanchet/gpinter")
 ```
+
+## Application
+
+You can run the web application built on the package at [this address](http://wid.world/gpinter/). Alternatively, you can run in locally on your computer using the R code:
+```{R}
+library(gpinter)
+run_app()
+```
+

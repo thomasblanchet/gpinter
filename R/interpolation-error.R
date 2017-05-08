@@ -96,6 +96,10 @@ kernel_deriv_error <- function(xk, x, t) {
 #'
 #' @return The bound for each value of \code{x}.
 #'
+#' @rdname interpolation_error_bound_cons
+#' @name interpolation_error_bound_cons
+#' @aliases interpolation_value_error_bound_cons interpolation_deriv_error_bound_cons
+#'
 #' @export
 
 interpolation_value_error_bound_cons <- function(x, xk, norm_deriv3) {
@@ -125,6 +129,10 @@ interpolation_deriv_error_bound_cons <- function(x, xk, norm_deriv3) {
 #' @param phid3 The third derivative of the interpolated function.
 #'
 #' @return The bound for each value of \code{x}.
+#'
+#' @rdname interpolation_error_bound_noncons
+#' @name interpolation_error_bound_noncons
+#' @aliases interpolation_value_error_bound_noncons interpolation_deriv_error_bound_noncons
 #'
 #' @export
 
@@ -162,6 +170,10 @@ interpolation_deriv_error_bound_noncons <- function(x, xk, phid3) {
 #' @param phid3 The third derivative of the interpolated function.
 #'
 #' @return The bound for each value of \code{x}.
+#'
+#' @rdname interpolation_error_noncons
+#' @name interpolation_error_noncons
+#' @aliases interpolation_value_error_noncons interpolation_deriv_error_noncons
 #'
 #' @export
 
