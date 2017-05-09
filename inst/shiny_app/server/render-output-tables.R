@@ -269,6 +269,8 @@ output$dl_tables_excel <- downloadHandler(
             seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
             seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
         )
+        # Keep a list of sheet names to avoid duplicate names
+        all_sheet_names <- c()
         # Create the workbook
         wb <- createWorkbook()
         for (country in data$output_countries) {
@@ -340,7 +342,15 @@ output$dl_tables_excel <- downloadHandler(
                 df_series <- df_series[!is.na(df_series[, "Year"]), ]
                 df_series <- df_series[order(df_series[, "Year"]), ]
 
-                sheet <- createSheet(wb, strtrim(series_label, 31))
+                sheet_name <- strtrim(series_label, 31)
+                i <- 1
+                while (sheet_name %in% all_sheet_names) {
+                    to_add <- paste0(" (", i, ")")
+                    sheet_name <- paste0(strtrim(series_label, 31 - nchar(to_add)), to_add)
+                    i <- i + 1
+                }
+                all_sheet_names <- c(all_sheet_names, sheet_name)
+                sheet <- createSheet(wb, sheet_name)
                 addDataFrame(df_series, sheet, row.names=FALSE)
 
                 for (year in data$output_years) {
@@ -394,7 +404,15 @@ output$dl_tables_excel <- downloadHandler(
                         out_df[var$b] <- table$invpareto
                     }
 
-                    sheet <- createSheet(wb, strtrim(data_label, 31))
+                    sheet_name <- strtrim(series_label, 31)
+                    i <- 1
+                    while (sheet_name %in% all_sheet_names) {
+                        to_add <- paste0(" (", i, ")")
+                        sheet_name <- paste0(strtrim(series_label, 31 - nchar(to_add)), to_add)
+                        i <- i + 1
+                    }
+                    all_sheet_names <- c(all_sheet_names, sheet_name)
+                    sheet <- createSheet(wb, sheet_name)
                     addDataFrame(out_df, sheet, row.names=FALSE)
                 }
             }
