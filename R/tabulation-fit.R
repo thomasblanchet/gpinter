@@ -23,9 +23,8 @@
 #' Pareto distribution, \code{"hist"} for histogram density, or \code{"dirac"}.
 #' Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 #' \code{min(threshold) == 0} and \code{"gpd"} otherwise.
-#' @param hist_lower_bound Lower bound of the histogram in the bottom of the
-#' distribution. Only relevant if \code{min(p) > 0} and
-#' \code{bottom_model == "hist"}. Default is \code{0}.
+#' @param lower_bound Lower bound of the distribution. Only relevant if
+#' \code{min(p) > 0}. Default is \code{0}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -36,7 +35,7 @@
 
 tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
                            bracketavg=NULL, topavg=NULL, invpareto=NULL,
-                           bottom_model=NULL, hist_lower_bound=0) {
+                           bottom_model=NULL, lower_bound=0) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -53,11 +52,9 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # Model for the bottom
     if (p[1] > 0 && is.null(bottom_model)) {
         if (threshold[1] > 0) {
-            bottom_model <- "hist"
+            bottom_model <- "gpd"
         } else if (threshold[1] == 0) {
             bottom_model <- "dirac"
-        } else {
-            bottom_model <- "gpd"
         }
     }
     if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
@@ -313,7 +310,16 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # Estimate the parameters of the model for the bottom
     bracketavg <- (average - mk_cns[1])/pk_cns[1] # Estimate the average in the bottom
     if (p[1] > 0) {
-        if (bottom_model == "gpd" || bracketavg <= 0) {
+        if (bottom_model == "gpd" && bracketavg > 0) {
+            q1 <- qk[1]
+            param_bottom <- list(
+                mu_bottom    = q1,
+                sigma_bottom = (q1*(-bracketavg + q1))/bracketavg,
+                xi_bottom    = 1 - q1/bracketavg,
+                delta        = NA
+            )
+            print(param_bottom)
+        } else if (bottom_model == "gpd" || bracketavg <= 0) {
             param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
             # Same thing as for the top if xi >= 1 or sigma <= 0
             if (param_bottom$sigma <= 0 || param_bottom$xi >= 1) {

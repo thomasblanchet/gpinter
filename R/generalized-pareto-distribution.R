@@ -209,7 +209,9 @@ gpd_bottom_parameters <- function(x1, y1, s1, a1, average) {
 #' @return The value of the quantile at \code{p}.
 
 gpd_bottom_quantile <- function(p, p1, mu, sigma, xi) {
-    return(mu + sigma/xi*(1 - (p1/p)^xi))
+    q <- mu + sigma/xi*(1 - (p1/p)^xi)
+    q[p == 0] <- mu + sigma/xi
+    return(q)
 }
 
 #' @title Density function of the generalized Pareto distribution in the bottom
