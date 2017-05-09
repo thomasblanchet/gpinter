@@ -278,7 +278,10 @@ gpd_bottom_cdf <- function(q, p1, mu, sigma, xi) {
 #' @return The value of the truncated average at \code{p}.
 
 gpd_bottom_mean <- function(p, p1, y1, mu, sigma, xi) {
-    return(mu*(p1 - p) + sigma/xi*(p1 - p) + sigma/(xi*(1 - xi))*(p*(p1/p)^xi - p1) + exp(-y1))
+    a <- suppressWarnings(mu*(p1 - p) + sigma/xi*(p1 - p) +
+            sigma/(xi*(1 - xi))*(p*(p1/p)^xi - p1) + exp(-y1))
+    a[p == 0] <- p1*(mu + sigma/(-1 + xi)) + exp(-y1)
+    return(a)
 }
 
 #' @title Interpolation function below the first bracket

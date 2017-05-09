@@ -17,9 +17,8 @@
 #' Pareto distribution, \code{"hist"} for histogram density, or \code{"dirac"}.
 #' Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 #' \code{min(threshold) == 0} and \code{"gpd"} otherwise.
-#' @param hist_lower_bound Lower bound of the histogram in the bottom of the
-#' distribution. Only relevant if \code{min(p) > 0} and
-#' \code{bottom_model == "hist"}. Default is \code{0}.
+#' @param lower_bound Lower bound of the distribution. Only relevant if
+#' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf The asymptotic value of the inverted Pareto coefficient. If
 #' \code{NULL}, it is estimated from the data (recommended, unless the
 #' estimated value implies infinite mean). Default is \code{NULL}.
@@ -29,7 +28,7 @@
 #' @export
 
 thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
-                           hist_lower_bound=0, binf=NULL) {
+                           lower_bound=0, binf=NULL) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -53,8 +52,8 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
     if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
         stop("'bottom_model' must be one of 'hist', 'pareto', 'dirac', or NULL.")
     }
-    if (!is.null(bottom_model) && bottom_model == "hist" && hist_lower_bound > threshold[1]) {
-        stop("'hist_lower_bound' must be smaller than min(threshold).")
+    if (!is.null(bottom_model) && bottom_model == "hist" && lower_bound > threshold[1]) {
+        stop("'lower_bound' must be smaller than min(threshold).")
     }
 
     # Calculate the tail function
@@ -137,13 +136,13 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
     mk <- c(mk, (1 - pk[n])*qk[n]/(1 - sn))
 
     if (pk[1] > 0) {
-        m0 <- pk[1]*(hist_lower_bound + qk[1])/2
+        m0 <- pk[1]*(lower_bound + qk[1])/2
 
         mk[n] <- mk[n] + average - sum(mk) - m0
 
         bracketavg <- mk/diff(c(pk, 1))
         return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-            bottom_model=bottom_model, hist_lower_bound=hist_lower_bound))
+            bottom_model=bottom_model, lower_bound=lower_bound))
     } else {
         missing_income <- (average - sum(mk))
         first_bracket_avg <- (mk[1] + missing_income)/pk[2]
@@ -152,6 +151,6 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
 
         bracketavg <- mk/diff(c(pk, 1))
         return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-            bottom_model=bottom_model, hist_lower_bound=hist_lower_bound))
+            bottom_model=bottom_model, lower_bound=lower_bound))
     }
 }

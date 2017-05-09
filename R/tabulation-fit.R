@@ -60,8 +60,8 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
         stop("'bottom_model' must be one of 'hist', 'gpd', 'dirac', or NULL.")
     }
-    if (!is.null(bottom_model) && bottom_model == "hist" && hist_lower_bound > threshold[1]) {
-        stop("'hist_lower_bound' must be smaller than min(threshold).")
+    if (!is.null(bottom_model) && bottom_model == "hist" && lower_bound > threshold[1]) {
+        stop("'lower_bound' must be smaller than min(threshold).")
     }
 
     # Put the information on average in the right format (truncated average)
@@ -314,11 +314,10 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             q1 <- qk[1]
             param_bottom <- list(
                 mu_bottom    = q1,
-                sigma_bottom = (q1*(-bracketavg + q1))/bracketavg,
-                xi_bottom    = 1 - q1/bracketavg,
+                sigma_bottom = ((bracketavg - q1)*(lower_bound - q1))/(bracketavg - lower_bound),
+                xi_bottom    = (bracketavg - q1)/(bracketavg - lower_bound),
                 delta        = NA
             )
-            print(param_bottom)
         } else if (bottom_model == "gpd" || bracketavg <= 0) {
             param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
             # Same thing as for the top if xi >= 1 or sigma <= 0
@@ -332,10 +331,10 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=p[1])
         } else if (bottom_model == "hist") {
             use_hist <- c(TRUE, TRUE, use_hist)
-            hist <- hist_interpol(0, pk_cns[1], hist_lower_bound, qk_cns[1], bracketavg)
+            hist <- hist_interpol(0, pk_cns[1], lower_bound, qk_cns[1], bracketavg)
             fk_cns <- c(hist$f0, hist$f1, fk_cns)
             pk_cns <- c(0, hist$pstar, pk_cns)
-            qk_cns <- c(hist_lower_bound, hist$qstar, qk_cns)
+            qk_cns <- c(lower_bound, hist$qstar, qk_cns)
             mk_cns <- c(
                 average,
                 hist_lorenz(hist$pstar,
@@ -347,7 +346,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
             )
             xk_cns <- c(0, -log(1 - hist$pstar), xk_cns)
             yk_cns <- c(-log(average), NA, yk_cns)
-            sk_cns <- c(hist_lower_bound/average, NA, sk_cns)
+            sk_cns <- c(lower_bound/average, NA, sk_cns)
             ak_cns <- c(NA, NA, ak_cns)
 
             param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=NA)

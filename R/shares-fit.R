@@ -22,9 +22,8 @@
 #' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 #' Pareto distribution, or \code{"hist"} for histogram density. Default is
 #' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
-#' @param hist_lower_bound Lower bound of the histogram in the bottom of the
-#' distribution. Only relevant if \code{min(p) > 0} and
-#' \code{bottom_model == "hist"}. Default is \code{0}.
+#' @param lower_bound Lower bound of the distribution. Only relevant if
+#' \code{min(p) > 0}. Default is \code{0}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -35,7 +34,7 @@
 
 shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
     bracketavg=NULL, topavg=NULL, invpareto=NULL, first_threshold=NULL,
-    bottom_model=NULL, hist_lower_bound=0) {
+    bottom_model=NULL, lower_bound=0) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -142,5 +141,5 @@ shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
 
     # Pass the estimated thresholds to tabulation_fit
     return(tabulation_fit(p=pk, threshold=threshold, average=average,
-        bracketavg=bracketavg, bottom_model=bottom_model, hist_lower_bound=hist_lower_bound))
+        bracketavg=bracketavg, bottom_model=bottom_model, lower_bound=lower_bound))
 }

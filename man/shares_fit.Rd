@@ -6,7 +6,7 @@
 \usage{
 shares_fit(p, average, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, invpareto = NULL,
-  first_threshold = NULL, bottom_model = NULL, hist_lower_bound = 0)
+  first_threshold = NULL, bottom_model = NULL, lower_bound = 0)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -31,9 +31,8 @@ Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 Pareto distribution, or \code{"hist"} for histogram density. Default is
 \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.}
 
-\item{hist_lower_bound}{Lower bound of the histogram in the bottom of the
-distribution. Only relevant if \code{min(p) > 0} and
-\code{bottom_model == "hist"}. Default is \code{0}.}
+\item{lower_bound}{Lower bound of the distribution. Only relevant if
+\code{min(p) > 0}. Default is \code{0}.}
 }
 \value{
 An object of class \code{gpinter_dist_orig}.
