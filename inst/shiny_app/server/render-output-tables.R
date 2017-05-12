@@ -404,11 +404,11 @@ output$dl_tables_excel <- downloadHandler(
                         out_df[var$b] <- table$invpareto
                     }
 
-                    sheet_name <- strtrim(series_label, 31)
+                    sheet_name <- strtrim(data_label, 31)
                     i <- 1
                     while (sheet_name %in% all_sheet_names) {
                         to_add <- paste0(" (", i, ")")
-                        sheet_name <- paste0(strtrim(series_label, 31 - nchar(to_add)), to_add)
+                        sheet_name <- paste0(strtrim(data_label, 31 - nchar(to_add)), to_add)
                         i <- i + 1
                     }
                     all_sheet_names <- c(all_sheet_names, sheet_name)
