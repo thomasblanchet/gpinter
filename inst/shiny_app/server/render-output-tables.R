@@ -96,20 +96,13 @@ output$dl_tables_csv <- downloadHandler(
         )
 
         tmp <- tempdir()
-        files <- c()
+        # Time series for each country and income concept
+        df_all_series <- data.frame()
         for (country in data$output_countries) {
             for (component in data$output_components) {
-                # Times series for the given country and income concept
-                series_label <- c(component, country)
-                series_label <- series_label[!series_label %in% c("n.a.", "merged", "added up")]
-                series_label <- paste(series_label, collapse=", ")
-                if (series_label == "") {
-                    series_label <- "series"
-                } else {
-                    series_label <- paste("series", series_label, sep=" - ")
-                }
-
                 df_series <- data.frame(
+                    "Country" = rep(country, length(data$output_years)),
+                    "Component" = rep(component, length(data$output_years)),
                     "Year" = data$output_years,
                     "Average" = sapply(data$output_years, function(year) {
                         result <- data$output_dist[[year]][[country]][[component]]
@@ -166,16 +159,25 @@ output$dl_tables_csv <- downloadHandler(
                 df_series <- df_series[!is.na(df_series[, "Year"]), ]
                 df_series <- df_series[order(df_series[, "Year"]), ]
 
-                filename_series <- paste0(tmp, "/", series_label, ".csv")
-                write.table(df_series,
-                    file = filename_series,
-                    na = "",
-                    row.names = FALSE,
-                    sep = isolate(input$csv_output_field_separator),
-                    dec = isolate(input$csv_output_dec_separator)
-                )
-                files <- c(files, filename_series)
+                if (all(is.na(df_series["Average"]))) {
+                    next
+                }
 
+                df_all_series <- rbind(df_all_series, df_series)
+            }
+        }
+        write.table(df_all_series,
+            file = paste0(tmp, "/series.csv"),
+            na = "",
+            row.names = FALSE,
+            sep = isolate(input$csv_output_field_separator),
+            dec = isolate(input$csv_output_dec_separator)
+        )
+        files <- paste0(tmp, "/series.csv")
+
+        # Files with detailed g-perc data
+        for (country in data$output_countries) {
+            for (component in data$output_components) {
                 for (year in data$output_years) {
                     result <- data$output_dist[[year]][[country]][[component]]
                     table <- data$output_tables[[year]][[country]][[component]]
@@ -273,19 +275,14 @@ output$dl_tables_excel <- downloadHandler(
         all_sheet_names <- c()
         # Create the workbook
         wb <- createWorkbook()
+
+        # Time series for each country and income concept
+        df_all_series <- data.frame()
         for (country in data$output_countries) {
             for (component in data$output_components) {
-                # Times series for the given country and income concept
-                series_label <- c(component, country)
-                series_label <- series_label[!series_label %in% c("n.a.", "merged", "added up")]
-                series_label <- paste(series_label, collapse=", ")
-                if (series_label == "") {
-                    series_label <- "series"
-                } else {
-                    series_label <- paste("series", series_label, sep=" - ")
-                }
-
                 df_series <- data.frame(
+                    "Country" = rep(country, length(data$output_years)),
+                    "Component" = rep(component, length(data$output_years)),
                     "Year" = data$output_years,
                     "Average" = sapply(data$output_years, function(year) {
                         result <- data$output_dist[[year]][[country]][[component]]
@@ -342,17 +339,20 @@ output$dl_tables_excel <- downloadHandler(
                 df_series <- df_series[!is.na(df_series[, "Year"]), ]
                 df_series <- df_series[order(df_series[, "Year"]), ]
 
-                sheet_name <- strtrim(series_label, 31)
-                i <- 1
-                while (sheet_name %in% all_sheet_names) {
-                    to_add <- paste0(" (", i, ")")
-                    sheet_name <- paste0(strtrim(series_label, 31 - nchar(to_add)), to_add)
-                    i <- i + 1
+                if (all(is.na(df_series["Average"]))) {
+                    next
                 }
-                all_sheet_names <- c(all_sheet_names, sheet_name)
-                sheet <- createSheet(wb, sheet_name)
-                addDataFrame(df_series, sheet, row.names=FALSE)
 
+                df_all_series <- rbind(df_all_series, df_series)
+            }
+        }
+        sheet_name <- "series"
+        all_sheet_names <- sheet_name
+        sheet <- createSheet(wb, sheet_name)
+        addDataFrame(df_all_series, sheet, row.names=FALSE)
+
+        for (country in data$output_countries) {
+            for (component in data$output_components) {
                 for (year in data$output_years) {
                     result <- data$output_dist[[year]][[country]][[component]]
                     table <- data$output_tables[[year]][[country]][[component]]
