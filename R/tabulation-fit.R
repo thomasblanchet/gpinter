@@ -107,11 +107,19 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     # Sanity check of the data
     # Fractiles are strictly increasing
     if (any(diff(p) <= 0)) {
-        stop("Fractiles must be strictly increasing.")
+        index_error <- min(which(diff(p) <= 0))
+        p1_error <- p[index_error]
+        p2_error <- p[index_error + 1]
+        stop(paste0("p must be strictly increasing: at rows ", index_error, " and ", index_error + 1,
+            ", you have p=", p1_error, " followed by p=", p2_error, "."))
     }
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
-        stop("Thresholds must be strictly increasing.")
+        index_error <- min(which(diff(threshold) <= 0))
+        t1_error <- threshold[index_error]
+        t2_error <- threshold[index_error + 1]
+        stop(paste0("thresholds must be strictly increasing: at rows ", index_error, " and ", index_error + 1,
+            ", you have threshold=", t1_error, " followed by threshold=", t2_error, "."))
     }
     # Percentiles between 0 and 1
     if (any(p >= 1) | any(p < 0)) {
