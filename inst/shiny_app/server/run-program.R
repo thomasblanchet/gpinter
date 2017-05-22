@@ -122,6 +122,8 @@ show_success <- function() {
 
     shinyjs::show("success_message")
     shinyjs::show("dismiss_run_success")
+
+    shinyjs::runjs("notify_user_success();")
 }
 
 show_failure <- function(data_label, msg) {
@@ -141,6 +143,8 @@ show_failure <- function(data_label, msg) {
     msg <- gsub("'", "\\'", msg, fixed=TRUE)
     shinyjs::runjs(paste0("$('#error_message2').html('<i class=\"fa fa-exclamation-circle\" aria-hidden=\"true\"></i> &nbsp; ", msg, "')"))
     shinyjs::removeClass("run_progress", "active")
+
+    shinyjs::runjs("notify_user_failure();")
 }
 
 set_active <- function(active) {

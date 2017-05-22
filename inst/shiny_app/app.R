@@ -53,6 +53,8 @@ server <- function(input, output, session) {
 
 ui <- tagList(
     useShinyjs(),
+    tags$head(tags$script(src="notify.js")),
+    tags$head(tags$script(src="set-up-notifications.js")),
     navbarPage(
         title = actionLink("main_logo", tagList(
             tags$span("generalized Pareto interpolation")
