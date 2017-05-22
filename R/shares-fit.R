@@ -15,7 +15,6 @@
 #' @param topshare The corresponding top share.
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
-#' @param invpareto The inverted Pareto coefficient.
 #' @param first_threshold The value of the first threshold. If \code{NULL}, it
 #' is estimated from the data. Default is \code{NULL}.
 #' @param bottom_model Which model to use at the bottom of the distribution?
@@ -33,56 +32,17 @@
 #' @export
 
 shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
-    bracketavg=NULL, topavg=NULL, invpareto=NULL, first_threshold=NULL,
-    bottom_model=NULL, lower_bound=0) {
-    # Number of interpolation points
-    n <- length(p)
-    if (n < 3) {
-        stop("The method requires at least three interpolation points.")
-    }
-    # Sort the input data
-    ord <- order(p)
-    p <- p[ord]
+                       bracketavg=NULL, topavg=NULL, first_threshold=NULL,
+                       bottom_model=NULL, lower_bound=0) {
 
-    # Put the information on average in the right format (truncated average)
-    if (!is.null(bracketshare)) {
-        if (length(bracketshare) != n) {
-            stop("'p' and 'bracketshare' must have the same length.")
-        }
-        bracketshare <- bracketshare[ord]
-        m <- rev(cumsum(rev(bracketshare*average)))
-    } else if (!is.null(topshare)) {
-        if (length(topshare) != n) {
-            stop("'p' and 'topshare' must have the same length.")
-        }
-        topshare <- topshare[ord]
-        m <- average*topshare
-    } else if (!is.null(bracketavg)) {
-        if (length(bracketavg) != n) {
-            stop("'p' and 'bracketavg' must have the same length.")
-        }
-        bracketavg <- bracketavg[ord]
-        m <- rev(cumsum(rev(diff(c(p, 1))*bracketavg)))
-    } else if (!is.null(topavg)) {
-        if (length(topavg) != n) {
-            stop("'p' and 'topavg' must have the same length.")
-        }
-        topavg <- topavg[ord]
-        m <- (1 - p)*topavg
-    } else if (!is.null(invpareto)) {
-        if (length(invpareto) != n) {
-            stop("'p' and 'invpareto' must have the same length.")
-        }
-        invpareto <- invpareto[ord]
-        m <- (1 - p)*threshold*invpareto
+    input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
+        topavg, invpareto, first_threshold, bottom_model, lower_bound)
 
-        # The inverted Pareto may not be defined for the first threshold
-        if (is.na(invpareto[1]) & p[1] == 0) {
-            m[1] <- average
-        }
-    } else {
-        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg', 'topavg' or 'invpareto'.")
-    }
+    p            <- input$p
+    m            <- input$m
+    bottom_model <- input$bottom_model
+    lower_bound  <- input$lower_bound
+    n            <- input$n
 
     # Log-transform of the data
     pk <- p

@@ -5,8 +5,8 @@
 \title{Fit a nonparametric distribution on tabulated data without thresholds}
 \usage{
 shares_fit(p, average, bracketshare = NULL, topshare = NULL,
-  bracketavg = NULL, topavg = NULL, invpareto = NULL,
-  first_threshold = NULL, bottom_model = NULL, lower_bound = 0)
+  bracketavg = NULL, topavg = NULL, first_threshold = NULL,
+  bottom_model = NULL, lower_bound = 0)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -20,8 +20,6 @@ shares_fit(p, average, bracketshare = NULL, topshare = NULL,
 \item{bracketavg}{The corresponding bracket average.}
 
 \item{topavg}{The corresponding top average.}
-
-\item{invpareto}{The inverted Pareto coefficient.}
 
 \item{first_threshold}{The value of the first threshold. If \code{NULL}, it
 is estimated from the data. Default is \code{NULL}.}

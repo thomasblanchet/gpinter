@@ -37,7 +37,7 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
                            bracketavg=NULL, topavg=NULL, invpareto=NULL,
                            bottom_model=NULL, lower_bound=0) {
     # Check and clean the input
-    input <- clean_input(p, threshold, average, bracketshare, topshare,
+    input <- clean_input_tabulation(p, threshold, average, bracketshare, topshare,
         bracketavg, topavg, invpareto, bottom_model, lower_bound)
 
     p            <- input$p

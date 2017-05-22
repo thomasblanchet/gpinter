@@ -27,9 +27,9 @@
 #'
 #' @export
 
-clean_input <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
-                        bracketavg=NULL, topavg=NULL, invpareto=NULL,
-                        bottom_model=NULL, lower_bound=0) {
+clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
+                                   bracketavg=NULL, topavg=NULL, invpareto=NULL,
+                                   bottom_model=NULL, lower_bound=0) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -139,4 +139,78 @@ clean_input <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
     }
 
     return(list(p=p, m=m, threshold=threshold, bottom_model=bottom_model, lower_bound=lower_bound, n=n))
+}
+
+#' @title Clean (and check) the inputs for \code{shares_fit}
+#'
+#' @author Thomas Blanchet, Juliette Fournier, Thomas Piketty
+#'
+#' @description Check the validity and consistency of the input arguments
+#' of \code{shares_fit}.
+#'
+#' @param p A vector of values in [0, 1].
+#' @param average The average over the entire distribution.
+#' @param bracketshare The corresponding bracket share.
+#' @param topshare The corresponding top share.
+#' @param bracketavg The corresponding bracket average.
+#' @param topavg The corresponding top average.
+#' @param invpareto The inverted Pareto coefficient.
+#' @param first_threshold The value of the first threshold. If \code{NULL}, it
+#' is estimated from the data. Default is \code{NULL}.
+#' @param bottom_model Which model to use at the bottom of the distribution?
+#' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
+#' Pareto distribution, or \code{"hist"} for histogram density. Default is
+#' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
+#' @param lower_bound Lower bound of the distribution. Only relevant if
+#' \code{min(p) > 0}. Default is \code{0}.
+#'
+#' @return A list with the following components: \itemize{
+#'     \item
+#' }
+#'
+#' @export
+
+clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
+                               bracketavg=NULL, topavg=NULL, invpareto=NULL,
+                               first_threshold=NULL, bottom_model=NULL, lower_bound=0) {
+    # Number of interpolation points
+    n <- length(p)
+    if (n < 3) {
+        stop("The method requires at least three interpolation points.")
+    }
+    # Sort the input data
+    ord <- order(p)
+    p <- p[ord]
+
+    # Put the information on average in the right format (truncated average)
+    if (!is.null(bracketshare)) {
+        if (length(bracketshare) != n) {
+            stop("'p' and 'bracketshare' must have the same length.")
+        }
+        bracketshare <- bracketshare[ord]
+        m <- rev(cumsum(rev(bracketshare*average)))
+    } else if (!is.null(topshare)) {
+        if (length(topshare) != n) {
+            stop("'p' and 'topshare' must have the same length.")
+        }
+        topshare <- topshare[ord]
+        m <- average*topshare
+    } else if (!is.null(bracketavg)) {
+        if (length(bracketavg) != n) {
+            stop("'p' and 'bracketavg' must have the same length.")
+        }
+        bracketavg <- bracketavg[ord]
+        m <- rev(cumsum(rev(diff(c(p, 1))*bracketavg)))
+    } else if (!is.null(topavg)) {
+        if (length(topavg) != n) {
+            stop("'p' and 'topavg' must have the same length.")
+        }
+        topavg <- topavg[ord]
+        m <- (1 - p)*topavg
+    } else {
+        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg' or 'topavg'.")
+    }
+
+    return(list(p=p, m=m, first_threshold=first_threshold,
+        bottom_model=bottom_model, lower_bound=lower_bound, n=n))
 }
