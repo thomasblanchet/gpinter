@@ -38,11 +38,11 @@ shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
     input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
         topavg, invpareto, first_threshold, bottom_model, lower_bound)
 
-    p            <- input$p
-    m            <- input$m
+    p <- input$p
+    m <- input$m
+    n <- input$n
     bottom_model <- input$bottom_model
     lower_bound  <- input$lower_bound
-    n            <- input$n
 
     # Log-transform of the data
     pk <- p

@@ -292,6 +292,46 @@ parse_input <- function(data, var, dpcomma) {
         data_list$lowerbound <- NA
     }
 
+    # Check consistency of input data
+    if (is.na(data_list$threshold[1])) {
+        args <- list(
+            p = data_list$p,
+            average = data_list$average
+        )
+        avgsh <- data_list$whichavgsh
+        args[avgsh] <- data_list[avgsh]
+        if (!is.na(data_list$lowerbound)) {
+            if (min(data_list$p) == 0) {
+                args["first_threshold"] <- data_list$lowerbound
+            } else {
+                args["lower_bound"] <- data_list$lowerbound
+            }
+        }
+        result <- tryCatch(do.call(clean_input_shares, args), error = function(e) {
+            return(simpleError(e$message))
+        })
+        if (is.error(result)) {
+            return(result)
+        }
+    } else {
+        args <- list(
+            p = data_list$p,
+            threshold = data_list$threshold,
+            average = data_list$average
+        )
+        avgsh <- data_list$whichavgsh
+        args[avgsh] <- data_list[avgsh]
+        if (!is.na(data_list$lowerbound)) {
+            args["lower_bound"] <- data_list$lowerbound
+        }
+        result <- tryCatch(do.call(clean_input_tabulation, args), error = function(e) {
+            return(simpleError(e$message))
+        })
+        if (is.error(result)) {
+            return(result)
+        }
+    }
+
     return(data_list)
 }
 

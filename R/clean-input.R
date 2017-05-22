@@ -33,10 +33,10 @@ clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, top
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
-        stop("The method requires at least three interpolation points.")
+        stop("the method requires at least three interpolation points")
     }
     if (length(threshold) != n) {
-        stop("'p' and 'threshold' must have the same length.")
+        stop("'p' and 'threshold' must have the same length")
     }
     # Sort the input data
     ord <- order(p)
@@ -52,40 +52,40 @@ clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, top
         }
     }
     if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
-        stop("'bottom_model' must be one of 'hist', 'gpd', 'dirac', or NULL.")
+        stop("'bottom_model' must be one of 'hist', 'gpd', 'dirac', or NULL")
     }
     if (!is.null(bottom_model) && bottom_model == "hist" && lower_bound > threshold[1]) {
-        stop("'lower_bound' must be smaller than min(threshold).")
+        stop("'lower_bound' must be smaller than min(threshold)")
     }
 
     # Put the information on average in the right format (truncated average)
     if (!is.null(bracketshare)) {
         if (length(bracketshare) != n) {
-            stop("'p' and 'bracketshare' must have the same length.")
+            stop("'p' and 'bracketshare' must have the same length.-")
         }
         bracketshare <- bracketshare[ord]
         m <- rev(cumsum(rev(bracketshare*average)))
     } else if (!is.null(topshare)) {
         if (length(topshare) != n) {
-            stop("'p' and 'topshare' must have the same length.")
+            stop("'p' and 'topshare' must have the same length")
         }
         topshare <- topshare[ord]
         m <- average*topshare
     } else if (!is.null(bracketavg)) {
         if (length(bracketavg) != n) {
-            stop("'p' and 'bracketavg' must have the same length.")
+            stop("'p' and 'bracketavg' must have the same length")
         }
         bracketavg <- bracketavg[ord]
         m <- rev(cumsum(rev(diff(c(p, 1))*bracketavg)))
     } else if (!is.null(topavg)) {
         if (length(topavg) != n) {
-            stop("'p' and 'topavg' must have the same length.")
+            stop("'p' and 'topavg' must have the same length")
         }
         topavg <- topavg[ord]
         m <- (1 - p)*topavg
     } else if (!is.null(invpareto)) {
         if (length(invpareto) != n) {
-            stop("'p' and 'invpareto' must have the same length.")
+            stop("'p' and 'invpareto' must have the same length")
         }
         invpareto <- invpareto[ord]
         m <- (1 - p)*threshold*invpareto
@@ -95,7 +95,7 @@ clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, top
             m[1] <- average
         }
     } else {
-        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg', 'topavg' or 'invpareto'.")
+        stop("you must specify one of 'bracketshare', 'topshare', 'bracketavg', 'topavg' or 'invpareto'")
     }
 
     # Sanity check of the data
@@ -105,7 +105,7 @@ clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, top
         p1_error <- p[index_error]
         p2_error <- p[index_error + 1]
         stop(paste0("p must be strictly increasing: at rows ", index_error, " and ", index_error + 1,
-            ", you have p=", p1_error, " followed by p=", p2_error, "."))
+            ", you have p=", p1_error, " followed by p=", p2_error))
     }
     # Quantile function is increasing
     if (any(diff(threshold) <= 0)) {
@@ -113,27 +113,27 @@ clean_input_tabulation <- function(p, threshold, average, bracketshare=NULL, top
         t1_error <- threshold[index_error]
         t2_error <- threshold[index_error + 1]
         stop(paste0("thresholds must be strictly increasing: at rows ", index_error, " and ", index_error + 1,
-            ", you have threshold=", t1_error, " followed by threshold=", t2_error, "."))
+            ", you have threshold=", t1_error, " followed by threshold=", t2_error))
     }
     # Percentiles between 0 and 1
     if (any(p >= 1) | any(p < 0)) {
-        stop("The elements of 'p' must be >=0 and <1.")
+        stop("the elements of 'p' must be >=0 and <1.")
     }
     # The average between each bracket is within the bracket
     bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
     for (i in 1:(n - 1)) {
         if (bracketavg[i] <= threshold[i] || bracketavg[i] >= threshold[i + 1]) {
             stop(sprintf(paste(
-                "Input data is inconsistent between p=%.4f and p=%.4f. The bracket",
-                "average (%.2f) is not strictly within the bracket thresholds (%.2f and %.2f)."
+                "input data is inconsistent between p=%.4f and p=%.4f. The bracket",
+                "average (%.2f) is not strictly within the bracket thresholds (%.2f and %.2f)"
             ), p[i], p[i + 1], bracketavg[i], threshold[i], threshold[i + 1]))
         }
     }
     # Total average consistent with bracket averages
     if (p[1] == 0) {
         if (abs((average - m[1])/average) > 1e-2) {
-            stop(sprintf(paste("The average you specified (%.2f) is inconsistent with the average",
-                "implied by the brackets (%.2f)."), average, m[1]))
+            stop(sprintf(paste("the average you specified (%.2f) is inconsistent with the average",
+                "implied by the brackets (%.2f)"), average, m[1]))
         }
         average <- m[1]
     }
@@ -176,7 +176,7 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
-        stop("The method requires at least three interpolation points.")
+        stop("the method requires at least three interpolation points")
     }
     # Sort the input data
     ord <- order(p)
@@ -185,30 +185,30 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
     # Put the information on average in the right format (truncated average)
     if (!is.null(bracketshare)) {
         if (length(bracketshare) != n) {
-            stop("'p' and 'bracketshare' must have the same length.")
+            stop("'p' and 'bracketshare' must have the same length")
         }
         bracketshare <- bracketshare[ord]
         m <- rev(cumsum(rev(bracketshare*average)))
     } else if (!is.null(topshare)) {
         if (length(topshare) != n) {
-            stop("'p' and 'topshare' must have the same length.")
+            stop("'p' and 'topshare' must have the same length")
         }
         topshare <- topshare[ord]
         m <- average*topshare
     } else if (!is.null(bracketavg)) {
         if (length(bracketavg) != n) {
-            stop("'p' and 'bracketavg' must have the same length.")
+            stop("'p' and 'bracketavg' must have the same length")
         }
         bracketavg <- bracketavg[ord]
         m <- rev(cumsum(rev(diff(c(p, 1))*bracketavg)))
     } else if (!is.null(topavg)) {
         if (length(topavg) != n) {
-            stop("'p' and 'topavg' must have the same length.")
+            stop("'p' and 'topavg' must have the same length")
         }
         topavg <- topavg[ord]
         m <- (1 - p)*topavg
     } else {
-        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg' or 'topavg'.")
+        stop("You must specify one of 'bracketshare', 'topshare', 'bracketavg' or 'topavg'")
     }
 
     return(list(p=p, m=m, first_threshold=first_threshold,

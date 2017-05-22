@@ -40,12 +40,12 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     input <- clean_input_tabulation(p, threshold, average, bracketshare, topshare,
         bracketavg, topavg, invpareto, bottom_model, lower_bound)
 
-    p            <- input$p
-    m            <- input$m
-    threshold    <- input$threshold
+    p <- input$p
+    m <- input$m
+    n <- input$n
     bottom_model <- input$bottom_model
     lower_bound  <- input$lower_bound
-    n            <- input$n
+    threshold    <- input$threshold
 
     # Log-transform of the data
     pk <- p
