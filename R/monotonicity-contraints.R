@@ -16,7 +16,7 @@
 #' @param a1 Second derivative of the first spline at \code{x1}.
 
 is_increasing_fast <- function(x0, x1, y0, y1, s0, s1, a0, a1) {
-    return(all(mono_cns(x0, x1, y0, y1, s0, s1, a0, a1) >= -1e-6))
+    return(all(mono_cns(x0, x1, y0, y1, s0, s1, a0, a1) > 0))
 }
 
 #' @title “Slow” check of monotonicity constraint
@@ -41,7 +41,7 @@ is_increasing_slow <- function(x0, x1, y0, y1, s0, s1, a0, a1, m=1e4) {
     x_eval <- seq(x0, x1, length.out=m)
     phid2 <- hd2(x_eval, x0, x1, y0, y1, s0, s1, a0, a1)
     phid1 <- hd1(x_eval, x0, x1, y0, y1, s0, s1, a0, a1)
-    return(all(phid2 + phid1*(1 - phid1) >= -1e-6))
+    return(all(phid2 + phid1*(1 - phid1) > 0))
 }
 
 #' @title Check of monotonicity constraint
