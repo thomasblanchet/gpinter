@@ -221,8 +221,13 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
     }
 
     # Estimate the parameters of the model for the bottom
-    bracketavg <- (average - mk_cns[1])/pk_cns[1] # Estimate the average in the bottom
     if (p[1] > 0) {
+        bracketavg <- (average - mk_cns[1])/pk_cns[1] # Estimate the average in the bottom
+        if (bracketavg >= threshold[1]) {
+            stop(paste0("The average below the first bracket (", round(bracketavg),
+                ") is above the first threshold (", round(threshold[1]), ")"))
+        }
+
         if (bottom_model == "gpd" && bracketavg > 0) {
             q1 <- qk[1]
             param_bottom <- list(
