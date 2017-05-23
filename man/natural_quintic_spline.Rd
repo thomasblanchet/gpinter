@@ -25,4 +25,3 @@ a zero third derivative at the extremities.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

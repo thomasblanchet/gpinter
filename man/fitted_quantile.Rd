@@ -21,4 +21,3 @@ Pareto interpolation, for any value in [0, 1].
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

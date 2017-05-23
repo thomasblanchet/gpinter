@@ -30,4 +30,3 @@ that the third and fourth derivatives are continuous at each knot.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

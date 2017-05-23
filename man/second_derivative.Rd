@@ -33,4 +33,3 @@ for the three input points \code{x0}, \code{x1} and \code{x2}.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

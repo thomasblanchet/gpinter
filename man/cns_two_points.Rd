@@ -48,4 +48,3 @@ spline.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

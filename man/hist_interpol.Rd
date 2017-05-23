@@ -39,4 +39,3 @@ and piecewise linear quantile function with two slopes).
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

@@ -23,4 +23,3 @@ that characterizes the combined distribution of all countries.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

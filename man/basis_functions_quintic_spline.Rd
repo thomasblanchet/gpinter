@@ -3,22 +3,22 @@
 \name{basis_functions_quintic_spline}
 \alias{basis_functions_quintic_spline}
 \alias{h00}
-\alias{h00d1}
-\alias{h00d2}
 \alias{h01}
-\alias{h01d1}
-\alias{h01d2}
 \alias{h10}
-\alias{h10d1}
-\alias{h10d2}
 \alias{h11}
-\alias{h11d1}
-\alias{h11d2}
 \alias{h20}
-\alias{h20d1}
-\alias{h20d2}
 \alias{h21}
+\alias{h00d1}
+\alias{h01d1}
+\alias{h10d1}
+\alias{h11d1}
+\alias{h20d1}
 \alias{h21d1}
+\alias{h00d2}
+\alias{h01d2}
+\alias{h10d2}
+\alias{h11d2}
+\alias{h20d2}
 \alias{h21d2}
 \title{Basis functions for the quintic spline}
 \usage{
@@ -37,4 +37,3 @@ spline.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

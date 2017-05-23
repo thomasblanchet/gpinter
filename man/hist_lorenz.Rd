@@ -28,4 +28,3 @@ top share) for a distribution with constant density over an interval.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

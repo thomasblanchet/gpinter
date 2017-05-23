@@ -259,7 +259,7 @@ parse_input <- function(data, var, dpcomma) {
     }
 
     if (is.null(data_list$average) || is.na(data_list$average)) {
-        return(simpleError("average is missing"))
+        data_list$average <- NA
     }
     if (is.null(data_list$year)) {
         data_list$year <- "n.a."
@@ -308,6 +308,21 @@ parse_input <- function(data, var, dpcomma) {
             }
         }
         result <- tryCatch(do.call(clean_input_shares, args), error = function(e) {
+            return(simpleError(e$message))
+        })
+        if (is.error(result)) {
+            return(result)
+        }
+    } else if (is.na(data_list$whichavgsh)) {
+        args <- list(
+            p = data_list$p,
+            threshold = data_list$threshold,
+            average = data_list$average
+        )
+        if (!is.na(data_list$lowerbound)) {
+            args["lower_bound"] <- data_list$lowerbound
+        }
+        result <- tryCatch(do.call(clean_input_thresholds, args), error = function(e) {
             return(simpleError(e$message))
         })
         if (is.error(result)) {

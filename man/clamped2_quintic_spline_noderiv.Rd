@@ -35,4 +35,3 @@ to zero at the first and the last point.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

@@ -31,4 +31,3 @@ Taylor expansion of the function around \code{x1}.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

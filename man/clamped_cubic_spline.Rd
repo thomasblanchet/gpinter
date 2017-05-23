@@ -25,4 +25,3 @@ at the first point, and a given first derivative at the last point.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

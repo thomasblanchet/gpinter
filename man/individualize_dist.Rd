@@ -44,4 +44,3 @@ at different points of the distribution.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

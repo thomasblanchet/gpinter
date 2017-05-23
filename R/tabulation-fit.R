@@ -33,9 +33,10 @@
 #'
 #' @export
 
-tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NULL,
+tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topshare=NULL,
                            bracketavg=NULL, topavg=NULL, invpareto=NULL,
                            bottom_model=NULL, lower_bound=0) {
+
     # Check and clean the input
     input <- clean_input_tabulation(p, threshold, average, bracketshare, topshare,
         bracketavg, topavg, invpareto, bottom_model, lower_bound)
@@ -43,9 +44,10 @@ tabulation_fit <- function(p, threshold, average, bracketshare=NULL, topshare=NU
     p <- input$p
     m <- input$m
     n <- input$n
+    average <- input$average
     bottom_model <- input$bottom_model
-    lower_bound  <- input$lower_bound
-    threshold    <- input$threshold
+    lower_bound <- input$lower_bound
+    threshold <- input$threshold
 
     # Log-transform of the data
     pk <- p

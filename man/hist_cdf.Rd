@@ -22,4 +22,3 @@ distribution has a constant density.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

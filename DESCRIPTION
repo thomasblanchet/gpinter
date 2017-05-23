@@ -30,5 +30,5 @@ Suggests:
     readxl (>= 0.1.1),
     evaluate (>= 0.10),
     reldist (>= 1.6)
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Encoding: UTF-8

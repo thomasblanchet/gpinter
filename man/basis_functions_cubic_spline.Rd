@@ -3,16 +3,16 @@
 \name{basis_functions_cubic_spline}
 \alias{basis_functions_cubic_spline}
 \alias{g00}
-\alias{g00d1}
 \alias{g01}
-\alias{g01d1}
 \alias{g10}
-\alias{g10d1}
 \alias{g11}
-\alias{g11d1}
 \alias{g20}
-\alias{g20d1}
 \alias{g21}
+\alias{g00d1}
+\alias{g01d1}
+\alias{g10d1}
+\alias{g11d1}
+\alias{g20d1}
 \alias{g21d1}
 \title{Basis functions for the cubic spline}
 \usage{
@@ -31,4 +31,3 @@ spline.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

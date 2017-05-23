@@ -36,4 +36,3 @@ Third derivative of the quintic spline over an interval
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

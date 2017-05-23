@@ -39,4 +39,3 @@ of the quantile function.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

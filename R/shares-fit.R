@@ -31,7 +31,7 @@
 #'
 #' @export
 
-shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
+shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
                        bracketavg=NULL, topavg=NULL, first_threshold=NULL,
                        bottom_model=NULL, lower_bound=0) {
 
@@ -41,8 +41,9 @@ shares_fit <- function(p, average, bracketshare=NULL, topshare=NULL,
     p <- input$p
     m <- input$m
     n <- input$n
+    average <- input$average
     bottom_model <- input$bottom_model
-    lower_bound  <- input$lower_bound
+    lower_bound <- input$lower_bound
 
     # Log-transform of the data
     pk <- p

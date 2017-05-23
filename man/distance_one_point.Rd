@@ -51,4 +51,3 @@ coordinates of the additional point.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

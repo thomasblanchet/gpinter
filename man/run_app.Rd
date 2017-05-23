@@ -12,4 +12,3 @@ Run the Shiny app of wid.world/gpinter locally.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

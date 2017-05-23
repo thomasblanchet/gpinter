@@ -24,4 +24,3 @@ via generalized Pareto interpolation.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

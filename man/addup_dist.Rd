@@ -24,4 +24,3 @@ characterized by a Gumbel copula.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

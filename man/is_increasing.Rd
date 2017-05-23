@@ -33,4 +33,3 @@ function, first using the fast condition, then the slower one if necessary.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

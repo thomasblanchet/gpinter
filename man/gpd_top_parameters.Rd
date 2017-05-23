@@ -28,4 +28,3 @@ function, and to match the average in the last bracket.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

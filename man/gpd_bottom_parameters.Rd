@@ -30,4 +30,3 @@ function, and to match the average.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

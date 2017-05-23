@@ -25,4 +25,3 @@ to objects of class \code{gpinter_dist_orig}.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

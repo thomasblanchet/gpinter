@@ -37,4 +37,3 @@ spline at each bound.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

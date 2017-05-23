@@ -31,4 +31,3 @@ second-order Taylor expansion of the function around \code{x0}.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

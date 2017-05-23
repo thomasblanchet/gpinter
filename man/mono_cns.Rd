@@ -2,12 +2,12 @@
 % Please edit documentation in R/formulas.R
 \name{mono_cns}
 \alias{mono_cns}
-\alias{mono_cns_deriv_a0}
-\alias{mono_cns_deriv_a1}
-\alias{mono_cns_deriv_s0}
-\alias{mono_cns_deriv_s1}
 \alias{mono_cns_deriv_y0}
 \alias{mono_cns_deriv_y1}
+\alias{mono_cns_deriv_s0}
+\alias{mono_cns_deriv_s1}
+\alias{mono_cns_deriv_a0}
+\alias{mono_cns_deriv_a1}
 \title{Monotonicity constraint for the quantile function}
 \usage{
 mono_cns(x0, x1, y0, y1, s0, s1, a0, a1)
@@ -43,4 +43,3 @@ form of the constraint (see Mathematica workbook for details).
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

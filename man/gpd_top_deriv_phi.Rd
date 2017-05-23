@@ -30,4 +30,3 @@ distribution used in the last bracket of the data.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

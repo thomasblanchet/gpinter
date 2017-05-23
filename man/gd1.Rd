@@ -32,4 +32,3 @@ First derivative of the cubic spline over an interval
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

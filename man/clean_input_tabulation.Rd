@@ -4,7 +4,7 @@
 \alias{clean_input_tabulation}
 \title{Clean (and check) the inputs for \code{tabulation_fit}}
 \usage{
-clean_input_tabulation(p, threshold, average, bracketshare = NULL,
+clean_input_tabulation(p, threshold, average = NULL, bracketshare = NULL,
   topshare = NULL, bracketavg = NULL, topavg = NULL, invpareto = NULL,
   bottom_model = NULL, lower_bound = 0)
 }
@@ -46,4 +46,3 @@ of \code{tabulation_fit}.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

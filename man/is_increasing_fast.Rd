@@ -31,4 +31,3 @@ sufficient conditions.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

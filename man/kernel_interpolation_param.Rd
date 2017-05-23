@@ -26,4 +26,3 @@ Parameters of the spline interpolating the Peano kernel.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

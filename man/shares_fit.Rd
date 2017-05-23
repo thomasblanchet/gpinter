@@ -4,7 +4,7 @@
 \alias{shares_fit}
 \title{Fit a nonparametric distribution on tabulated data without thresholds}
 \usage{
-shares_fit(p, average, bracketshare = NULL, topshare = NULL,
+shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
   bottom_model = NULL, lower_bound = 0)
 }
@@ -46,4 +46,3 @@ of a distribution which include:
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

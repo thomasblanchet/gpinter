@@ -27,4 +27,3 @@ Quintic spline interpolation function over several intervals.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

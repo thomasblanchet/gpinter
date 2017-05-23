@@ -33,4 +33,3 @@ function using a precise but somewhat computationally intensive method.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

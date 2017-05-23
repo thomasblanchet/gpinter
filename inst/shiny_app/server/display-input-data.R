@@ -122,13 +122,19 @@ output$input_data_view <- renderUI({
             tags$tbody(
                 tags$tr(
                     tags$th("Average", style="white-space: nowrap;"),
-                    tags$td(format(round(data_view$average), big.mark=" ", scientific=FALSE), style="text-align: right;")
+                    tags$td(ifelse(is.na(data_view$singleshare),
+                        "n/a",
+                        format(round(data_view$average), big.mark=" ", scientific=FALSE)
+                    ), style = ifelse(
+                        is.na(data_view$singleshare),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
                 ),
                 tags$tr(
                     tags$th("Overall single share", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$singleshare),
                         "n/a",
-                        data_view$singleshare
+                        format(data_view$singleshare, digits=2, scientific=FALSE)
                     ), style = ifelse(
                         is.na(data_view$singleshare),
                         "color: #999; text-align: right;", "text-align: right;"
@@ -138,7 +144,7 @@ output$input_data_view <- renderUI({
                     tags$th("Overall couple share", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$coupleshare),
                         "n/a",
-                        data_view$coupleshare
+                        format(data_view$coupleshare, digits=2, scientific=FALSE)
                     ), style = ifelse(
                         is.na(data_view$coupleshare),
                         "color: #999; text-align: right;", "text-align: right;"
@@ -148,7 +154,7 @@ output$input_data_view <- renderUI({
                     tags$th("Population size", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$popsize),
                         "n/a",
-                        format(data_view$popsize, scientific=FALSE, big.mark=" ")
+                        format(round(data_view$popsize), scientific=FALSE, big.mark=" ")
                     ), style = ifelse(
                         is.na(data_view$popsize),
                         "color: #999; text-align: right;", "text-align: right;"
@@ -158,7 +164,7 @@ output$input_data_view <- renderUI({
                     tags$th("Gumbel parameter", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$gumbel),
                         "n/a",
-                        data_view$gumbel
+                        format(data_view$gumbel, digits=2, scientific=FALSE)
                     ), style = ifelse(
                         is.na(data_view$gumbel),
                         "color: #999; text-align: right;", "text-align: right;"
@@ -168,7 +174,7 @@ output$input_data_view <- renderUI({
                     tags$th("Distribution lower bound", style="white-space: nowrap;"),
                     tags$td(ifelse(is.na(data_view$lowerbound),
                         "n/a",
-                        data_view$lowerbound
+                        format(round(data_view$lowerbound), scientific=FALSE, big.mark=" ")
                     ), style = ifelse(
                         is.na(data_view$lowerbound),
                         "color: #999; text-align: right;", "text-align: right;"

@@ -66,4 +66,3 @@ coordinates of the additionals points.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

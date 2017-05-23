@@ -4,8 +4,8 @@
 \alias{thresholds_fit}
 \title{Fit a nonparametric distribution on tabulated data with thresholds only}
 \usage{
-thresholds_fit(p, threshold, average, bottom_model = NULL, lower_bound = 0,
-  binf = NULL)
+thresholds_fit(p, threshold, average = NULL, bottom_model = NULL,
+  lower_bound = 0, binf = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -41,4 +41,3 @@ of a distribution which include:
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

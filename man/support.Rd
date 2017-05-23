@@ -26,4 +26,3 @@ Pareto distribution.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

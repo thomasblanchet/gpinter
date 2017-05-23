@@ -27,34 +27,16 @@
 #'
 #' @export
 
-thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
+thresholds_fit <- function(p, threshold, average=NULL, bottom_model=NULL,
                            lower_bound=0, binf=NULL) {
-    # Number of interpolation points
-    n <- length(p)
-    if (n < 3) {
-        stop("The method requires at least three interpolation points.")
-    }
-    # Sort the input data
-    ord <- order(p)
-    p <- p[ord]
-    threshold <- threshold[ord]
 
-    # Model for the bottom
-    if (p[1] > 0 && is.null(bottom_model)) {
-        if (threshold[1] > 0) {
-            bottom_model <- "hist"
-        } else if (threshold[1] == 0) {
-            bottom_model <- "dirac"
-        } else {
-            bottom_model <- "pareto"
-        }
-    }
-    if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
-        stop("'bottom_model' must be one of 'hist', 'pareto', 'dirac', or NULL.")
-    }
-    if (!is.null(bottom_model) && bottom_model == "hist" && lower_bound > threshold[1]) {
-        stop("'lower_bound' must be smaller than min(threshold).")
-    }
+    input <- clean_input_thresholds(p, threshold, average, bottom_model, lower_bound)
+
+    p <- input$p
+    n <- input$n
+    bottom_model <- input$bottom_model
+    lower_bound  <- input$lower_bound
+    threshold    <- input$threshold
 
     # Calculate the tail function
     pk <- p
@@ -88,9 +70,13 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
             "using the parameter 'binf'."), .immediate=TRUE)
     }
     # Calculate the other derivatives
-    sk <- clamped_cubic_spline(xk, yk, sn)
     # Ensure that the function is increasing using the PCHIP algorithm
-    delta <- (yk[2:n] - yk[1:(n - 1)])/(sk[2:n] - sk[1:(n - 1)])
+    delta <- (yk[2:n] - yk[1:(n - 1)])/(xk[2:n] - xk[1:(n - 1)])
+    # Using the right derivative leads to more robust results
+    sk <- c(
+        delta[1:(n - 1)],
+        sn
+    )
     alpha <- sk[1:(n - 1)]/delta
     beta <- sk[2:n]/delta
     tau <- 3/sqrt(alpha^2 + beta^2)
@@ -100,6 +86,7 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
             sk[i + 1] <- tau[i]*beta[i]*delta[i]
         }
     }
+
     # Re-add the non positive points
     xk <- c(rep(NA, sum(threshold <= 0)), xk)
     yk <- c(rep(NA, sum(threshold <= 0)), yk)
@@ -135,22 +122,46 @@ thresholds_fit <- function(p, threshold, average, bottom_model=NULL,
     }
     mk <- c(mk, (1 - pk[n])*qk[n]/(1 - sn))
 
-    if (pk[1] > 0) {
-        m0 <- pk[1]*(lower_bound + qk[1])/2
-
-        mk[n] <- mk[n] + average - sum(mk) - m0
-
+    if (is.null(average) || is.na(average)) {
+        average <- sum(mk)
         bracketavg <- mk/diff(c(pk, 1))
+
+        # Remove first bracket for more robust results
+        if (pk[1] == 0) {
+            lower_bound <- qk[1]
+            qk <- qk[-1]
+            pk <- pk[-1]
+            bracketavg <- bracketavg[-1]
+        }
+
         return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
             bottom_model=bottom_model, lower_bound=lower_bound))
     } else {
-        missing_income <- (average - sum(mk))
-        first_bracket_avg <- (mk[1] + missing_income)/pk[2]
-        # Add missing income to the last bracket
-        mk[n] <- mk[n] + missing_income
+        if (pk[1] > 0) {
+            m0 <- pk[1]*(lower_bound + qk[1])/2
 
-        bracketavg <- mk/diff(c(pk, 1))
-        return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-            bottom_model=bottom_model, lower_bound=lower_bound))
+            mk[n] <- mk[n] + average - sum(mk) - m0
+
+            bracketavg <- mk/diff(c(pk, 1))
+            return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
+                bottom_model=bottom_model, lower_bound=lower_bound))
+        } else {
+            missing_income <- (average - sum(mk))
+            first_bracket_avg <- (mk[1] + missing_income)/pk[2]
+            # Add missing income to the last bracket
+            mk[n] <- mk[n] + missing_income
+            bracketavg <- mk/diff(c(pk, 1))
+
+            # Remove first bracket for more robust results
+            if (pk[1] == 0) {
+                lower_bound <- qk[1]
+                qk <- qk[-1]
+                pk <- pk[-1]
+                bracketavg <- bracketavg[-1]
+            }
+
+            return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
+                bottom_model=bottom_model, lower_bound=lower_bound))
+        }
     }
 }

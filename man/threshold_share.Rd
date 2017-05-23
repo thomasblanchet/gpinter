@@ -21,4 +21,3 @@ to \code{top_share(dist, fitted_cdf(dist, q))}, but can be much faster.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

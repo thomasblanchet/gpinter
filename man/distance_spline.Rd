@@ -2,12 +2,12 @@
 % Please edit documentation in R/formulas.R
 \name{distance_spline}
 \alias{distance_spline}
-\alias{distance_spline_deriv_a0new}
-\alias{distance_spline_deriv_a1new}
-\alias{distance_spline_deriv_s0new}
-\alias{distance_spline_deriv_s1new}
 \alias{distance_spline_deriv_y0new}
 \alias{distance_spline_deriv_y1new}
+\alias{distance_spline_deriv_s0new}
+\alias{distance_spline_deriv_s1new}
+\alias{distance_spline_deriv_a0new}
+\alias{distance_spline_deriv_a1new}
 \title{Distance between two quintic splines}
 \usage{
 distance_spline(x0, x1, y0, y1, s0, s1, a0, a1, y0new, y1new, s0new, s1new,
@@ -54,4 +54,3 @@ the second function.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

@@ -30,4 +30,3 @@ of the distribution only.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

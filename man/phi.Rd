@@ -33,4 +33,3 @@ correspond to:
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

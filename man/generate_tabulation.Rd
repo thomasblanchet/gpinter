@@ -26,4 +26,3 @@ computations compared with using the dedicated function for each quantity.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

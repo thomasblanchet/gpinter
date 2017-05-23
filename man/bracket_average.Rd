@@ -26,4 +26,3 @@ quantiles for a distribution estimated via generalized Pareto interpolation.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

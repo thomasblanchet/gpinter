@@ -4,8 +4,8 @@
 \alias{tabulation_fit}
 \title{Fit a nonparametric distribution on tabulated data}
 \usage{
-tabulation_fit(p, threshold, average, bracketshare = NULL, topshare = NULL,
-  bracketavg = NULL, topavg = NULL, invpareto = NULL,
+tabulation_fit(p, threshold, average = NULL, bracketshare = NULL,
+  topshare = NULL, bracketavg = NULL, topavg = NULL, invpareto = NULL,
   bottom_model = NULL, lower_bound = 0)
 }
 \arguments{
@@ -49,4 +49,3 @@ of a distribution which include:
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

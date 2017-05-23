@@ -43,4 +43,3 @@ Quintic spline over an interval \code{[x0, x1]}. It is such that:
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

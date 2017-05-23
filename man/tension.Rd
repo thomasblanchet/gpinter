@@ -25,4 +25,3 @@ third derivative) of several splines put together.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-

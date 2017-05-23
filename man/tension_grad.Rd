@@ -25,4 +25,3 @@ to the value of the second derivative at each knot.
 \author{
 Thomas Blanchet, Juliette Fournier, Thomas Piketty
 }
-
