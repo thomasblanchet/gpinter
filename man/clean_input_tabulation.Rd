@@ -34,11 +34,6 @@ Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}
 }
-\value{
-A list with the following components: \itemize{
-    \item
-}
-}
 \description{
 Check the validity and consistency of the input arguments
 of \code{tabulation_fit}.

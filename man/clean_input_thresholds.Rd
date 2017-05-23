@@ -10,6 +10,8 @@ clean_input_thresholds(p, threshold, average = NULL, bottom_model = NULL,
 \arguments{
 \item{p}{A vector of values in [0, 1].}
 
+\item{threshold}{The quantiles corresponding to \code{p}.}
+
 \item{average}{The average over the entire distribution.}
 
 \item{bottom_model}{Which model to use at the bottom of the distribution?
@@ -20,23 +22,7 @@ Pareto distribution, or \code{"hist"} for histogram density. Default is
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}
 
-\item{bracketshare}{The corresponding bracket share.}
-
-\item{topshare}{The corresponding top share.}
-
-\item{bracketavg}{The corresponding bracket average.}
-
-\item{topavg}{The corresponding top average.}
-
-\item{invpareto}{The inverted Pareto coefficient.}
-
-\item{first_threshold}{The value of the first threshold. If \code{NULL}, it
-is estimated from the data. Default is \code{NULL}.}
-}
-\value{
-A list with the following components: \itemize{
-    \item
-}
+\item{binf}{Asymptotic Pareto coefficient.}
 }
 \description{
 Check the validity and consistency of the input arguments

@@ -21,10 +21,6 @@
 #' @param lower_bound Lower bound of the distribution. Only relevant if
 #' \code{min(p) > 0}. Default is \code{0}.
 #'
-#' @return A list with the following components: \itemize{
-#'     \item
-#' }
-#'
 #' @export
 
 clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL, topshare=NULL,
@@ -196,10 +192,6 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
 #' @param lower_bound Lower bound of the distribution. Only relevant if
 #' \code{min(p) > 0}. Default is \code{0}.
 #'
-#' @return A list with the following components: \itemize{
-#'     \item
-#' }
-#'
 #' @export
 
 clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
@@ -290,19 +282,15 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
 #' of \code{threshold_fit}.
 #'
 #' @param p A vector of values in [0, 1].
+#' @param threshold The quantiles corresponding to \code{p}.
 #' @param average The average over the entire distribution.
-#' @param first_threshold The value of the first threshold. If \code{NULL}, it
-#' is estimated from the data. Default is \code{NULL}.
 #' @param bottom_model Which model to use at the bottom of the distribution?
 #' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 #' Pareto distribution, or \code{"hist"} for histogram density. Default is
 #' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
 #' @param lower_bound Lower bound of the distribution. Only relevant if
 #' \code{min(p) > 0}. Default is \code{0}.
-#'
-#' @return A list with the following components: \itemize{
-#'     \item
-#' }
+#' @param binf Asymptotic Pareto coefficient.
 #'
 #' @export
 
