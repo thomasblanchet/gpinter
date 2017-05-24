@@ -8,7 +8,7 @@ Authors@R: c(
     person("Juliette", "Fournier", email="jfournie@mit.edu", role="aut"),
     person("Thomas", "Piketty", email="thomas.piketty@psemail.eu", role="aut"))
 Description: Nonparametric estimation of distributions from tabulated data using generalized Pareto interpolation techniques.
-License: GPL-3 + file LICENSE
+License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
     nloptr (>= 1.0.4),
