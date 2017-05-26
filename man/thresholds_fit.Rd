@@ -4,7 +4,8 @@
 \alias{thresholds_fit}
 \title{Fit a nonparametric distribution on tabulated data with thresholds only}
 \usage{
-thresholds_fit(p, threshold, average = NULL, bottom_model = NULL,
+thresholds_fit(p, threshold, average = NULL, last_bracketshare = NULL,
+  last_bracketavg = NULL, last_invpareto = NULL, bottom_model = NULL,
   lower_bound = 0, binf = NULL)
 }
 \arguments{
@@ -12,7 +13,17 @@ thresholds_fit(p, threshold, average = NULL, bottom_model = NULL,
 
 \item{threshold}{The quantiles corresponding to \code{p}.}
 
-\item{average}{The average over the entire distribution.}
+\item{average}{The average over the entire distribution. Use \code{NULL} for
+unknown. (Default is \code{NULL}.)}
+
+\item{last_bracketshare}{The share of the last bracket. Use \code{NULL} for
+unknown. (Default is \code{NULL}.)}
+
+\item{last_bracketavg}{The average in the last bracket. Use \code{NULL} for
+unknown. (Default is \code{NULL}.)}
+
+\item{last_invpareto}{The inverted Pareto coefficient at the last threshold.
+Use \code{NULL} for unknown. (Default is \code{NULL}.)}
 
 \item{bottom_model}{Which model to use at the bottom of the distribution?
 Only relevant if \code{min(p) >= 0}. Either \code{"gpd"} for the generalized

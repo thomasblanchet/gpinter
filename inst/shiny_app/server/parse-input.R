@@ -171,32 +171,59 @@ parse_input <- function(data, var, dpcomma) {
         }
         data[, var$bracketavg] <- as.numeric(data[, var$bracketavg])
         if (anyNA(data[, var$bracketavg])) {
-            return(simpleError("bracket averages contain missing values"))
+            # Allow for all values missing except the last one
+            v <- data[, var$bracketavg]
+            n <- length(v)
+            if (all(is.na(v[-n])) & !is.na(v[n])) {
+                data_list$last_bracketavg <- v[n]
+                data_list$whichavgsh <- NA
+            } else {
+                return(simpleError("top averages contain missing values"))
+            }
+        } else {
+            data_list$whichavgsh <- "bracketavg"
+            data_list$bracketavg <- data[, var$bracketavg]
         }
-        data_list$whichavgsh <- "bracketavg"
-        data_list$bracketavg <- data[, var$bracketavg]
     } else if (var$topavg %in% colnames(data)) {
         if (dpcomma) {
             data[, var$topavg] <- gsub(",", ".", data[, var$topavg])
         }
         data[, var$topavg] <- as.numeric(data[, var$topavg])
         if (anyNA(data[, var$topavg])) {
-            return(simpleError("top averages contain missing values"))
+            # Allow for all values missing except the last one
+            v <- data[, var$topavg]
+            n <- length(v)
+            if (all(is.na(v[-n])) & !is.na(v[n])) {
+                data_list$last_bracketavg <- v[n]
+                data_list$whichavgsh <- NA
+            } else {
+                return(simpleError("top averages contain missing values"))
+            }
+        } else {
+            data_list$whichavgsh <- "topavg"
+            data_list$topavg <- data[, var$topavg]
         }
-        data_list$whichavgsh <- "topavg"
-        data_list$topavg <- data[, var$topavg]
     } else if (var$b %in% colnames(data)) {
         if (dpcomma) {
             data[, var$b] <- gsub(",", ".", data[, var$b])
         }
         data[, var$b] <- as.numeric(data[, var$b])
         if (anyNA(data[data_list$threshold != 0, var$b])) {
-            return(simpleError("inverted Pareto coefficients contain missing values"))
+            # Allow for all values missing except the last one
+            v <- data[, var$b]
+            n <- length(v)
+            if (all(is.na(v[-n])) & !is.na(v[n])) {
+                data_list$last_invpareto <- v[n]
+                data_list$whichavgsh <- NA
+            } else {
+                return(simpleError("inverted Pareto coefficients contain missing values"))
+            }
+        } else {
+            data_list$whichavgsh <- "invpareto"
+            data_list$invpareto <- data[, var$b]
+            data_list$invpareto[is.infinite(data_list$invpareto)] <- NA
+            data_list$invpareto[is.nan(data_list$invpareto)] <- NA
         }
-        data_list$whichavgsh <- "invpareto"
-        data_list$invpareto <- data[, var$b]
-        data_list$invpareto[is.infinite(data_list$invpareto)] <- NA
-        data_list$invpareto[is.nan(data_list$invpareto)] <- NA
     } else {
         data_list$whichavgsh <- NA
     }
@@ -291,6 +318,12 @@ parse_input <- function(data, var, dpcomma) {
     if (is.null(data_list$lowerbound)) {
         data_list$lowerbound <- NA
     }
+    if (is.null(data_list$last_bracketavg)) {
+        data_list$last_bracketavg <- NA
+    }
+    if (is.null(data_list$last_invpareto)) {
+        data_list$last_invpareto <- NA
+    }
 
     # Check consistency of input data
     if (is.na(data_list$threshold[1])) {
@@ -317,7 +350,9 @@ parse_input <- function(data, var, dpcomma) {
         args <- list(
             p = data_list$p,
             threshold = data_list$threshold,
-            average = data_list$average
+            average = data_list$average,
+            last_bracketavg = data_list$last_bracketavg,
+            last_invpareto = data_list$last_invpareto
         )
         if (!is.na(data_list$lowerbound)) {
             args["lower_bound"] <- data_list$lowerbound

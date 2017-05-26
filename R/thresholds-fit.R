@@ -11,7 +11,14 @@
 #'
 #' @param p A vector of values in [0, 1].
 #' @param threshold The quantiles corresponding to \code{p}.
-#' @param average The average over the entire distribution.
+#' @param average The average over the entire distribution. Use \code{NULL} for
+#' unknown. (Default is \code{NULL}.)
+#' @param last_bracketshare The share of the last bracket. Use \code{NULL} for
+#' unknown. (Default is \code{NULL}.)
+#' @param last_bracketavg The average in the last bracket. Use \code{NULL} for
+#' unknown. (Default is \code{NULL}.)
+#' @param last_invpareto The inverted Pareto coefficient at the last threshold.
+#' Use \code{NULL} for unknown. (Default is \code{NULL}.)
 #' @param bottom_model Which model to use at the bottom of the distribution?
 #' Only relevant if \code{min(p) >= 0}. Either \code{"gpd"} for the generalized
 #' Pareto distribution, \code{"hist"} for histogram density, or \code{"dirac"}.
@@ -27,16 +34,21 @@
 #'
 #' @export
 
-thresholds_fit <- function(p, threshold, average=NULL, bottom_model=NULL,
-                           lower_bound=0, binf=NULL) {
+thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
+                           last_bracketavg=NULL, last_invpareto=NULL,
+                           bottom_model=NULL, lower_bound=0, binf=NULL) {
 
-    input <- clean_input_thresholds(p, threshold, average, bottom_model, lower_bound)
+    input <- clean_input_thresholds(p, threshold, average,
+        last_bracketavg, last_invpareto,
+        bottom_model, lower_bound
+    )
 
     p <- input$p
     n <- input$n
     bottom_model <- input$bottom_model
     lower_bound  <- input$lower_bound
     threshold    <- input$threshold
+    last_m       <- input$last_m
 
     # Calculate the tail function
     pk <- p
@@ -123,6 +135,11 @@ thresholds_fit <- function(p, threshold, average=NULL, bottom_model=NULL,
     mk <- c(mk, (1 - pk[n])*qk[n]/(1 - sn))
 
     if (is.null(average) || is.na(average)) {
+        # Set the average/Pareto coef in the last bracket
+        if (!is.null(last_m)) {
+            mk[n] <- last_m
+        }
+
         average <- sum(mk)
         bracketavg <- mk/diff(c(pk, 1))
 

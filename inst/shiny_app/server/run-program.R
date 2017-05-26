@@ -226,7 +226,9 @@ interpolate_only <- function() {
                         args <- list(
                             p = data_model$p,
                             threshold = data_model$threshold,
-                            average = data_model$average
+                            average = data_model$average,
+                            last_invpareto = data_model$last_invpareto,
+                            last_bracketavg = data_model$last_bracketavg
                         )
                         if (!is.na(data_model$lowerbound)) {
                             args["lower_bound"] <- data_model$lowerbound

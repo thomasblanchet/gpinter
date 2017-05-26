@@ -4,15 +4,23 @@
 \alias{clean_input_thresholds}
 \title{Clean (and check) the inputs for \code{threshold_fit}}
 \usage{
-clean_input_thresholds(p, threshold, average = NULL, bottom_model = NULL,
-  lower_bound = 0, binf)
+clean_input_thresholds(p, threshold, average = NULL, last_bracketavg = NULL,
+  last_invpareto = NULL, bottom_model = NULL, lower_bound = 0,
+  binf = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
 
 \item{threshold}{The quantiles corresponding to \code{p}.}
 
-\item{average}{The average over the entire distribution.}
+\item{average}{The average over the entire distribution. Use \code{NULL} for
+unknown. (Default is \code{NULL}.)}
+
+\item{last_bracketavg}{The average in the last bracket. Use \code{NULL} for
+unknown. (Default is \code{NULL}.)}
+
+\item{last_invpareto}{The inverted Pareto coefficient at the last threshold.
+Use \code{NULL} for unknown. (Default is \code{NULL}.)}
 
 \item{bottom_model}{Which model to use at the bottom of the distribution?
 Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized

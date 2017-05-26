@@ -37,7 +37,7 @@ tabPanel("Output tables",
                                 "Bracket average" = "bracketavg",
                                 "Inverted Pareto coefficient" = "invpareto"
                             ),
-                            selected = c("perc", "thres", "topshare", "topavg", "invpareto"),
+                            selected = c("perc", "thres", "topshare", "topavg", "bracketavg", "invpareto"),
                             width = "100%"
                         ),
                         class = "panel-body"

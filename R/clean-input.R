@@ -283,7 +283,12 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
 #'
 #' @param p A vector of values in [0, 1].
 #' @param threshold The quantiles corresponding to \code{p}.
-#' @param average The average over the entire distribution.
+#' @param average The average over the entire distribution. Use \code{NULL} for
+#' unknown. (Default is \code{NULL}.)
+#' @param last_bracketavg The average in the last bracket. Use \code{NULL} for
+#' unknown. (Default is \code{NULL}.)
+#' @param last_invpareto The inverted Pareto coefficient at the last threshold.
+#' Use \code{NULL} for unknown. (Default is \code{NULL}.)
 #' @param bottom_model Which model to use at the bottom of the distribution?
 #' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 #' Pareto distribution, or \code{"hist"} for histogram density. Default is
@@ -294,7 +299,9 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
 #'
 #' @export
 
-clean_input_thresholds <- function(p, threshold, average=NULL, bottom_model=NULL, lower_bound=0, binf) {
+clean_input_thresholds <- function(p, threshold, average=NULL,
+                                   last_bracketavg=NULL, last_invpareto=NULL,
+                                   bottom_model=NULL, lower_bound=0, binf=NULL) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -315,6 +322,7 @@ clean_input_thresholds <- function(p, threshold, average=NULL, bottom_model=NULL
             bottom_model <- "pareto"
         }
     }
+
     if (!is.null(bottom_model) && !bottom_model %in% c("hist", "gpd", "dirac")) {
         stop("'bottom_model' must be one of 'hist', 'pareto', 'dirac', or NULL.")
     }
@@ -331,7 +339,29 @@ clean_input_thresholds <- function(p, threshold, average=NULL, bottom_model=NULL
             ", you have threshold=", t1_error, " followed by threshold=", t2_error))
     }
 
-    return(list(p=p, threshold=threshold,
+    if (!is.null(last_bracketavg) && !is.na(last_bracketavg)) {
+        if (!is.null(average) && !is.na(average)) {
+            stop(paste("You can specify either the overall average",
+                "or the average is the last bracket, but not both"))
+        }
+        if (last_bracketavg <= threshold[n]) {
+            stop("The average in the last bracket is below the last threshold")
+        }
+        last_m <- (1 - p[n])*last_bracketavg
+    } else if (!is.null(last_invpareto) && !is.na(last_invpareto)) {
+        if (!is.null(average) && !is.na(average)) {
+            stop(paste("You can specify either the overall average",
+                "or the inverted Pareto coefficient at the last threshold, but not both"))
+        }
+        if (last_invpareto <= 1) {
+            stop("The inverted Pareto coefficient at the last threhsold must be above one")
+        }
+        last_m <- (1 - p[n])*threshold[n]*last_invpareto
+    } else {
+        last_m <- NULL
+    }
+
+    return(list(p=p, threshold=threshold, last_m=last_m,
         bottom_model=bottom_model, lower_bound=lower_bound))
 }
 

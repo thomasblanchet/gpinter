@@ -179,6 +179,26 @@ output$input_data_view <- renderUI({
                         is.na(data_view$lowerbound),
                         "color: #999; text-align: right;", "text-align: right;"
                     ))
+                ),
+                tags$tr(
+                    tags$th("Average in the last bracket", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$last_bracketavg),
+                        "n/a",
+                        format(round(data_view$last_bracketavg), scientific=FALSE, big.mark=" ")
+                    ), style = ifelse(
+                        is.na(data_view$last_bracketavg),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
+                ),
+                tags$tr(
+                    tags$th("Inverted Pareto coefficient at the last threshold", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$last_invpareto),
+                        "n/a",
+                        format(data_view$last_invpareto, digit=2, scientific=FALSE, big.mark=" ")
+                    ), style = ifelse(
+                        is.na(data_view$last_invpareto),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
                 )
             ),
             class = "table table-condensed table-striped"
