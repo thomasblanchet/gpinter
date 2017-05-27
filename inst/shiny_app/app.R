@@ -1,3 +1,6 @@
+# Allow more RAM to Java (to export big Excel files)
+options(java.parameters="-Xmx8000m")
+
 library(shiny)
 library(shinyBS)
 library(shinyjs)

@@ -99,7 +99,11 @@ deriv_phi.gpinter_dist_orig <- function(dist, x, ...) {
         gpd_top_deriv_phi(x, 1 - exp(-xn), dist$mu_top, dist$sigma_top, dist$xi_top)
     }, ifelse(x < x1, {
         if (is.na(dist$delta_bottom)) {
-            gpd_bottom_deriv_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+            dy <- gpd_bottom_deriv_phi(x, 1 - exp(-x1), y1, dist$mu_bottom, dist$sigma_bottom, dist$xi_bottom)
+            if (dist$xi_bottom > 0) {
+                dy[x == 0] <- -Inf
+            }
+            dy
         } else {
             0
         }

@@ -351,6 +351,12 @@ output$dl_tables_excel <- downloadHandler(
         sheet <- createSheet(wb, sheet_name)
         addDataFrame(df_all_series, sheet, row.names=FALSE)
 
+        # Function to call garbage collector oin Java (better memory managment)
+        jgc <- function() {
+            .jcall("java/lang/System", method = "gc")
+        }
+
+        counter <- 1
         for (country in data$output_countries) {
             for (component in data$output_components) {
                 for (year in data$output_years) {
@@ -414,6 +420,8 @@ output$dl_tables_excel <- downloadHandler(
                     all_sheet_names <- c(all_sheet_names, sheet_name)
                     sheet <- createSheet(wb, sheet_name)
                     addDataFrame(out_df, sheet, row.names=FALSE)
+                    # Call Java garbage collector
+                    jgc()
                 }
             }
         }
