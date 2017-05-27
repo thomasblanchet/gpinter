@@ -100,70 +100,27 @@ output$dl_tables_csv <- downloadHandler(
         df_all_series <- data.frame()
         for (country in data$output_countries) {
             for (component in data$output_components) {
-                df_series <- data.frame(
-                    "Country" = rep(country, length(data$output_years)),
-                    "Component" = rep(component, length(data$output_years)),
-                    "Year" = data$output_years,
-                    "Average" = sapply(data$output_years, function(year) {
-                        result <- data$output_dist[[year]][[country]][[component]]
-                        if (is.null(result)) {
-                            return(NA)
-                        } else {
-                            return(result$average)
-                        }
-                    }),
-                    "Bottom 50%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$bottom50)
-                        }
-                    }),
-                    "Middle 40%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$middle40)
-                        }
-                    }),
-                    "Top 10%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$top10)
-                        }
-                    }),
-                    "Top 1%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$top1)
-                        }
-                    }),
-                    "Gini" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$gini)
-                        }
-                    }),
-                    check.names  = FALSE,
-                    stringsAsFactors = FALSE
-                )
-                df_series[, "Year"] <- as.numeric(df_series[, "Year"])
-                df_series <- df_series[!is.na(df_series[, "Year"]), ]
-                df_series <- df_series[order(df_series[, "Year"]), ]
-
-                if (all(is.na(df_series["Average"]))) {
-                    next
+                for (year in data$output_years) {
+                    result <- data$output_dist[[year]][[country]][[component]]
+                    table <- data$output_tables[[year]][[country]][[component]]
+                    if (is.null(result)) {
+                        next
+                    }
+                    row <- data.frame(
+                        "Country"    = country,
+                        "Component"  = component,
+                        "Year"       = year,
+                        "Average"    = result$average,
+                        "Bottom 50%" = table$bottom50,
+                        "Middle 40%" = table$middle40,
+                        "Top 10%"    = table$top10,
+                        "Top 1%"     = table$top1,
+                        "Gini"       = table$gini,
+                        check.names  = FALSE,
+                        stringsAsFactors = FALSE
+                    )
+                    df_all_series <- rbind(df_all_series, row)
                 }
-
-                df_all_series <- rbind(df_all_series, df_series)
             }
         }
         write.table(df_all_series,
@@ -280,70 +237,27 @@ output$dl_tables_excel <- downloadHandler(
         df_all_series <- data.frame()
         for (country in data$output_countries) {
             for (component in data$output_components) {
-                df_series <- data.frame(
-                    "Country" = rep(country, length(data$output_years)),
-                    "Component" = rep(component, length(data$output_years)),
-                    "Year" = data$output_years,
-                    "Average" = sapply(data$output_years, function(year) {
-                        result <- data$output_dist[[year]][[country]][[component]]
-                        if (is.null(result)) {
-                            return(NA)
-                        } else {
-                            return(result$average)
-                        }
-                    }),
-                    "Bottom 50%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$bottom50)
-                        }
-                    }),
-                    "Middle 40%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$middle40)
-                        }
-                    }),
-                    "Top 10%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$top10)
-                        }
-                    }),
-                    "Top 1%" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$top1)
-                        }
-                    }),
-                    "Gini" = sapply(data$output_years, function(year) {
-                        table <- data$output_tables[[year]][[country]][[component]]
-                        if (is.null(table)) {
-                            return(NA)
-                        } else {
-                            return(table$gini)
-                        }
-                    }),
-                    check.names  = FALSE,
-                    stringsAsFactors = FALSE
-                )
-                df_series[, "Year"] <- as.numeric(df_series[, "Year"])
-                df_series <- df_series[!is.na(df_series[, "Year"]), ]
-                df_series <- df_series[order(df_series[, "Year"]), ]
-
-                if (all(is.na(df_series["Average"]))) {
-                    next
+                for (year in data$output_years) {
+                    result <- data$output_dist[[year]][[country]][[component]]
+                    table <- data$output_tables[[year]][[country]][[component]]
+                    if (is.null(result)) {
+                        next
+                    }
+                    row <- data.frame(
+                        "Country"    = country,
+                        "Component"  = component,
+                        "Year"       = year,
+                        "Average"    = result$average,
+                        "Bottom 50%" = table$bottom50,
+                        "Middle 40%" = table$middle40,
+                        "Top 10%"    = table$top10,
+                        "Top 1%"     = table$top1,
+                        "Gini"       = table$gini,
+                        check.names  = FALSE,
+                        stringsAsFactors = FALSE
+                    )
+                    df_all_series <- rbind(df_all_series, row)
                 }
-
-                df_all_series <- rbind(df_all_series, df_series)
             }
         }
         sheet_name <- "series"
