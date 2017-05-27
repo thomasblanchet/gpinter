@@ -12,8 +12,6 @@ library(gpinter)
 # Increased max upload size to 50MB
 options(shiny.maxRequestSize=50*1024^2)
 
-source(file.path("ui", "radiobutton-html.R"), local=TRUE)
-
 source(file.path("server", "parse-input.R"), local=TRUE)
 source(file.path("server", "plot-text.R"), local=TRUE)
 

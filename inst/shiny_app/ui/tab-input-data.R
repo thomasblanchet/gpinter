@@ -234,27 +234,37 @@ tabPanel("Input data",
                         class = "panel-heading"
                     ),
                     tags$div(
-                        withMathJax(radioButtons_withHTML("interpolation_options", NULL, width="100%", choices=c(
-                            "<h4 style='margin-top: 0;'>Generalized Pareto interpolation</h4>
-                            <p style='font-size: small; color: #666;'>Interpolate the distribution
-                            of your data directly, without any transformation.</p>" = "basic",
-                            "<h4 style='margin-top: 0;'>Interpolate and individualize</h4>
-                            <p style='font-size: small; color: #666;'>Individualize the distribution of income or wealth
-                            under the assumption of equal sharing among spouses. If you select this
-                            option, you must specify the share of singles in your input files.</p>" = "individualize",
-                            "<h4 style='margin-top: 0;'>Interpolate and merge countries</h4>
-                            <p style='font-size: small; color: #666;'>Merge the distribution of several countries
-                            into a single one. If you select this option, you must specify the population size of each country.</p>" = "merge",
-                            "<h4 style='margin-top: 0;'>Interpolate and add up components</h4>
-                            <p style='font-size: small; color: #666;'>Add up two components of income or wealth (for example, labor and capital income,
-                            housing wealth and financial wealth, male earnings and female earnings, etc.), assuming that the dependence between both
-                            components is characterized by a Gumbel copula with parameter \\(\\theta\\). The higher
-                            \\(\\theta\\), the stronger the dependence, with \\(\\theta = 1\\) meaning
-                            full independence, and \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
-                            You may specify a value for \\(\\theta\\) in each files,
-                            or set a global value below (the default value \\(\\theta = 3\\) corresponds to the typical
-                            dependance between labor and capital income).</p>" = "addup"
-                        ))),
+                        withMathJax(radioButtons("interpolation_options", NULL, width="100%",
+                            choiceValues = c("basic", "individualize", "addup"),
+                            choiceNames = list(
+                                tagList(
+                                    tags$h4("Generalized Pareto interpolation", style="margin-top: 0;"),
+                                    tags$p("Interpolate the distribution of your data directly,
+                                        without any transformation.", style="font-size: small; color: #666;")
+                                ),
+                                tagList(
+                                    tags$h4("Interpolate and individualize", style="margin-top: 0;"),
+                                    tags$p("Individualize the distribution of income or wealth
+                                        under the assumption of equal sharing among spouses. If you select this
+                                        option, you must specify the share of singles in your input files.",
+                                        style="font-size: small; color: #666;")
+                                ),
+                                tagList(
+                                    tags$h4("Interpolate and add up components", style="margin-top: 0;"),
+                                    tags$p("Add up two components of income or wealth (for example, labor and
+                                        capital income, housing wealth and financial wealth, male earnings and
+                                        female earnings, etc.), assuming that the dependence between both
+                                        components is characterized by a Gumbel copula with parameter
+                                        \\(\\theta\\). The higher \\(\\theta\\), the stronger the dependence,
+                                        with \\(\\theta = 1\\) meaning full independence, and
+                                        \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
+                                        You may specify a value for \\(\\theta\\) in each files,
+                                        or set a global value below (the default value \\(\\theta = 3\\)
+                                        corresponds to the typical dependance between labor and capital income).",
+                                        style="font-size: small; color: #666;")
+                                )
+                            )
+                        )),
                         tags$div(
                             numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
                             style = "margin-left: 20px;"
