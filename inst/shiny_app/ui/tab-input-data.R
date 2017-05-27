@@ -235,7 +235,7 @@ tabPanel("Input data",
                     ),
                     tags$div(
                         withMathJax(radioButtons("interpolation_options", NULL, width="100%",
-                            choiceValues = c("basic", "individualize", "addup"),
+                            choiceValues = c("basic", "individualize", "merge", "addup"),
                             choiceNames = list(
                                 tagList(
                                     tags$h4("Generalized Pareto interpolation", style="margin-top: 0;"),
@@ -247,6 +247,13 @@ tabPanel("Input data",
                                     tags$p("Individualize the distribution of income or wealth
                                         under the assumption of equal sharing among spouses. If you select this
                                         option, you must specify the share of singles in your input files.",
+                                        style="font-size: small; color: #666;")
+                                ),
+                                tagList(
+                                    tags$h4("Interpolate and merge countries", style="margin-top: 0;"),
+                                    tags$p("Merge the distribution of several countries into a single one.
+                                        If you select this option, you must specify the population size
+                                        of each country.",
                                         style="font-size: small; color: #666;")
                                 ),
                                 tagList(
