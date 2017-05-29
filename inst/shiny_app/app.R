@@ -1,6 +1,11 @@
 # Allow more RAM to Java (to export big Excel files)
 options(java.parameters="-Xmx8000m")
 
+# Function to call garbage collector oin Java (better memory managment)
+jgc <- function() {
+    .jcall("java/lang/System", method = "gc")
+}
+
 library(shiny)
 library(shinyBS)
 library(shinyjs)
@@ -36,7 +41,9 @@ server <- function(input, output, session) {
         output_tables     = NULL, # Output tables
         output_years      = NULL, # Years in the output data
         output_countries  = NULL, # Countries in the output data
-        output_components = NULL  # Components in the output data
+        output_components = NULL, # Components in the output data
+        years_merged      = NULL, # Years with merged distributions, if any
+        components_merged = NULL  # Components with merged distributions, if any
     )
 
     observeEvent(input$go_to_help, {
@@ -50,6 +57,7 @@ server <- function(input, output, session) {
     source(file.path("server", "render-output-tables.R"), local=TRUE)$value
     source(file.path("server", "render-plot.R"), local=TRUE)$value
     source(file.path("server", "download-sample.R"), local=TRUE)$value
+    source(file.path("server", "extra-tables.R"), local=TRUE)$value
 }
 
 ui <- tagList(
@@ -64,7 +72,6 @@ ui <- tagList(
         source(file.path("ui", "tab-output-tables.R"), local=TRUE)$value,
         source(file.path("ui", "tab-plots.R"), local=TRUE)$value,
         source(file.path("ui", "tab-sample.R"), local=TRUE)$value,
-        #source(file.path("ui", "tab-diagnostic.R"), local=TRUE)$value,
         source(file.path("ui", "tab-settings.R"), local=TRUE)$value,
         source(file.path("ui", "tab-help.R"), local=TRUE)$value,
         id = "main_navbar",

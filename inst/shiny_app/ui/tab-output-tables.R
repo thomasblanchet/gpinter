@@ -44,6 +44,18 @@ tabPanel("Output tables",
                     ),
                     class = "panel panel-default",
                     style = "margin-top: 20px;"
+                ),
+                tags$div(
+                    tags$div(
+                        tags$h3(icon("plus-square"), HTML("&nbsp;"), "Extra tables", class="panel-title"),
+                        class = "panel-heading"
+                    ),
+                    tags$div(
+                        uiOutput("extra_tables_buttons"),
+                        class = "panel-body"
+                    ),
+                    class = "panel panel-default",
+                    style = "margin-top: 20px;"
                 )
             )
         )

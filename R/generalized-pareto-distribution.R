@@ -304,7 +304,7 @@ gpd_bottom_mean <- function(p, p1, y1, mu, sigma, xi) {
 
 gpd_bottom_phi <- function(x, p1, y1, mu, sigma, xi) {
     p <- 1 - exp(-x)
-    return(-log(gpd_bottom_mean(p, p1, y1, mu, sigma, xi)))
+    return(suppressWarnings(-log(gpd_bottom_mean(p, p1, y1, mu, sigma, xi))))
 }
 
 #' @title Derivative of the interpolation function below the first bracket

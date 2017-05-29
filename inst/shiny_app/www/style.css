@@ -302,6 +302,10 @@ span.btn-file {
     margin-top: 10px;
 }
 
+#contrib_display_choice, #contrib_type_choice {
+    margin-bottom: 0;
+}
+
 @media (min-width: 768px) {
     .nav-doc {
         display: block;

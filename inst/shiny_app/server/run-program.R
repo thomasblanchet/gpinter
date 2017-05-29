@@ -78,12 +78,6 @@ show_run_modal <- function() {
                             of your data."
                         ))
                     ),
-                    #tags$tr(
-                    #    tags$td(tags$i(class="fa fa-stethoscope fa-3x", `aria-hidden`="true")),
-                    #    tags$td(tags$p("The", tags$b("Diagnostic"), "tab can help you identify pathological
-                    #        features of your data which may indicate mistakes or inconsistencies."
-                    #    ))
-                    #),
                     class = "tabs-presentation"
                     ),
                 id = "success_message"
@@ -344,6 +338,23 @@ interpolate_and_individualize <- function() {
                     }, error = function(e) {
                         return(simpleError(e$message))
                     })
+                } else if (is.na(data_model$whichavgsh)) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average,
+                            last_invpareto = data_model$last_invpareto,
+                            last_bracketavg = data_model$last_bracketavg
+                        )
+                        if (!is.na(data_model$lowerbound)) {
+                            args["lower_bound"] <- data_model$lowerbound
+                        }
+                        result <- do.call(thresholds_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
                 } else {
                     result_model <- tryCatch({
                         args <- list(
@@ -513,6 +524,23 @@ interpolate_and_merge <- function() {
                     }, error = function(e) {
                         return(simpleError(e$message))
                     })
+                } else if (is.na(data_model$whichavgsh)) {
+                    result_model <- tryCatch({
+                        args <- list(
+                            p = data_model$p,
+                            threshold = data_model$threshold,
+                            average = data_model$average,
+                            last_invpareto = data_model$last_invpareto,
+                            last_bracketavg = data_model$last_bracketavg
+                        )
+                        if (!is.na(data_model$lowerbound)) {
+                            args["lower_bound"] <- data_model$lowerbound
+                        }
+                        result <- do.call(thresholds_fit, args)
+                        result
+                    }, error = function(e) {
+                        return(simpleError(e$message))
+                    })
                 } else {
                     result_model <- tryCatch({
                         args <- list(
@@ -545,6 +573,10 @@ interpolate_and_merge <- function() {
                 } else {
                     list_results[[year]][[country]][[component]] <- result_model
 
+                    # Add the country name to the dist object to help display
+                    # the contribution table later on
+                    result_model$country <- country
+
                     models_to_merge <- c(models_to_merge, list(result_model))
                     populations <- c(populations, data_model$popsize)
 
@@ -558,11 +590,11 @@ interpolate_and_merge <- function() {
             data_label <- data_label[data_label != "n/a"]
             data_label <- paste(data_label, collapse=" – ")
             # Merge the models
-            update_run_progressbar_message(paste("Merging:", data_label))
+            update_run_progressbar_message(paste("Merging :", data_label))
 
-            result_model <- tryCatch(merge_dist(models_to_merge, populations), error = function(e) {
+            result_model <- suppressWarnings(tryCatch(merge_dist(models_to_merge, populations), error = function(e) {
                 return(simpleError(e$message))
-            })
+            }))
 
             if (is.error(result_model)) {
                 set_active(FALSE)
@@ -732,7 +764,7 @@ interpolate_and_addup <- function() {
                 data_label <- data_label[data_label != "n/a"]
                 data_label <- paste(data_label, collapse=" – ")
                 # Merge the models
-                update_run_progressbar_message(paste("Adding up:", data_label))
+                update_run_progressbar_message(paste("Adding up :", data_label))
 
                 addedup_dist <- tryCatch(addup_dist(components_to_add_up[[1]], components_to_add_up[[2]], theta), error = function(e) {
                     return(simpleError(e$message))

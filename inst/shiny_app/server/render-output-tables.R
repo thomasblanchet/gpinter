@@ -34,7 +34,7 @@ output$output_table <- renderUI({
     )
 
     # Detailed tabulation
-    out_df <- data.frame("Fractiles" = sprintf("%1.5f", gperc))
+    out_df <- data.frame("Rank" = sprintf("%1.5f", gperc))
 
     if ("thres" %in% input$results_display) {
         out_df["Threshold"] <- ifelse(is.na(table$threshold), NA, format(round(table$threshold), big.mark=" ", scientific=FALSE))
@@ -224,10 +224,6 @@ output$dl_tables_excel <- downloadHandler(
             average       = trimws(isolate(input$var_average))
         )
 
-        gperc <- c(
-            seq(0, 0.99, 0.01), seq(0.991, 0.999, 0.001),
-            seq(0.9991, 0.9999, 0.0001), seq(0.99991, 0.99999, 0.00001)
-        )
         # Keep a list of sheet names to avoid duplicate names
         all_sheet_names <- c()
         # Create the workbook
@@ -264,11 +260,6 @@ output$dl_tables_excel <- downloadHandler(
         all_sheet_names <- sheet_name
         sheet <- createSheet(wb, sheet_name)
         addDataFrame(df_all_series, sheet, row.names=FALSE)
-
-        # Function to call garbage collector oin Java (better memory managment)
-        jgc <- function() {
-            .jcall("java/lang/System", method = "gc")
-        }
 
         counter <- 1
         for (country in data$output_countries) {
