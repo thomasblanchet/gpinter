@@ -17,6 +17,16 @@
     <li>Simulate a representative sample from the estimated distribution.</li>
 </ul>
 
+<a class="anchor" id="share-based"></a>
+<h2>Share-based interpolation</h2>
+<p>In case the user solely provides bracket-level information on averages for income or wealth (ie. information on fractiles \(p\) and on shares or averages using “bracketsh”, “topsh”, “bracketavg” or “topavg”), and no bracket-level information on thresholds (“thr”), the interface will provide output tables by interpolating the Lorenz curve.</p>
+<p>We stress that shares-based interpolation is bound to be less precise than thresholds-and-shares-based generalized Pareto interpolation, and we urge users to be cautious. In order to improve accuracy, we offer the possibility to specify the inverted Pareto coefficient b for the top bracket (eg. on the basis of observed b for countries and years with similar Lorenz curves). In case this information is provided by the user it will be exploited by the interpolation procedure (otherwise it will be estimated from Lorenz curve interpolation).</p>
+
+<a class="anchor" id="threshold-based"></a>
+<h2>Threshold-based interpolation</h2>
+<p>In case the user solely provides bracket-level information on thresholds (ie. information on fractiles \(p\) and matching quantiles “thr”), and no bracket-level information on averages for income or wealth (i.e. no information on shares or averages using “bracketsh”, “topsh”, “bracketavg”, “topavg” or “b”), the interface will provide output tables by interpolating the quantile function. In case the user also provides information on the overall average income or wealth for the entire population this information will be exploited by the interpolation procedure (otherwise it will be estimated from quantile function interpolation).</p>
+<p>We stress that thresholds-based interpolation is bound to be less precise than thresholds-and-shares-based generalized Pareto interpolation, and we urge users to be cautious. In order to raise accuracy, we offer the possibility to specify the inverted Pareto coefficient b for the top bracket (e.g. on the basis of observed b for countries and years with similar quantile functions below the top). In case this information is provided by the user it will be exploited by the interpolation procedure (otherwise it will be estimated from quantile function interpolation).</p>
+
 <a class="anchor" id="copula"></a>
 <h2>Adding up income or wealth components using Gumbel copulas</h2>
 <p>The interface has an option to add up components of income or wealth (for example, labor and capital income) with the assumption that the dependance between labor and capital income is characterized by a Gumbel copula. This option can be useful in countries where tabulations of the distribution of labor and capital incomes are available separately, but not jointly.</p>

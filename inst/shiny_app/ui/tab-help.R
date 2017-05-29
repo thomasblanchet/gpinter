@@ -9,6 +9,8 @@ tabPanel("Help",
                     tags$ul(
                         tags$li(a("Introduction", href="#")),
                         tags$li(a("Functionalities", href="#functionalities")),
+                        tags$li(a("Share-based interpolation", href="#share-based")),
+                        tags$li(a("Threshold-based interpolation", href="#threshold-based")),
                         tags$li(a("Adding up income or wealth components", href="#copula")),
                         tags$li(a("Source code", href="#source")),
                         tags$li(a("Contact us", href="#contact"))
