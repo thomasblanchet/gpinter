@@ -302,8 +302,8 @@ span.btn-file {
     margin-top: 10px;
 }
 
-#contrib_display_choice, #contrib_type_choice {
-    margin-bottom: 0;
+#contrib_choice .panel-body {
+    padding: 0 15px;
 }
 
 @media (min-width: 768px) {

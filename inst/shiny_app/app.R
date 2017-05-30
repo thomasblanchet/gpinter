@@ -6,6 +6,18 @@ jgc <- function() {
     .jcall("java/lang/System", method = "gc")
 }
 
+# Simple moving average function
+movavg <- function(x, k) {
+    n <- length(x)
+    x_smooth <- vector(mode="numeric", length=n)
+    for (i in 1:n) {
+        i_min <- max(1, i - k)
+        i_max <- min(n, i + k)
+        x_smooth[i] <- mean(x[i_min:i_max], na.rm=TRUE)
+    }
+    return(x_smooth)
+}
+
 library(shiny)
 library(shinyBS)
 library(shinyjs)

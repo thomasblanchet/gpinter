@@ -50,30 +50,67 @@ observeEvent(input$show_country_contribution, {
                     in the global top 1% belongs to Americans?) Contributions in each bracket should
                     always sum to 100%."),
                 fixedRow(
-                    column(6, selectInput("contrib_table_year", "Year", choices=data$years_merged, width="100%")),
-                    column(6, selectInput("contrib_table_component", "Component", choices=data$components_merged, width="100%"))
-                ),
-                tags$div(
                     tags$div(
-                        tags$h3(tagList(icon("wrench"), HTML("&nbsp; Options")), class="panel-title"),
-                        class = "panel-heading"
-                    ),
-                    tags$div(
-                        fixedRow(
-                            column(6, radioButtons("contrib_type_choice", "Contribution in terms of", inline=TRUE, selected="population",
-                                choices=c("population", "income or wealth"))),
-                            column(6, radioButtons("contrib_display_choice", "Calculate", inline=TRUE, selected="top contributions",
-                                choices=c("top contributions", "bracket contributions")))
+                        column(4,
+                            tags$div(
+                                tags$div(
+                                    "Decomposition type",
+                                    class = "panel-heading"
+                                ),
+                                tags$div(
+                                    radioButtons("contrib_type_choice", NULL,
+                                        selected = "population",
+                                        choices = c("population", "income or wealth")
+                                    ),
+                                    class = "panel-body"
+                                ),
+                                class = "panel panel-default"
+                            )
                         ),
-                        class = "panel-body"
-                    ),
-                    class = "panel panel-default"
+                        column(4,
+                            tags$div(
+                                tags$div(
+                                    "Bracket type",
+                                    class = "panel-heading"
+                                ),
+                                tags$div(
+                                    radioButtons("contrib_display_choice", NULL,
+                                        selected = "top contributions",
+                                        choices = c("top contributions", "bracket contributions")
+                                    ),
+                                    class = "panel-body"
+                                ),
+                                class = "panel panel-default"
+                            )
+                        ),
+                        column(4,
+                            tags$div(
+                                tags$div(
+                                    "Smoothing",
+                                    class = "panel-heading"
+                                ),
+                                tags$div(
+                                    radioButtons("contrib_smoothing_choice", NULL,
+                                        selected = "no",
+                                        choices = c("no", "yes")
+                                    ),
+                                    class = "panel-body"
+                                ),
+                                class = "panel panel-default"
+                            )
+                        ),
+                        id = "contrib_choice"
+                    )
                 ),
                 fixedRow(
                     column(6, downloadButton("download_contrib_csv", label="Download as CSV", class="btn-primary btn-block")),
                     column(6, downloadButton("download_contrib_excel", label="Download as Excel", class="btn-primary btn-block"))
                 ),
                 tags$hr(),
+                fixedRow(
+                    column(6, selectInput("contrib_table_year", "Year", choices=data$years_merged, width="100%")),
+                    column(6, selectInput("contrib_table_component", "Component", choices=data$components_merged, width="100%"))
+                ),
                 uiOutput("contrib_table")
             )
         ),
@@ -119,6 +156,9 @@ output$contrib_table <- renderUI({
             parent <- merged_result$parent_dist[[i]]
             relsize <- merged_result$relsize[i]
             contrib <- (1 - fitted_cdf(parent, thr))*relsize/(1 - gperc)
+            if (input$contrib_smoothing_choice == "yes") {
+                contrib <- movavg(contrib, 3)
+            }
             return(sprintf("%.2f%%", 100*contrib))
         })
         colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -144,6 +184,9 @@ output$contrib_table <- renderUI({
             parent <- merged_result$parent_dist[[i]]
             relsize <- merged_result$relsize[i]
             contrib <- diff(c(fitted_cdf(parent, thr), 1))*relsize/diff(c(gperc, 1))
+            if (input$contrib_smoothing_choice == "yes") {
+                contrib <- movavg(contrib, 3)
+            }
             return(sprintf("%.2f%%", 100*contrib))
         })
         colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -169,6 +212,9 @@ output$contrib_table <- renderUI({
             parent <- merged_result$parent_dist[[i]]
             relsize <- merged_result$relsize[i]*parent$average/merged_result$average
             contrib <- threshold_share(parent, thr)*relsize/merged_table$top_share
+            if (input$contrib_smoothing_choice == "yes") {
+                contrib <- movavg(contrib, 3)
+            }
             return(sprintf("%.2f%%", 100*contrib))
         })
         colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -194,6 +240,9 @@ output$contrib_table <- renderUI({
             parent <- merged_result$parent_dist[[i]]
             relsize <- merged_result$relsize[i]*parent$average/merged_result$average
             contrib <- diff(c(threshold_share(parent, thr), 0))*relsize/diff(c(merged_table$top_share, 0))
+            if (input$contrib_smoothing_choice == "yes") {
+                contrib <- movavg(contrib, 3)
+            }
             return(sprintf("%.2f%%", 100*contrib))
         })
         colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -247,6 +296,9 @@ output$download_contrib_csv <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]
                         contrib <- (1 - fitted_cdf(parent, thr))*relsize/(1 - gperc)
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -262,6 +314,9 @@ output$download_contrib_csv <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]
                         contrib <- diff(c(fitted_cdf(parent, thr), 1))*relsize/diff(c(gperc, 1))
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -277,6 +332,9 @@ output$download_contrib_csv <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]*parent$average/merged_result$average
                         contrib <- threshold_share(parent, thr)*relsize/merged_table$top_share
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -292,6 +350,9 @@ output$download_contrib_csv <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]*parent$average/merged_result$average
                         contrib <- diff(c(threshold_share(parent, thr), 0))*relsize/diff(c(merged_table$top_share, 0))
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -355,6 +416,9 @@ output$download_contrib_excel <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]
                         contrib <- (1 - fitted_cdf(parent, thr))*relsize/(1 - gperc)
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -370,6 +434,9 @@ output$download_contrib_excel <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]
                         contrib <- diff(c(fitted_cdf(parent, thr), 1))*relsize/diff(c(gperc, 1))
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -385,6 +452,9 @@ output$download_contrib_excel <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]*parent$average/merged_result$average
                         contrib <- threshold_share(parent, thr)*relsize/merged_table$top_share
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
@@ -400,6 +470,9 @@ output$download_contrib_excel <- downloadHandler(
                         parent <- merged_result$parent_dist[[i]]
                         relsize <- merged_result$relsize[i]*parent$average/merged_result$average
                         contrib <- diff(c(threshold_share(parent, thr), 0))*relsize/diff(c(merged_table$top_share, 0))
+                        if (input$contrib_smoothing_choice == "yes") {
+                            contrib <- movavg(contrib, 3)
+                        }
                         return(contrib)
                     })
                     colnames(pop_contrib) <- sapply(seq_along(merged_result$parent_dist), function(i) {
