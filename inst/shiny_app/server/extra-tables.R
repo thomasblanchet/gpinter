@@ -15,6 +15,8 @@ output$extra_tables_buttons <- renderUI({
             }
         }
     }
+    years_merged <- unique(years_merged)
+    components_merged <- unique(components_merged)
     has_merged <- (length(years_merged) > 0) && (length(components_merged) > 0)
 
     if (has_merged) {
