@@ -486,12 +486,12 @@ output$download_contrib_excel <- downloadHandler(
 
                 sheet_name <- strtrim(data_label, 31)
                 i <- 1
-                while (sheet_name %in% all_sheet_names) {
+                while (tolower(sheet_name) %in% all_sheet_names) {
                     to_add <- paste0(" (", i, ")")
                     sheet_name <- paste0(strtrim(data_label, 31 - nchar(to_add)), to_add)
                     i <- i + 1
                 }
-                all_sheet_names <- c(all_sheet_names, sheet_name)
+                all_sheet_names <- c(all_sheet_names, tolower(sheet_name))
                 sheet <- createSheet(wb, sheet_name)
                 addDataFrame(df, sheet, row.names=FALSE)
                 # Call Java garbage collector
