@@ -20,7 +20,7 @@ generate_tabulation <- function(dist, fractiles, ...) UseMethod("generate_tabula
 
 #' @export
 generate_tabulation.gpinter_dist_orig <- function(dist, fractiles, ...) {
-    tab <- data.frame(
+    tab <- list(
         fractile = fractiles,
         threshold = fitted_quantile(dist, fractiles),
         top_share = top_share(dist, fractiles)
@@ -34,6 +34,16 @@ generate_tabulation.gpinter_dist_orig <- function(dist, fractiles, ...) {
     tab$bracket_average <- dist$average*tab$bracket_share/diff(c(fractiles, 1))
 
     tab$invpareto <- tab$top_average/tab$threshold
+
+    tab$p10_average <- tab$threshold[11]/dist$average
+    tab$p50_average <- tab$threshold[51]/dist$average
+    tab$p90_average <- tab$threshold[90]/dist$average
+    tab$p99_average <- tab$threshold[100]/dist$average
+
+    tab$b10 <- tab$invpareto[11]
+    tab$b50 <- tab$invpareto[51]
+    tab$b90 <- tab$invpareto[90]
+    tab$b99 <- tab$invpareto[100]
 
     return(tab)
 }
@@ -54,6 +64,16 @@ generate_tabulation.gpinter_dist <- function(dist, fractiles, ...) {
     tab$bracket_average <- dist$average*tab$bracket_share/diff(c(fractiles, 1))
 
     tab$invpareto <- tab$top_average/tab$threshold
+
+    tab$p10_average <- tab$threshold[11]/dist$average
+    tab$p50_average <- tab$threshold[51]/dist$average
+    tab$p90_average <- tab$threshold[90]/dist$average
+    tab$p99_average <- tab$threshold[100]/dist$average
+
+    tab$b10 <- tab$invapreto[11]
+    tab$b50 <- tab$invapreto[51]
+    tab$b90 <- tab$invapreto[90]
+    tab$b99 <- tab$invapreto[100]
 
     return(tab)
 }
