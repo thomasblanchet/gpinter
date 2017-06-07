@@ -70,10 +70,10 @@ generate_tabulation.gpinter_dist <- function(dist, fractiles, ...) {
     tab$p90_average <- tab$threshold[90]/dist$average
     tab$p99_average <- tab$threshold[100]/dist$average
 
-    tab$b10 <- tab$invapreto[11]
-    tab$b50 <- tab$invapreto[51]
-    tab$b90 <- tab$invapreto[90]
-    tab$b99 <- tab$invapreto[100]
+    tab$b10 <- tab$invpareto[11]
+    tab$b50 <- tab$invpareto[51]
+    tab$b90 <- tab$invpareto[90]
+    tab$b99 <- tab$invpareto[100]
 
     return(tab)
 }
