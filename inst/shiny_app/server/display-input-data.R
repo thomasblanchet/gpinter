@@ -122,11 +122,11 @@ output$input_data_view <- renderUI({
             tags$tbody(
                 tags$tr(
                     tags$th("Average", style="white-space: nowrap;"),
-                    tags$td(ifelse(is.na(data_view$singleshare),
+                    tags$td(ifelse(is.na(data_view$average),
                         "n/a",
                         format(round(data_view$average), big.mark=" ", scientific=FALSE)
                     ), style = ifelse(
-                        is.na(data_view$singleshare),
+                        is.na(data_view$average),
                         "color: #999; text-align: right;", "text-align: right;"
                     ))
                 ),

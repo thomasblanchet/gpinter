@@ -1,7 +1,7 @@
 # Allow more RAM to Java (to export big Excel files)
 options(java.parameters="-Xmx8000m")
 
-# Function to call garbage collector oin Java (better memory managment)
+# Function to call garbage collector in Java (better memory managment)
 jgc <- function() {
     .jcall("java/lang/System", method = "gc")
 }
