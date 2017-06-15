@@ -155,6 +155,12 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
                 "average (%.2f) is not strictly within the bracket thresholds (%.2f and %.2f)"
             ), p[i], p[i + 1], bracketavg[i], threshold[i], threshold[i + 1]))
         }
+        if (bracketavg[n] <= threshold[n]) {
+            stop(sprintf(paste(
+                "input data is inconsistent after p=%.4f. The bracket",
+                "average (%.2f) is not strictly above the bracket threshold (%.2f)"
+            ), p[n], bracketavg[n], threshold[n]))
+        }
     }
     # Total average consistent with bracket averages
     if (p[1] == 0) {
