@@ -134,51 +134,68 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
     }
     mk <- c(mk, (1 - pk[n])*qk[n]/(1 - sn))
 
-    if (is.null(average) || is.na(average)) {
-        # Set the average/Pareto coef in the last bracket
-        if (!is.null(last_m)) {
-            mk[n] <- last_m
-        }
+    # Calculate average in first bracket if necessary
+    if (pk[1] > 0) {
+        m0 <- pk[1]*(lower_bound + qk[1])/2
+        mk <- c(m0, mk)
+        pk <- c(0, pk)
+        qk <- c(lower_bound, qk)
+        n <- n + 1
+    }
 
-        average <- sum(mk)
-        bracketavg <- mk/diff(c(pk, 1))
+    # Set the aveage/Pareto coef in the last bracket if required
+    if (!is.null(last_m)) {
+        mk[n] <- last_m
+    }
 
-        # Remove first bracket for more robust results
-        if (pk[1] == 0) {
-            lower_bound <- qk[1]
-            qk <- qk[-1]
-            pk <- pk[-1]
-            bracketavg <- bracketavg[-1]
-        }
+    # Adjust mk to match the average is it was given
+    if (!is.null(average) && !is.na(average)) {
+        missing_income <- average - sum(mk)
 
-        return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-            bottom_model=bottom_model, lower_bound=lower_bound))
-    } else {
-        if (pk[1] > 0) {
-            m0 <- pk[1]*(lower_bound + qk[1])/2
+        dk <- diff(c(pk, 1))
 
-            mk[n] <- mk[n] + average - sum(mk) - m0
-
-            bracketavg <- mk/diff(c(pk, 1))
-            return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-                bottom_model=bottom_model, lower_bound=lower_bound))
-        } else {
-            missing_income <- (average - sum(mk))
-            first_bracket_avg <- (mk[1] + missing_income)/pk[2]
-            # Add missing income to the last bracket
+        if (missing_income >= 0 & is.null(last_m)) {
+            # If missing income is positive, and average at the top is not
+            # predetermined, add it to the top
             mk[n] <- mk[n] + missing_income
-            bracketavg <- mk/diff(c(pk, 1))
-
-            # Remove first bracket for more robust results
-            if (pk[1] == 0) {
-                lower_bound <- qk[1]
-                qk <- qk[-1]
-                pk <- pk[-1]
-                bracketavg <- bracketavg[-1]
+        } else if (missing_income >= 0 & !is.null(last_m)) {
+            # Here average in last bracket is predetermined, so we adjust
+            # the other brackets
+            target_avg <- average - mk[n]
+            lambda <- (target_avg - sum(mk[1:(n - 1)]))/(sum(qk[2:n]*dk[1:(n - 1)]) - sum(mk[1:(n - 1)]))
+            if (lambda >= 1 || lambda <= 0) {
+                stop("input thresholds are inconsistent with the average")
             }
-
-            return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-                bottom_model=bottom_model, lower_bound=lower_bound))
+            mk[1:(n - 1)] <- mk[1:(n - 1)] + lambda*(qk[2:n]*dk[1:(n - 1)] - mk[1:(n - 1)])
+        } else if (missing_income < 0 & is.null(last_m)) {
+            # We lower the average in every bracket
+            lambda <- -(average - sum(mk))/(sum(mk) - sum(qk*dk))
+            if (lambda >= 1 || lambda <= 0) {
+                stop("input thresholds are inconsistent with the average")
+            }
+            mk <- mk - lambda*(mk - qk*dk)
+        } else if (missing_income < 0 & !is.null(last_m)) {
+            # We lower the average in every bracket except the last
+            target_avg <- average - mk[n]
+            lambda <- -(target_avg - sum(mk[1:(n - 1)]))/(sum(mk[1:(n - 1)]) - sum(qk[1:(n - 1)]*dk[1:(n - 1)]))
+            if (lambda >= 1 || lambda <= 0) {
+                stop("input thresholds are inconsistent with the average")
+            }
+            mk[1:(n - 1)] <- mk[1:(n - 1)] - lambda*(mk[1:(n - 1)] - qk[1:(n - 1)]*dk[1:(n - 1)])
         }
     }
+
+    average <- sum(mk)
+    bracketavg <- mk/diff(c(pk, 1))
+
+    # Remove first bracket for more robust results
+    if (pk[1] == 0) {
+        lower_bound <- qk[1]
+        qk <- qk[-1]
+        pk <- pk[-1]
+        bracketavg <- bracketavg[-1]
+    }
+
+    return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
+        bottom_model=bottom_model, lower_bound=lower_bound))
 }

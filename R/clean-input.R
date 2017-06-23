@@ -346,19 +346,11 @@ clean_input_thresholds <- function(p, threshold, average=NULL,
     }
 
     if (!is.null(last_bracketavg) && !is.na(last_bracketavg)) {
-        if (!is.null(average) && !is.na(average)) {
-            stop(paste("You can specify either the overall average",
-                "or the average is the last bracket, but not both"))
-        }
         if (last_bracketavg <= threshold[n]) {
             stop("The average in the last bracket is below the last threshold")
         }
         last_m <- (1 - p[n])*last_bracketavg
     } else if (!is.null(last_invpareto) && !is.na(last_invpareto)) {
-        if (!is.null(average) && !is.na(average)) {
-            stop(paste("You can specify either the overall average",
-                "or the inverted Pareto coefficient at the last threshold, but not both"))
-        }
         if (last_invpareto <= 1) {
             stop("The inverted Pareto coefficient at the last threhsold must be above one")
         }
