@@ -41,7 +41,7 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
 
     # Model for the bottom
     if (p[1] > 0 && is.null(bottom_model)) {
-        if (threshold[1] > 0) {
+        if (threshold[1] != 0) {
             bottom_model <- "gpd"
         } else if (threshold[1] == 0) {
             bottom_model <- "dirac"

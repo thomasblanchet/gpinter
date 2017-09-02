@@ -227,7 +227,6 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
             stop(paste0("The average below the first bracket (", round(bracketavg),
                 ") is above the first threshold (", round(threshold[1]), ")"))
         }
-
         if (bottom_model == "dirac") {
             param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=p[1])
         } else if (bottom_model == "gpd" && bracketavg > 0) {
