@@ -1,11 +1,3 @@
-# Allow more RAM to Java (to export big Excel files)
-options(java.parameters="-Xmx8000m")
-
-# Function to call garbage collector in Java (better memory managment)
-jgc <- function() {
-    .jcall("java/lang/System", method = "gc")
-}
-
 # Simple moving average function
 movavg <- function(x, k) {
     n <- length(x)
@@ -22,7 +14,7 @@ library(shiny)
 library(shinyBS)
 library(shinyjs)
 library(evaluate)
-library(xlsx)
+library(openxlsx)
 library(readxl)
 library(gpinter)
 

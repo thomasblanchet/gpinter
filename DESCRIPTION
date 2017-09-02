@@ -24,7 +24,7 @@ Imports:
 Suggests:
     testthat (>= 1.0.2),
     numDeriv (>= 2016.8-1),
-    xlsx (>= 0.5.7),
+    openxlsx (>= 4.0.17),
     shinyBS (>= 0.61),
     shinyjs (>= 0.7),
     readxl (>= 0.1.1),

@@ -99,13 +99,9 @@ output$synthpop_dl_excel <- downloadHandler(
     content = function(dest) {
         df <- generate_samples()
 
-        wb <- createWorkbook()
-        sheet <- createSheet(wb, "Samples")
-        cs <- CellStyle(wb, dataFormat=DataFormat("# ##0.00"))
-        cs <- rep(list(cs), ncol(df))
-        names(cs) <- as.character(1:ncol(df))
-        print(str(cs))
-        addDataFrame(df, sheet, colStyle=rep(cs, ncol(df)), row.names=FALSE)
-        saveWorkbook(wb, dest)
+        wb <- openxlsx::createWorkbook()
+        openxlsx::addWorksheet(wb, "Samples")
+        openxlsx::writeData(wb, "Samples", df)
+        openxlsx::saveWorkbook(wb, dest)
     }
 )

@@ -394,7 +394,7 @@ output$download_contrib_excel <- downloadHandler(
         # Keep a list of sheet names to avoid duplicate names
         all_sheet_names <- c()
         # Create the workbook
-        wb <- createWorkbook()
+        wb <- openxlsx::createWorkbook()
 
         for (year in data$years_merged) {
             for (component in data$components_merged) {
@@ -492,15 +492,13 @@ output$download_contrib_excel <- downloadHandler(
                     i <- i + 1
                 }
                 all_sheet_names <- c(all_sheet_names, tolower(sheet_name))
-                sheet <- createSheet(wb, sheet_name)
-                addDataFrame(df, sheet, row.names=FALSE)
-                # Call Java garbage collector
-                jgc()
+                openxlsx::addWorksheet(wb, sheet_name)
+                openxlsx::writeData(wb, sheet_name, df)
             }
         }
 
         # Save the workbook
-        saveWorkbook(wb, dest)
+        openxlsx::saveWorkbook(wb, dest)
     }
 )
 

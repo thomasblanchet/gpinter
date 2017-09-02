@@ -235,7 +235,7 @@ output$dl_tables_excel <- downloadHandler(
         # Keep a list of sheet names to avoid duplicate names
         all_sheet_names <- c()
         # Create the workbook
-        wb <- createWorkbook()
+        wb <- openxlsx::createWorkbook()
 
         # Time series for each country and income concept
         df_all_series <- data.frame()
@@ -274,8 +274,8 @@ output$dl_tables_excel <- downloadHandler(
         }
         sheet_name <- "series"
         all_sheet_names <- sheet_name
-        sheet <- createSheet(wb, sheet_name)
-        addDataFrame(df_all_series, sheet, row.names=FALSE)
+        openxlsx::addWorksheet(wb, sheet_name)
+        openxlsx::writeData(wb, sheet_name, df_all_series)
 
         counter <- 1
         for (country in data$output_countries) {
@@ -339,15 +339,13 @@ output$dl_tables_excel <- downloadHandler(
                         i <- i + 1
                     }
                     all_sheet_names <- c(all_sheet_names, tolower(sheet_name))
-                    sheet <- createSheet(wb, sheet_name)
-                    addDataFrame(out_df, sheet, row.names=FALSE)
-                    # Call Java garbage collector
-                    jgc()
+                    openxlsx::addWorksheet(wb, sheet_name)
+                    openxlsx::writeData(wb, sheet_name, out_df)
                 }
             }
         }
 
         # Save the workbook
-        saveWorkbook(wb, dest)
+        openxlsx::saveWorkbook(wb, dest)
     }
 )
