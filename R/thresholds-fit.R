@@ -65,7 +65,8 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
         stop("The method requires at least three positive thresholds.")
     }
     # Estimate the derivative at the last point
-    if (is.null(binf)) {
+    browser()
+    if (is.null(binf) || is.na(binf)) {
         sn <- (yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])
     } else {
         if (binf > 1) {
@@ -197,5 +198,5 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
     }
 
     return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-        bottom_model=bottom_model, lower_bound=lower_bound))
+        bottom_model=bottom_model, lower_bound=lower_bound, binf=binf))
 }

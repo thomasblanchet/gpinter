@@ -25,6 +25,8 @@
 #' \code{min(threshold) == 0} and \code{"gpd"} otherwise.
 #' @param lower_bound Lower bound of the distribution. Only relevant if
 #' \code{min(p) > 0}. Default is \code{0}.
+#' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
+#' it is directly estimated from the data. Default is \code{NULL}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -35,7 +37,7 @@
 
 tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topshare=NULL,
                            bracketavg=NULL, topavg=NULL, invpareto=NULL,
-                           bottom_model=NULL, lower_bound=0) {
+                           bottom_model=NULL, lower_bound=0, binf=NULL) {
 
     # Check and clean the input
     input <- clean_input_tabulation(p, threshold, average, bracketshare, topshare,
@@ -58,7 +60,20 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
     sk <- (1 - pk)*qk/mk
 
     # Estimate the second derivative at the last point
-    an <- (sk[n] - sk[n - 1])/(xk[n] - xk[n - 1])
+    if (is.null(binf) || is.na(binf)) {
+        an <- (sk[n] - sk[n - 1])/(xk[n] - xk[n - 1])
+    } else {
+        if (binf <= 1) {
+            stop("the asymptotic Pareto coefficient must be above one")
+        }
+        xi <- 1/binf
+        mu <- qk[n]
+        # Identify sigma using the average in the last threshold
+        sigma <- ((exp(-yk[n]) - mu + mu*pk[n])*(-1 + xi))/(-1 + pk[n])
+        # Identify an from sigma
+        an <- (-sigma + (-1 + pk[n])*(-1 + sk[n])*sk[n] *
+            exp(2*xk[n] - yk[n]))/((-1 + pk[n])*exp(2*xk[n] - yk[n]))
+    }
 
     # Calculate the second derivative
     ak <- clamped_quintic_spline(xk, yk, sk, an)

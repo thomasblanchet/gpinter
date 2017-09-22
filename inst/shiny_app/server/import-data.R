@@ -283,7 +283,8 @@ observeEvent(data$files_selected, ignoreNULL = TRUE, handlerExpr = {
         average       = trimws(isolate(input$var_average)),
         popsize       = trimws(isolate(input$var_popsize)),
         gumbel        = trimws(isolate(input$var_gumbel)),
-        lowerbound    = trimws(isolate(input$var_lowerbound))
+        lowerbound    = trimws(isolate(input$var_lowerbound)),
+        binf          = trimws(isolate(input$var_binf))
     )
 
     # Number of files to process

@@ -6,7 +6,7 @@
 \usage{
 tabulation_fit(p, threshold, average = NULL, bracketshare = NULL,
   topshare = NULL, bracketavg = NULL, topavg = NULL, invpareto = NULL,
-  bottom_model = NULL, lower_bound = 0)
+  bottom_model = NULL, lower_bound = 0, binf = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -33,6 +33,9 @@ Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}
+
+\item{binf}{Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
+it is directly estimated from the data. Default is \code{NULL}.}
 }
 \value{
 An object of class \code{gpinter_dist_orig}.

@@ -112,6 +112,15 @@ parse_input <- function(data, var, dpcomma) {
         data_list$gumbel <- data[1, var$gumbel]
     }
 
+    # Look for asymptotic Pareto coef
+    if (var$binf %in% colnames(data)) {
+        if (dpcomma) {
+            data[, var$binf] <- gsub(",", ".", data[, var$gumbel])
+        }
+        data[, var$binf] <- as.numeric(data[, var$binf])
+        data_list$binf <- data[1, var$binf]
+    }
+
     # Look for lower bound
     if (var$lowerbound %in% colnames(data)) {
         if (dpcomma) {
@@ -323,6 +332,9 @@ parse_input <- function(data, var, dpcomma) {
     }
     if (is.null(data_list$last_invpareto)) {
         data_list$last_invpareto <- NA
+    }
+    if (is.null(data_list$binf)) {
+        data_list$binf <- NA
     }
 
     # Check consistency of input data

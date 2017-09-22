@@ -199,6 +199,16 @@ output$input_data_view <- renderUI({
                         is.na(data_view$last_invpareto),
                         "color: #999; text-align: right;", "text-align: right;"
                     ))
+                ),
+                tags$tr(
+                    tags$th("Asymptotic Pareto coefficient", style="white-space: nowrap;"),
+                    tags$td(ifelse(is.na(data_view$binf),
+                        "n/a",
+                        format(data_view$binf, digit=2, scientific=FALSE, big.mark=" ")
+                    ), style = ifelse(
+                        is.na(data_view$binf),
+                        "color: #999; text-align: right;", "text-align: right;"
+                    ))
                 )
             ),
             class = "table table-condensed table-striped"

@@ -6,7 +6,7 @@
 \usage{
 shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  bottom_model = NULL, lower_bound = 0)
+  bottom_model = NULL, lower_bound = 0, binf = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -31,6 +31,9 @@ Pareto distribution, or \code{"hist"} for histogram density. Default is
 
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}
+
+\item{binf}{Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
+it is directly estimated from the data. Default is \code{NULL}.}
 }
 \value{
 An object of class \code{gpinter_dist_orig}.

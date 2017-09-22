@@ -199,7 +199,8 @@ interpolate_only <- function() {
                     result_model <- tryCatch({
                         args <- list(
                             p = data_model$p,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -222,7 +223,8 @@ interpolate_only <- function() {
                             threshold = data_model$threshold,
                             average = data_model$average,
                             last_invpareto = data_model$last_invpareto,
-                            last_bracketavg = data_model$last_bracketavg
+                            last_bracketavg = data_model$last_bracketavg,
+                            binf = data_model$binf
                         )
                         if (!is.na(data_model$lowerbound)) {
                             args["lower_bound"] <- data_model$lowerbound
@@ -237,7 +239,8 @@ interpolate_only <- function() {
                         args <- list(
                             p = data_model$p,
                             threshold = data_model$threshold,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -322,7 +325,8 @@ interpolate_and_individualize <- function() {
                     result_model <- tryCatch({
                         args <- list(
                             p = data_model$p,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -345,7 +349,8 @@ interpolate_and_individualize <- function() {
                             threshold = data_model$threshold,
                             average = data_model$average,
                             last_invpareto = data_model$last_invpareto,
-                            last_bracketavg = data_model$last_bracketavg
+                            last_bracketavg = data_model$last_bracketavg,
+                            binf = data_model$binf
                         )
                         if (!is.na(data_model$lowerbound)) {
                             args["lower_bound"] <- data_model$lowerbound
@@ -360,7 +365,8 @@ interpolate_and_individualize <- function() {
                         args <- list(
                             p = data_model$p,
                             threshold = data_model$threshold,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -508,7 +514,8 @@ interpolate_and_merge <- function() {
                     result_model <- tryCatch({
                         args <- list(
                             p = data_model$p,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -531,7 +538,8 @@ interpolate_and_merge <- function() {
                             threshold = data_model$threshold,
                             average = data_model$average,
                             last_invpareto = data_model$last_invpareto,
-                            last_bracketavg = data_model$last_bracketavg
+                            last_bracketavg = data_model$last_bracketavg,
+                            binf = data_model$binf
                         )
                         if (!is.na(data_model$lowerbound)) {
                             args["lower_bound"] <- data_model$lowerbound
@@ -546,7 +554,8 @@ interpolate_and_merge <- function() {
                         args <- list(
                             p = data_model$p,
                             threshold = data_model$threshold,
-                            average = data_model$average
+                            average = data_model$average,
+                            binf = data_model$binf
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
