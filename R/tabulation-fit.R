@@ -66,7 +66,7 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
         if (binf <= 1) {
             stop("the asymptotic Pareto coefficient must be above one")
         }
-        xi <- 1/binf
+        xi <- (binf - 1)/binf
         mu <- qk[n]
         # Identify sigma using the average in the last threshold
         sigma <- ((exp(-yk[n]) - mu + mu*pk[n])*(-1 + xi))/(-1 + pk[n])

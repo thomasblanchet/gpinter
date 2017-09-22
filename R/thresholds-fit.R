@@ -65,22 +65,15 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
         stop("The method requires at least three positive thresholds.")
     }
     # Estimate the derivative at the last point
-    browser()
+    sn <- (yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])
     if (is.null(binf) || is.na(binf)) {
-        sn <- (yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])
-    } else {
-        if (binf > 1) {
-            sn <- (binf - 1)/binf
-        } else {
-            stop("Asymptotic inverted Pareto coefficient must be below 1.")
+        # sn correspond the tail index index: make sure it is lower than 1
+        if (sn >= 1) {
+            sn <- (3 - 1)/3
+            warning(paste("The asymptotic b(p) implied by the data is infinite.",
+                "Using b(p) = 3 instead. You may want to set a different value yourself",
+                "using the parameter 'binf'."), .immediate=TRUE)
         }
-    }
-    # sn correspond the tail index index: make sure it is lower than 1
-    if (sn >= 1) {
-        sn <- 1/1.5
-        warning(paste("The asymptotic b(p) implied by the data is infinite.",
-            "Using b(p) = 3 instead. You may want to set a different value yourself",
-            "using the parameter 'binf'."), .immediate=TRUE)
     }
     # Calculate the other derivatives
     # Ensure that the function is increasing using the PCHIP algorithm
@@ -120,7 +113,7 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
         }
     }
 
-    # Calculate truncated average with each bracket
+    # Calculate truncated average within each bracket
     mk <- NULL
     for (i in 1:(n - 1)) {
         if (use_hist[i]) {
