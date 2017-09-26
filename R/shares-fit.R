@@ -17,6 +17,8 @@
 #' @param topavg The corresponding top average.
 #' @param first_threshold The value of the first threshold. If \code{NULL}, it
 #' is estimated from the data. Default is \code{NULL}.
+#' @param last_invpareto The inverted Pareto coefficient at the last threshold.
+#' Use \code{NULL} for unknown. (Default is \code{NULL}.)
 #' @param bottom_model Which model to use at the bottom of the distribution?
 #' Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 #' Pareto distribution, or \code{"hist"} for histogram density. Default is
@@ -35,7 +37,8 @@
 
 shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
                        bracketavg=NULL, topavg=NULL, first_threshold=NULL,
-                       bottom_model=NULL, lower_bound=0, binf=NULL) {
+                       last_invpareto=NULL, bottom_model=NULL, lower_bound=0,
+                       binf=NULL) {
 
     input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
         topavg, invpareto, first_threshold, bottom_model, lower_bound)
@@ -100,6 +103,17 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
         if (!is_increasing(xk[i - 1], xk[i], yk[i - 1], yk[i], sk[i - 1], sk[i], ak[i - 1], ak[i])) {
             constraints_ok <- FALSE
         }
+    }
+
+    if (!is.null(last_invpareto)) {
+        last_threshold <- bracketavg[length(bracketavg)]/last_invpareto
+        if (last_invpareto <= 1) {
+            stop("the inverted Pareto coefficient must be > 1")
+        } else if (last_threshold < threshold[length(threshold) - 1]) {
+            max_last_invpareto <- bracketavg[length(bracketavg)]/threshold[length(threshold) - 1]
+            stop(sprintf("given your data, the last Pareto coefficient must be below %.2f", max_last_invpareto))
+        }
+        threshold[length(threshold)] <- last_threshold
     }
 
     # Pass the estimated thresholds to tabulation_fit

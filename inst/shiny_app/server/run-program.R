@@ -200,7 +200,8 @@ interpolate_only <- function() {
                         args <- list(
                             p = data_model$p,
                             average = data_model$average,
-                            binf = data_model$binf
+                            binf = data_model$binf,
+                            last_invpareto = data_model$last_invpareto
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -326,7 +327,8 @@ interpolate_and_individualize <- function() {
                         args <- list(
                             p = data_model$p,
                             average = data_model$average,
-                            binf = data_model$binf
+                            binf = data_model$binf,
+                            last_invpareto = data_model$last_invpareto
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]
@@ -515,7 +517,8 @@ interpolate_and_merge <- function() {
                         args <- list(
                             p = data_model$p,
                             average = data_model$average,
-                            binf = data_model$binf
+                            binf = data_model$binf,
+                            last_invpareto = data_model$last_invpareto
                         )
                         avgsh <- data_model$whichavgsh
                         args[avgsh] <- data_model[avgsh]

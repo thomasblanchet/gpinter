@@ -212,7 +212,12 @@ parse_input <- function(data, var, dpcomma) {
             data_list$whichavgsh <- "topavg"
             data_list$topavg <- data[, var$topavg]
         }
-    } else if (var$b %in% colnames(data)) {
+    } else {
+        data_list$whichavgsh <- NA
+    }
+    # Put this outside of the "if ... else if ... else" block to capture
+    # the last inverted Pareto coef in all cases
+    if (var$b %in% colnames(data)) {
         if (dpcomma) {
             data[, var$b] <- gsub(",", ".", data[, var$b])
         }
@@ -223,7 +228,6 @@ parse_input <- function(data, var, dpcomma) {
             n <- length(v)
             if (all(is.na(v[-n])) & !is.na(v[n])) {
                 data_list$last_invpareto <- v[n]
-                data_list$whichavgsh <- NA
             } else {
                 return(simpleError("inverted Pareto coefficients contain missing values"))
             }
@@ -233,8 +237,6 @@ parse_input <- function(data, var, dpcomma) {
             data_list$invpareto[is.infinite(data_list$invpareto)] <- NA
             data_list$invpareto[is.nan(data_list$invpareto)] <- NA
         }
-    } else {
-        data_list$whichavgsh <- NA
     }
 
     # Look for single/couple share

@@ -6,7 +6,8 @@
 \usage{
 shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  bottom_model = NULL, lower_bound = 0, binf = NULL)
+  last_invpareto = NULL, bottom_model = NULL, lower_bound = 0,
+  binf = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -23,6 +24,9 @@ shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
 
 \item{first_threshold}{The value of the first threshold. If \code{NULL}, it
 is estimated from the data. Default is \code{NULL}.}
+
+\item{last_invpareto}{The inverted Pareto coefficient at the last threshold.
+Use \code{NULL} for unknown. (Default is \code{NULL}.)}
 
 \item{bottom_model}{Which model to use at the bottom of the distribution?
 Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
