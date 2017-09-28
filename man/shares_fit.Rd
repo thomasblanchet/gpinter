@@ -7,7 +7,7 @@
 shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
   last_invpareto = NULL, bottom_model = NULL, lower_bound = 0,
-  binf = NULL)
+  binf = NULL, fast = FALSE)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -38,6 +38,9 @@ Pareto distribution, or \code{"hist"} for histogram density. Default is
 
 \item{binf}{Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 it is directly estimated from the data. Default is \code{NULL}.}
+
+\item{fast}{Use a faster but less precise method (split-histogram)?
+Default is \code{FALSE}.}
 }
 \value{
 An object of class \code{gpinter_dist_orig}.

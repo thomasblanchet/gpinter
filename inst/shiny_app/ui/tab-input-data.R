@@ -276,6 +276,20 @@ tabPanel("Input data",
                             numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
                             style = "margin-left: 20px;"
                         ),
+                        tags$hr(),
+                        checkboxInput("fast_interpolation",
+                            tagList(
+                                    tags$h4("Use fast interpolation (less precise)", style="margin-top: 0;"),
+                                    tags$p("Use a faster, but less precise interpolation method. Useful if
+                                        you have very precise tabulations in input, for example because
+                                        you are using the output from a previous interpolation. In such
+                                        cases the interpolation will be faster with little consequences
+                                        on the results.",
+                                        style="font-size: small; color: #666;")
+                                ),
+                            FALSE,
+                            width = "100%"
+                        ),
                         class = "panel-body"
                     ),
                     class = "panel panel-default"

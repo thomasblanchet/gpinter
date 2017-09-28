@@ -29,6 +29,8 @@
 #' @param binf The asymptotic value of the inverted Pareto coefficient. If
 #' \code{NULL}, it is estimated from the data (recommended, unless the
 #' estimated value implies infinite mean). Default is \code{NULL}.
+#' @param fast Use a faster but less precise method (split-histogram)?
+#' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -36,7 +38,7 @@
 
 thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
                            last_bracketavg=NULL, last_invpareto=NULL,
-                           bottom_model=NULL, lower_bound=0, binf=NULL) {
+                           bottom_model=NULL, lower_bound=0, binf=NULL, fast=FALSE) {
 
     input <- clean_input_thresholds(p, threshold, average,
         last_bracketavg, last_invpareto,
@@ -191,5 +193,5 @@ thresholds_fit <- function(p, threshold, average=NULL, last_bracketshare=NULL,
     }
 
     return(tabulation_fit(pk, qk, average, bracketavg=bracketavg,
-        bottom_model=bottom_model, lower_bound=lower_bound, binf=binf))
+        bottom_model=bottom_model, lower_bound=lower_bound, binf=binf, fast=fast))
 }

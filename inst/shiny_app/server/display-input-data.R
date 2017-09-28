@@ -202,11 +202,11 @@ output$input_data_view <- renderUI({
                 ),
                 tags$tr(
                     tags$th("Asymptotic Pareto coefficient", style="white-space: nowrap;"),
-                    tags$td(ifelse(is.na(data_view$binf),
+                    tags$td(ifelse(is.null(data_view$binf) || is.na(data_view$binf),
                         "n/a",
                         format(data_view$binf, digit=2, scientific=FALSE, big.mark=" ")
                     ), style = ifelse(
-                        is.na(data_view$binf),
+                        is.null(data_view$binf) || is.na(data_view$binf),
                         "color: #999; text-align: right;", "text-align: right;"
                     ))
                 )

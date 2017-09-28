@@ -27,6 +27,8 @@
 #' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 #' it is directly estimated from the data. Default is \code{NULL}.
+#' @param fast Use a faster but less precise method (split-histogram)?
+#' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -38,7 +40,7 @@
 shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
                        bracketavg=NULL, topavg=NULL, first_threshold=NULL,
                        last_invpareto=NULL, bottom_model=NULL, lower_bound=0,
-                       binf=NULL) {
+                       binf=NULL, fast=FALSE) {
 
     input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
         topavg, invpareto, first_threshold, bottom_model, lower_bound)
@@ -118,5 +120,5 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
 
     # Pass the estimated thresholds to tabulation_fit
     return(tabulation_fit(p=pk, threshold=threshold, average=average,
-        bracketavg=bracketavg, bottom_model=bottom_model, lower_bound=lower_bound, binf=binf))
+        bracketavg=bracketavg, bottom_model=bottom_model, lower_bound=lower_bound, binf=binf, fast=fast))
 }

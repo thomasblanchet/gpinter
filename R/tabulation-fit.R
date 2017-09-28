@@ -27,6 +27,8 @@
 #' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 #' it is directly estimated from the data. Default is \code{NULL}.
+#' @param fast Use a faster but less precise method (split-histogram)?
+#' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
 #'
@@ -37,7 +39,7 @@
 
 tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topshare=NULL,
                            bracketavg=NULL, topavg=NULL, invpareto=NULL,
-                           bottom_model=NULL, lower_bound=0, binf=NULL) {
+                           bottom_model=NULL, lower_bound=0, binf=NULL, fast=FALSE) {
 
     # Check and clean the input
     input <- clean_input_tabulation(p, threshold, average, bracketshare, topshare,
@@ -75,124 +77,40 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
             exp(2*xk[n] - yk[n]))/((-1 + pk[n])*exp(2*xk[n] - yk[n]))
     }
 
-    # Calculate the second derivative
-    ak <- clamped_quintic_spline(xk, yk, sk, an)
+    if (fast) {
+        # Use mean-split histogram all the time
+        ak <- c((sk[2] - sk[1])/(xk[2] - xk[1]), rep(NA, n - 2), an)
 
-    # Keep non-constrained parameter values in memory
-    xk_nc <- xk
-    yk_nc <- yk
-    sk_nc <- sk
-    ak_nc <- ak
+        xk_nc <- xk
+        yk_nc <- yk
+        sk_nc <- sk
+        ak_nc <- ak
 
-    # Enforce monotonicity constraint at the interpolation points
-    ak <- ifelse(ak + sk*(1 - sk) < 0, -sk*(1 - sk), ak)
+        use_hist <- NULL
+        fk_cns <- NULL
+        pk_cns <- pk[1]
+        qk_cns <- qk[1]
+        mk_cns <- mk[1]
+        xk_cns <- xk[1]
+        yk_cns <- yk[1]
+        sk_cns <- sk[1]
+        ak_cns <- NA
+        for (i in 1:(n - 1)) {
+            x0 <- xk[i]
+            x1 <- xk[i + 1]
+            y0 <- yk[i]
+            y1 <- yk[i + 1]
+            s0 <- sk[i]
+            s1 <- sk[i + 1]
+            p0 <- pk[i]
+            p1 <- pk[i + 1]
+            q0 <- qk[i]
+            q1 <- qk[i + 1]
+            m0 <- mk[i]
+            m1 <- mk[i + 1]
 
-    # Enforce monotonicity constraint over the entire function
-    use_hist <- NULL
-    fk_cns <- NULL
-    pk_cns <- pk[1]
-    qk_cns <- qk[1]
-    mk_cns <- mk[1]
-    xk_cns <- xk[1]
-    yk_cns <- yk[1]
-    sk_cns <- sk[1]
-    ak_cns <- ak[1]
-    for (i in 1:(n - 1)) {
-        x0 <- xk[i]
-        x1 <- xk[i + 1]
-        y0 <- yk[i]
-        y1 <- yk[i + 1]
-        s0 <- sk[i]
-        s1 <- sk[i + 1]
-        a0 <- ak[i]
-        a1 <- ak[i + 1]
-        p0 <- pk[i]
-        p1 <- pk[i + 1]
-        q0 <- qk[i]
-        q1 <- qk[i + 1]
-        m0 <- mk[i]
-        m1 <- mk[i + 1]
-        bracketavg <- (m0 - m1)/(p1 - p0)
-        # Check if constraint is violated
-        if (!is_increasing(x0, x1, y0, y1, s0, s1, a0, a1)) {
-            # First, try to enforce the constraint by adding one point
-            new_pt <- add_one_point(x0, x1, y0, y1, s0, s1, a0, a1)
-            # Check that the algorithm converged
-            if (!is.null(new_pt)) {
-                # Check that the constraint is now satisfied
-                cond <- is_increasing(
-                    x0, new_pt$x_new,
-                    y0, new_pt$y_new,
-                    s0, new_pt$s_new,
-                    a0, new_pt$a_new
-                ) & is_increasing(
-                    new_pt$x_new, x1,
-                    new_pt$y_new, y1,
-                    new_pt$s_new, s1,
-                    new_pt$a_new, a1
-                )
-                if (cond) {
-                    # If so, add the point and move on to the next bracket
-                    use_hist <- c(use_hist, FALSE, FALSE)
-                    fk_cns <- c(fk_cns, NA, NA)
-                    pk_cns <- c(pk_cns, 1 - exp(-new_pt$x_new), p1)
-                    mk_cns <- c(mk_cns, exp(-new_pt$y_new), m1)
-                    qk_cns <- c(qk_cns, new_pt$s_new*exp(new_pt$x_new - new_pt$y_new), q1)
-                    xk_cns <- c(xk_cns, new_pt$x_new, x1)
-                    yk_cns <- c(yk_cns, new_pt$y_new, y1)
-                    sk_cns <- c(sk_cns, new_pt$s_new, s1)
-                    ak_cns <- c(ak_cns, new_pt$a_new, a1)
-                    next
-                }
-            }
+            bracketavg <- (m0 - m1)/(p1 - p0)
 
-            # If adding one point failed, try adding two points
-            new_pts <- add_two_points(x0, x1, y0, y1, s0, s1, a0, a1)
-            # Check that the algorithm converged
-            if (!is.null(new_pts)) {
-                # Check that the constraint is now satisfied
-                cond <- is_increasing(
-                    x0, new_pts$x_new1,
-                    y0, new_pts$y_new1,
-                    s0, new_pts$s_new1,
-                    a0, new_pts$a_new1
-                ) & is_increasing(
-                    new_pts$x_new1, new_pts$x_new2,
-                    new_pts$y_new1, new_pts$y_new2,
-                    new_pts$s_new1, new_pts$s_new2,
-                    new_pts$a_new1, new_pts$a_new2
-                ) & is_increasing(
-                    new_pts$x_new2, x1,
-                    new_pts$y_new2, y1,
-                    new_pts$s_new2, s1,
-                    new_pts$a_new2, a1
-                )
-                if (cond) {
-                    # If so, add the two new points and move on to the next bracket
-                    use_hist <- c(use_hist, FALSE, FALSE, FALSE)
-                    fk_cns <- c(fk_cns, NA, NA, NA)
-                    pk_cns <- c(
-                        pk_cns,
-                        1 - exp(-new_pts$x_new1),
-                        1 - exp(-new_pts$x_new2),
-                        p1
-                    )
-                    qk_cns <- c(
-                        qk_cns,
-                        new_pts$s_new1*exp(new_pts$x_new1 - new_pts$y_new1),
-                        new_pts$s_new2*exp(new_pts$x_new2 - new_pts$y_new2),
-                        q1
-                    )
-                    mk_cns <- c(mk_cns, exp(-new_pts$y_new1), exp(-new_pts$y_new2), m1)
-                    xk_cns <- c(xk_cns, new_pts$x_new1, new_pts$x_new2, x1)
-                    yk_cns <- c(yk_cns, new_pts$y_new1, new_pts$y_new2, y1)
-                    sk_cns <- c(sk_cns, new_pts$s_new1, new_pts$s_new2, s1)
-                    ak_cns <- c(ak_cns, new_pts$a_new1, new_pts$a_new2, a1)
-                    next
-                }
-            }
-
-            # If adding two points also failed, we fall back to an histogram density
             use_hist <- c(use_hist, TRUE, TRUE)
             hist <- hist_interpol(p0, p1, q0, q1, bracketavg)
             fk_cns <- c(fk_cns, hist$f0, hist$f1)
@@ -209,18 +127,158 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
             xk_cns <- c(xk_cns, -log(1 - hist$pstar), x1)
             yk_cns <- c(yk_cns, NA, y1)
             sk_cns <- c(sk_cns, NA, s1)
-            ak_cns <- c(ak_cns, NA, a1)
-        } else {
-            # Leave the coefficients untouched if the constraint isn't violated
-            use_hist <- c(use_hist, FALSE)
-            fk_cns <- c(fk_cns, NA)
-            pk_cns <- c(pk_cns, p1)
-            qk_cns <- c(qk_cns, q1)
-            mk_cns <- c(mk_cns, m1)
-            xk_cns <- c(xk_cns, x1)
-            yk_cns <- c(yk_cns, y1)
-            sk_cns <- c(sk_cns, s1)
-            ak_cns <- c(ak_cns, a1)
+            ak_cns <- c(ak_cns, NA, NA)
+        }
+    } else {
+        # Do generalized Pareto interpolation
+
+        # Calculate the second derivative
+        ak <- clamped_quintic_spline(xk, yk, sk, an)
+
+        # Keep non-constrained parameter values in memory
+        xk_nc <- xk
+        yk_nc <- yk
+        sk_nc <- sk
+        ak_nc <- ak
+
+        # Enforce monotonicity constraint at the interpolation points
+        ak <- ifelse(ak + sk*(1 - sk) < 0, -sk*(1 - sk), ak)
+
+        # Enforce monotonicity constraint over the entire function
+        use_hist <- NULL
+        fk_cns <- NULL
+        pk_cns <- pk[1]
+        qk_cns <- qk[1]
+        mk_cns <- mk[1]
+        xk_cns <- xk[1]
+        yk_cns <- yk[1]
+        sk_cns <- sk[1]
+        ak_cns <- ak[1]
+        for (i in 1:(n - 1)) {
+            x0 <- xk[i]
+            x1 <- xk[i + 1]
+            y0 <- yk[i]
+            y1 <- yk[i + 1]
+            s0 <- sk[i]
+            s1 <- sk[i + 1]
+            a0 <- ak[i]
+            a1 <- ak[i + 1]
+            p0 <- pk[i]
+            p1 <- pk[i + 1]
+            q0 <- qk[i]
+            q1 <- qk[i + 1]
+            m0 <- mk[i]
+            m1 <- mk[i + 1]
+            bracketavg <- (m0 - m1)/(p1 - p0)
+            # Check if constraint is violated
+            if (!is_increasing(x0, x1, y0, y1, s0, s1, a0, a1)) {
+                # First, try to enforce the constraint by adding one point
+                new_pt <- add_one_point(x0, x1, y0, y1, s0, s1, a0, a1)
+                # Check that the algorithm converged
+                if (!is.null(new_pt)) {
+                    # Check that the constraint is now satisfied
+                    cond <- is_increasing(
+                        x0, new_pt$x_new,
+                        y0, new_pt$y_new,
+                        s0, new_pt$s_new,
+                        a0, new_pt$a_new
+                    ) & is_increasing(
+                        new_pt$x_new, x1,
+                        new_pt$y_new, y1,
+                        new_pt$s_new, s1,
+                        new_pt$a_new, a1
+                    )
+                    if (cond) {
+                        # If so, add the point and move on to the next bracket
+                        use_hist <- c(use_hist, FALSE, FALSE)
+                        fk_cns <- c(fk_cns, NA, NA)
+                        pk_cns <- c(pk_cns, 1 - exp(-new_pt$x_new), p1)
+                        mk_cns <- c(mk_cns, exp(-new_pt$y_new), m1)
+                        qk_cns <- c(qk_cns, new_pt$s_new*exp(new_pt$x_new - new_pt$y_new), q1)
+                        xk_cns <- c(xk_cns, new_pt$x_new, x1)
+                        yk_cns <- c(yk_cns, new_pt$y_new, y1)
+                        sk_cns <- c(sk_cns, new_pt$s_new, s1)
+                        ak_cns <- c(ak_cns, new_pt$a_new, a1)
+                        next
+                    }
+                }
+
+                # If adding one point failed, try adding two points
+                new_pts <- add_two_points(x0, x1, y0, y1, s0, s1, a0, a1)
+                # Check that the algorithm converged
+                if (!is.null(new_pts)) {
+                    # Check that the constraint is now satisfied
+                    cond <- is_increasing(
+                        x0, new_pts$x_new1,
+                        y0, new_pts$y_new1,
+                        s0, new_pts$s_new1,
+                        a0, new_pts$a_new1
+                    ) & is_increasing(
+                        new_pts$x_new1, new_pts$x_new2,
+                        new_pts$y_new1, new_pts$y_new2,
+                        new_pts$s_new1, new_pts$s_new2,
+                        new_pts$a_new1, new_pts$a_new2
+                    ) & is_increasing(
+                        new_pts$x_new2, x1,
+                        new_pts$y_new2, y1,
+                        new_pts$s_new2, s1,
+                        new_pts$a_new2, a1
+                    )
+                    if (cond) {
+                        # If so, add the two new points and move on to the next bracket
+                        use_hist <- c(use_hist, FALSE, FALSE, FALSE)
+                        fk_cns <- c(fk_cns, NA, NA, NA)
+                        pk_cns <- c(
+                            pk_cns,
+                            1 - exp(-new_pts$x_new1),
+                            1 - exp(-new_pts$x_new2),
+                            p1
+                        )
+                        qk_cns <- c(
+                            qk_cns,
+                            new_pts$s_new1*exp(new_pts$x_new1 - new_pts$y_new1),
+                            new_pts$s_new2*exp(new_pts$x_new2 - new_pts$y_new2),
+                            q1
+                        )
+                        mk_cns <- c(mk_cns, exp(-new_pts$y_new1), exp(-new_pts$y_new2), m1)
+                        xk_cns <- c(xk_cns, new_pts$x_new1, new_pts$x_new2, x1)
+                        yk_cns <- c(yk_cns, new_pts$y_new1, new_pts$y_new2, y1)
+                        sk_cns <- c(sk_cns, new_pts$s_new1, new_pts$s_new2, s1)
+                        ak_cns <- c(ak_cns, new_pts$a_new1, new_pts$a_new2, a1)
+                        next
+                    }
+                }
+
+                # If adding two points also failed, we fall back to an histogram density
+                use_hist <- c(use_hist, TRUE, TRUE)
+                hist <- hist_interpol(p0, p1, q0, q1, bracketavg)
+                fk_cns <- c(fk_cns, hist$f0, hist$f1)
+                pk_cns <- c(pk_cns, hist$pstar, p1)
+                qk_cns <- c(qk_cns, hist$qstar, q1)
+                mk_cns <- c(mk_cns,
+                    hist_lorenz(hist$pstar,
+                        hist$pstar, p1,
+                        hist$qstar, q1,
+                        m1, hist$f1
+                    ),
+                    m1
+                )
+                xk_cns <- c(xk_cns, -log(1 - hist$pstar), x1)
+                yk_cns <- c(yk_cns, NA, y1)
+                sk_cns <- c(sk_cns, NA, s1)
+                ak_cns <- c(ak_cns, NA, a1)
+            } else {
+                # Leave the coefficients untouched if the constraint isn't violated
+                use_hist <- c(use_hist, FALSE)
+                fk_cns <- c(fk_cns, NA)
+                pk_cns <- c(pk_cns, p1)
+                qk_cns <- c(qk_cns, q1)
+                mk_cns <- c(mk_cns, m1)
+                xk_cns <- c(xk_cns, x1)
+                yk_cns <- c(yk_cns, y1)
+                sk_cns <- c(sk_cns, s1)
+                ak_cns <- c(ak_cns, a1)
+            }
         }
     }
 
