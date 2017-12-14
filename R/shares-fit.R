@@ -107,7 +107,7 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
         }
     }
 
-    if (!is.null(last_invpareto)) {
+    if (!is.null(last_invpareto) & !is.na(last_invpareto)) {
         last_threshold <- bracketavg[length(bracketavg)]/last_invpareto
         if (last_invpareto <= 1) {
             stop("the inverted Pareto coefficient must be > 1")
