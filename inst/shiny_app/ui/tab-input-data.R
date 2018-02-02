@@ -266,14 +266,14 @@ tabPanel("Input data",
                                         with \\(\\theta = 1\\) meaning full independence, and
                                         \\(\\theta = +\\infty\\) meaning perfect correlation of the ranks.
                                         You may specify a value for \\(\\theta\\) in each files,
-                                        or set a global value below (the default value \\(\\theta = 3\\)
+                                        or set a global value below (the default value \\(\\theta = 1.5\\)
                                         corresponds to the typical dependance between labor and capital income).",
                                         style="font-size: small; color: #666;")
                                 )
                             )
                         )),
                         tags$div(
-                            numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=3, min=1, width="100%"),
+                            numericInput("gumbel_param", "Gumbel copula parameter \\(\\theta\\)", value=1.5, min=1, width="100%"),
                             style = "margin-left: 20px;"
                         ),
                         tags$hr(),

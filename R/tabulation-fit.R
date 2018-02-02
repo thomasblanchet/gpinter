@@ -27,7 +27,7 @@
 #' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 #' it is directly estimated from the data. Default is \code{NULL}.
-#' @param fast Use a faster but less precise method (split-histogram)?
+#' @param fast Use a faster but less precise method (split-histogram).
 #' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.

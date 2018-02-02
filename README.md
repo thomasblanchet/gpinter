@@ -10,9 +10,13 @@ install.packages("devtools")
 devtools::install_github("thomasblanchet/gpinter")
 ```
 
+## Documentation
+
+For the explanations of how the package works, please refer to the [package's vignette](https://thomasblanchet.fr/documents/gpinter-vignette.pdf) and to the documentation of each individual function by typing `?function_name` in the R console.
+
 ## Application
 
-You can run the web application built on the package at [this address](http://wid.world/gpinter/). Alternatively, you can run in locally on your computer using the R code:
+If you do not want to use R, you can still run [the online web application built on the package](http://wid.world/gpinter/). Alternatively, you can run in locally on your computer using the R code:
 ```{R}
 library(gpinter)
 run_app()

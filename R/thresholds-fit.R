@@ -29,7 +29,7 @@
 #' @param binf The asymptotic value of the inverted Pareto coefficient. If
 #' \code{NULL}, it is estimated from the data (recommended, unless the
 #' estimated value implies infinite mean). Default is \code{NULL}.
-#' @param fast Use a faster but less precise method (split-histogram)?
+#' @param fast Use a faster but less precise method (split-histogram).
 #' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.

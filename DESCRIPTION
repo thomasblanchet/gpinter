@@ -29,6 +29,9 @@ Suggests:
     shinyjs (>= 0.7),
     readxl (>= 0.1.1),
     evaluate (>= 0.10),
-    reldist (>= 1.6)
+    reldist (>= 1.6),
+    knitr,
+    rmarkdown
 RoxygenNote: 6.0.1
 Encoding: UTF-8
+VignetteBuilder: knitr

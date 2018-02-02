@@ -38,7 +38,7 @@ Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 \code{NULL}, it is estimated from the data (recommended, unless the
 estimated value implies infinite mean). Default is \code{NULL}.}
 
-\item{fast}{Use a faster but less precise method (split-histogram)?
+\item{fast}{Use a faster but less precise method (split-histogram).
 Default is \code{FALSE}.}
 }
 \value{

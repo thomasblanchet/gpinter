@@ -27,7 +27,7 @@
 #' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 #' it is directly estimated from the data. Default is \code{NULL}.
-#' @param fast Use a faster but less precise method (split-histogram)?
+#' @param fast Use a faster but less precise method (split-histogram).
 #' Default is \code{FALSE}.
 #'
 #' @return An object of class \code{gpinter_dist_orig}.
@@ -43,7 +43,7 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
                        binf=NULL, fast=FALSE) {
 
     input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
-        topavg, invpareto, first_threshold, bottom_model, lower_bound)
+        topavg, first_threshold, bottom_model, lower_bound)
 
     p <- input$p
     m <- input$m
@@ -107,7 +107,7 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
         }
     }
 
-    if (!is.null(last_invpareto) & !is.na(last_invpareto)) {
+    if (!is.null(last_invpareto) && !is.na(last_invpareto)) {
         last_threshold <- bracketavg[length(bracketavg)]/last_invpareto
         if (last_invpareto <= 1) {
             stop("the inverted Pareto coefficient must be > 1")

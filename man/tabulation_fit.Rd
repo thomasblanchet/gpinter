@@ -37,7 +37,7 @@ Default is \code{"hist"} if \code{min(threshold) > 0}, \code{"dirac"} if
 \item{binf}{Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 it is directly estimated from the data. Default is \code{NULL}.}
 
-\item{fast}{Use a faster but less precise method (split-histogram)?
+\item{fast}{Use a faster but less precise method (split-histogram).
 Default is \code{FALSE}.}
 }
 \value{

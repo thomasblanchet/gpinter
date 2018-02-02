@@ -188,7 +188,6 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
 #' @param topshare The corresponding top share.
 #' @param bracketavg The corresponding bracket average.
 #' @param topavg The corresponding top average.
-#' @param invpareto The inverted Pareto coefficient.
 #' @param first_threshold The value of the first threshold. If \code{NULL}, it
 #' is estimated from the data. Default is \code{NULL}.
 #' @param bottom_model Which model to use at the bottom of the distribution?
@@ -201,7 +200,7 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
 #' @export
 
 clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
-                               bracketavg=NULL, topavg=NULL, invpareto=NULL,
+                               bracketavg=NULL, topavg=NULL,
                                first_threshold=NULL, bottom_model=NULL, lower_bound=0) {
     # Number of interpolation points
     n <- length(p)
