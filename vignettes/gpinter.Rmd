@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Generalized Pareto Interpolation is a method for reconstructing complete distributions based on tabulations that only contains information on a few thresholds and bracket shares. It is usually applied in the study of income and wealth, but it could also in theory be used for other types of data.
+Generalized Pareto Interpolation is a method for reconstructing complete distributions based on tabulations that only contain information on a few thresholds and bracket shares. It is usually applied in the study of income and wealth, but it can also be used with other types of data.
 
 The method is described in detail in the paper by Thomas Blanchet, Juliette Fournier and Thomas Piketty, "Generalized Pareto curves: Theory and Applications" (2017). This vignette focuses on the use of the R package `gpinter`, which implements generalized Pareto interpolation.
 
