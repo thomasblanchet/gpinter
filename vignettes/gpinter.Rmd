@@ -236,7 +236,7 @@ distribution_us_fr2 <- merge_dist(
     popsize = c(2.257e+08, 36962517)
 )
 ```
-A very simple and efficient workaround is to export a tabulation from the first transformation, and interpolate it again. You should export a very detailed interpolation to keep as much information as possible from your initial transformation. You can do so quickly using `generate_tabulation`.
+A very simple and efficient workaround is to export a tabulation from the first transformation, and interpolate it again. You should export a very detailed tabulation to keep as much information as possible from your initial transformation. You can do so quickly using `generate_tabulation`.
 ```{R}
 tabulation_us_added_up <- generate_tabulation(distribution_us_added_up,
     fractiles = c(seq(0.01, 0.99, 0.01), seq(0.991, 0.999, 0.001),
