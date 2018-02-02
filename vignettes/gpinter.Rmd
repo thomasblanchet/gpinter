@@ -98,7 +98,7 @@ fitted_quantile(distribution, c(0.95, 0.999))
 fitted_cdf(distribution, c(1e5, 1e6))
 
 # Density at $100,000 and $1,000,000
-fitted_cdf(distribution, c(1e5, 1e6))
+fitted_density(distribution, c(1e5, 1e6))
 
 # Gini index
 gini(distribution)
