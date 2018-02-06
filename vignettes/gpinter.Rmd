@@ -5,6 +5,7 @@ date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: rmarkdown::pdf_document
 fontsize: 11pt
 numbersections: true
+geometry: margin=0.75in
 header-includes:
    - \usepackage{booktabs}
    - \usepackage{array}
@@ -35,6 +36,10 @@ The package is not yet on the CRAN, but it is available on GitHub, so you can in
 install.packages("devtools")
 devtools::install_github("thomasblanchet/gpinter")
 ```
+
+# Stata user?
+
+There is no native Stata command equivalent to `gpinter`, but if you are a Stata user, you can integrate `gpinter` in your workflow quite easily by calling R from your Stata programs. The example `.do` file at the address [`https://github.com/thomasblanchet/gpinter/blob/master/inst/stata/` `gpinter-stata-example.do`](https://github.com/thomasblanchet/gpinter/blob/master/inst/stata/gpinter-stata-example.do) demonstrates how to make this work.
 
 # Run the Online Application on your Computer
 
@@ -91,7 +96,7 @@ top_average(distribution, c(0.95, 0.999))
 # Bracket 95%-99% average
 bracket_average(distribution, 0.95, 0.99)
 
-# 5% and 0.1% quantiles
+# 95% and 99.9% quantiles
 fitted_quantile(distribution, c(0.95, 0.999))
 
 # Cumulative distribution function at $100,000 and $1,000,000
@@ -105,7 +110,7 @@ gini(distribution)
 ```
 
 You can also plot the distribution directly. Here are the Lorenz curve and the generalized Pareto curve:
-```{R, out.width='.49\\linewidth', fig.width=3, fig.height=3,fig.show='hold',fig.align='center'}
+```{R, out.width='.49\\linewidth', fig.width=3, fig.height=2.5,fig.show='hold',fig.align='center'}
 plot_lorenz(distribution, xlim = c(0, 1))
 plot_gpc(distribution, xlim = c(0.1, 1))
 ```
@@ -169,7 +174,7 @@ distribution_us_fr <- merge_dist(
 )
 ```
 It returns an object that can be used like the output of `tabulation_fit`:
-```{R, out.width='.49\\linewidth', fig.width=3, fig.height=2,fig.show='hold',fig.align='center'}
+```{R, out.width='.49\\linewidth', fig.width=3, fig.height=2.5,fig.show='hold',fig.align='center'}
 # Top 1% share of the region US + FR
 top_share(distribution_us_fr, 0.99)
 # Lorenz curve and density
