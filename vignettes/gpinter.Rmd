@@ -29,7 +29,7 @@ The method is described in detail in the paper by Thomas Blanchet, Juliette Four
 
 For people with limited needs who do not wish to use R, the method can also be used through the online application at [`http://wid.world/gpinter`](http://wid.world/gpinter), which relies on the R package, but does not require any installation or programming skill. Using the R package directly, however, provides more flexibility and more possibilities of automation.
 
-# Stata user?
+\section*{Note for Stata users}
 
 There is no native Stata command equivalent to `gpinter`, but if you are a Stata user, you can integrate `gpinter` in your workflow quite easily by calling R from your Stata programs. The example `.do` file at the address [`https://github.com/thomasblanchet/gpinter/blob/master/inst/stata/` `gpinter-stata-example.do`](https://github.com/thomasblanchet/gpinter/blob/master/inst/stata/gpinter-stata-example.do) demonstrates how to make this work.
 

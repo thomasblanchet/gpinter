@@ -16,9 +16,9 @@ devtools::install_github("thomasblanchet/gpinter")
 
 For the explanations of how the package works, please see the [package's vignette](https://thomasblanchet.fr/documents/gpinter-vignette.pdf) and the documentation of each individual function by typing `?function_name` in the R console.
 
-## Stata users
+## Note for Stata users
 
-Although there is no native Stata command equivalent to `gpinter`, you can apply generalized Pareto interpolation from within Stata by calling R code with the user-written `rsource` command. The following [example .do file](inst/stata/gpinter-stata-example.do) demonstrates how to make this work.
+Although there is no native Stata command equivalent to `gpinter`, you can apply generalized Pareto interpolation from within Stata by calling R code with the user-written `rsource` command. [This example .do file](inst/stata/gpinter-stata-example.do) demonstrates how to make this work.
 
 ## Online Application
 

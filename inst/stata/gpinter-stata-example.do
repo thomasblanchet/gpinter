@@ -5,7 +5,7 @@
 //
 // This example file shows you how to do this. You do not need a thorough
 // knowledge of R to run the interpolation and import the results into Stata.
-// 
+//
 // The method requires the following:
 //     - A working version of Stata.
 //     - A working version of R installed on the computer. If it is not already
@@ -34,7 +34,7 @@ cd "~/GitHub/gpinter/inst/stata"
 // If necessary, specify where R is installed on your computer. You only need
 // to do it if the program cannot find R by default. On Linux and macOS, you
 // should find it at the addresses "/usr/bin/r" or "/usr/local/bin/r". On
-// Windows, you should the file "Rterm.exe".
+// Windows, you should locate the file "Rterm.exe".
 // Type "help rsource" for more details.
 
 *global Rterm_path `"/usr/local/bin/r"'
