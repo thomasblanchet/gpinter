@@ -12,7 +12,7 @@
 //       the case, you should download and install R from the web address
 //       <https://cran.r-project.org/mirrors.html>. Make sure to choose
 //       a mirror near to your location and to pick the right operating system.
-//     - The packages 'haven' and 'gpinter' installed in R. To do so, lauch R
+//     - The packages 'haven' and 'gpinter' installed in R. To do so, launch R
 //       and type in the commands:
 //        > install.packages("haven", "devtools")
 //        > devtools::install_github("thomasblanchet/gpinter")
@@ -26,7 +26,7 @@
 // Preliminaries
 // -------------------------------------------------------------------------- //
 
-clear all
+clear
 
 // Set your working directory here
 cd "~/GitHub/gpinter/inst/stata"
@@ -43,11 +43,11 @@ cd "~/GitHub/gpinter/inst/stata"
 // Import tabulation example (US labor income, 2010)
 // -------------------------------------------------------------------------- //
 
-input average p threshold bracketavg
-37208	0.10	4130	12643
-.		0.50	23686	43908
-.		0.90	76252	108329
-.		0.99	211861	471463
+input average     p  threshold  bracketavg
+        37208  0.10       4130       12643
+            .  0.50      23686       43908
+            .  0.90      76252      108329
+            .  0.99     211861      471463
 end
 
 // -------------------------------------------------------------------------- //
