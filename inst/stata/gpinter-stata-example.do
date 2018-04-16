@@ -14,7 +14,7 @@
 //       a mirror near to your location and to pick the right operating system.
 //     - The packages 'haven' and 'gpinter' installed in R. To do so, launch R
 //       and type in the commands:
-//        > install.packages("haven", "devtools")
+//        > install.packages(c("haven", "devtools"))
 //        > devtools::install_github("thomasblanchet/gpinter")
 //     - The user-written Stata command 'rsource'. You can install it by typing:
 //        > ssc install rsource
