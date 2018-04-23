@@ -7,7 +7,7 @@ For more detail on generalized Pareto interpolation, please see [T.&nbsp;Blanche
 ## Installation
 
 You can install this package using the following R code:
-```{R}
+```{r}
 install.packages("devtools")
 devtools::install_github("thomasblanchet/gpinter")
 ```
@@ -23,7 +23,12 @@ Although there is no native Stata command equivalent to `gpinter`, you can apply
 ## Online Application
 
 If you do not want to use R, you can still run [the online web application built on the package](http://wid.world/gpinter/). Alternatively, you can run in locally on your computer using the R code:
-```{R}
+```{r}
 library(gpinter)
 run_app()
+```
+To run that code, you will need additional R packages not installed by default with `gpinter`. You can install them all with the following command:
+```{r}
+devtools::install_github("thomasblanchet/gpinter",
+    dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))
 ```
