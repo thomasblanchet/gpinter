@@ -29,5 +29,6 @@ run_app()
 ```
 To run that code, you will need additional R packages not installed by default with `gpinter`. You can install them all with the following command:
 ```{r}
-devtools::install_github("thomasblanchet/gpinter", dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))
+devtools::install_github("thomasblanchet/gpinter",
+    dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))
 ```
