@@ -67,7 +67,7 @@ rsource, terminator(END_OF_R) roptions(--vanilla)
 	// 'haven' is a R package for importing Stata '.dta' file
 	library(haven)
 
-	// 'gpinter' is the R package to perform generalized Pareto interpoaltion
+	// 'gpinter' is the R package to perform generalized Pareto interpolation
 	library(gpinter)
 
 	// Import the Stata data into R
