@@ -28,3 +28,7 @@ vignettes/*.pdf
 inst/shiny_app/config.codekit3
 inst/shiny_app/rsconnect/*
 inst/doc
+vignettes/gpinter.aux
+vignettes/gpinter.fdb_latexmk
+vignettes/gpinter.out
+vignettes/gpinter.fls

@@ -30,8 +30,8 @@ Suggests:
     readxl (>= 0.1.1),
     evaluate (>= 0.10),
     reldist (>= 1.6),
-    knitr,
-    rmarkdown
+    knitr (>= 1.20),
+    rmarkdown (>= 1.9)
 RoxygenNote: 6.0.1
 Encoding: UTF-8
 VignetteBuilder: knitr

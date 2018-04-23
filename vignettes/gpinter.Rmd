@@ -48,6 +48,11 @@ The code for the online application at [`http://wid.world/gpinter`](http://wid.w
 library(gpinter)
 run_app()
 ```
+To run that code, you will need additional R packages not installed by default with `gpinter`. You can install them all with the following command:
+```{R, eval = FALSE}
+devtools::install_github("thomasblanchet/gpinter",
+    dependencies = c("Depends", "Imports", "LinkingTo", "Suggests"))
+```
 
 # Using the Package
 
