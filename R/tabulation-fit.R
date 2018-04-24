@@ -80,6 +80,8 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
     if (fast) {
         # Use mean-split histogram all the time
         ak <- c((sk[2] - sk[1])/(xk[2] - xk[1]), rep(NA, n - 2), an)
+        # Enforce monotonicity constraint
+        ak <- ifelse(ak + sk*(1 - sk) < 0, -sk*(1 - sk), ak)
 
         xk_nc <- xk
         yk_nc <- yk
