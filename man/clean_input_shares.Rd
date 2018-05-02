@@ -6,7 +6,7 @@
 \usage{
 clean_input_shares(p, average, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  bottom_model = NULL, lower_bound = 0)
+  bottom_model = NULL, lower_bound = 0, top_model = NULL)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -31,6 +31,10 @@ Pareto distribution, or \code{"hist"} for histogram density. Default is
 
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}
+
+\item{top_model}{Which model to use at the top of the distribution?
+Either \code{"gpd"} for generalized Pareto distribution, or \code{"pareto"}
+for standard Pareto distribution. Default is \code{"gpd"}.}
 }
 \description{
 Check the validity and consistency of the input arguments

@@ -6,8 +6,8 @@
 \usage{
 shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
   bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  last_invpareto = NULL, bottom_model = NULL, lower_bound = 0,
-  binf = NULL, fast = FALSE)
+  last_invpareto = NULL, bottom_model = NULL, top_model = NULL,
+  lower_bound = 0, binf = NULL, fast = FALSE)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}
@@ -32,6 +32,10 @@ Use \code{NULL} for unknown. (Default is \code{NULL}.)}
 Only relevant if \code{min(p) > 0}. Either \code{"gpd"} for the generalized
 Pareto distribution, or \code{"hist"} for histogram density. Default is
 \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.}
+
+\item{top_model}{Which model to use at the top of the distribution?
+Either \code{"gpd"} for generalized Pareto distribution, or \code{"pareto"}
+for standard Pareto distribution. Default is \code{"gpd"}.}
 
 \item{lower_bound}{Lower bound of the distribution. Only relevant if
 \code{min(p) > 0}. Default is \code{0}.}

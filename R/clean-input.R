@@ -196,12 +196,16 @@ clean_input_tabulation <- function(p, threshold, average=NULL, bracketshare=NULL
 #' \code{"hist"} if \code{min(threshold) > 0}, and \code{"gpd"} otherwise.
 #' @param lower_bound Lower bound of the distribution. Only relevant if
 #' \code{min(p) > 0}. Default is \code{0}.
+#' @param top_model Which model to use at the top of the distribution?
+#' Either \code{"gpd"} for generalized Pareto distribution, or \code{"pareto"}
+#' for standard Pareto distribution. Default is \code{"gpd"}.
 #'
 #' @export
 
 clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
                                bracketavg=NULL, topavg=NULL,
-                               first_threshold=NULL, bottom_model=NULL, lower_bound=0) {
+                               first_threshold=NULL, bottom_model=NULL,
+                               lower_bound=0, top_model=NULL) {
     # Number of interpolation points
     n <- length(p)
     if (n < 3) {
@@ -275,7 +279,7 @@ clean_input_shares <- function(p, average, bracketshare=NULL, topshare=NULL,
     }
 
     return(list(p=p, m=m, first_threshold=first_threshold, average=average,
-        bottom_model=bottom_model, lower_bound=lower_bound, n=n))
+        bottom_model=bottom_model, top_model=top_model, lower_bound=lower_bound, n=n))
 }
 
 

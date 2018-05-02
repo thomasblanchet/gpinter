@@ -27,6 +27,9 @@
 #' \code{min(p) > 0}. Default is \code{0}.
 #' @param binf Asymptotic Pareto coefficient. If \code{NULL} or \code{NA},
 #' it is directly estimated from the data. Default is \code{NULL}.
+#' @param top_model Which model to use at the top of the distribution?
+#' Either \code{"gpd"} for generalized Pareto distribution, or \code{"pareto"}
+#' for standard Pareto distribution. Default is \code{"gpd"}.
 #' @param fast Use a faster but less precise method (split-histogram).
 #' Default is \code{FALSE}.
 #'
@@ -39,17 +42,18 @@
 
 shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
                        bracketavg=NULL, topavg=NULL, first_threshold=NULL,
-                       last_invpareto=NULL, bottom_model=NULL, lower_bound=0,
-                       binf=NULL, fast=FALSE) {
+                       last_invpareto=NULL, bottom_model=NULL, top_model=NULL,
+                       lower_bound=0, binf=NULL, fast=FALSE) {
 
     input <- clean_input_shares(p, average, bracketshare, topshare, bracketavg,
-        topavg, first_threshold, bottom_model, lower_bound)
+        topavg, first_threshold, bottom_model, lower_bound, top_model)
 
     p <- input$p
     m <- input$m
     n <- input$n
     average <- input$average
     bottom_model <- input$bottom_model
+    top_model <- input$top_model
     lower_bound <- input$lower_bound
 
     # Log-transform of the data
@@ -116,6 +120,12 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
             stop(sprintf("given your data, the last Pareto coefficient must be below %.2f", max_last_invpareto))
         }
         threshold[length(threshold)] <- last_threshold
+    }
+
+    if ((!is.null(top_model) && top_model == "pareto") && (is.null(binf) || is.na(binf))) {
+        binf <- bracketavg[length(bracketavg)]/threshold[length(threshold)]
+    } else if ((!is.null(top_model) && top_model == "pareto") && !(is.null(binf) || is.na(binf))) {
+        stop("you can either set 'binf' or 'top_model == \"pareto\"'")
     }
 
     # Pass the estimated thresholds to tabulation_fit
