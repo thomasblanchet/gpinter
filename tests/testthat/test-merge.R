@@ -71,4 +71,8 @@ test_that("Nothing changes if we merge the same distributions", {
         tolerance = 1e-3
     )
     expect_equal(gini(dist_total), 1/(2*alpha - 1), tolerance=1e-4)
+
+    # Decomposition
+    comp <- decompose_population(dist_total, p_test)
+    expect_equal(rowSums(comp[, 2:4]), rep(1, length(p_test)))
 })

@@ -110,6 +110,11 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
             constraints_ok <- FALSE
         }
     }
+    # Enforce the constraint for the first threshold
+    avg_bottom <- (1 - mk[1])/p[1]
+    if (p[1] > 0 && avg_bottom > threshold[1]) {
+        threshold[1] <- (avg_bottom + bracketavg[1])/2
+    }
 
     if (!is.null(last_invpareto) && !is.na(last_invpareto)) {
         last_threshold <- bracketavg[length(bracketavg)]/last_invpareto

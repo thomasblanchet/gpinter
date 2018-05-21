@@ -56,7 +56,7 @@ devtools::install_github("thomasblanchet/gpinter",
 
 # Using the Package
 
-When tax authorities give information on the distribution of income and wealth, we rarely get a sample of individual observations due to privacy and/or logistical concerns. Instead, we have a table that provides, for a handful of income brackets, the number of people in the bracket and their average income. As an example, we will assume a distribution with average income 37 208 and the following tabulation (it corresponds to the distribution of labor income in the United States in 2010):
+When tax authorities give information on the distribution of income and wealth, we rarely get a sample of individual observations due to privacy and/or logistical concerns. Instead, we have a table that provides, for a handful of income brackets, the number of people in the bracket and their average income. As an example, we will assume a distribution with average income $37~208$ and the following tabulation (it corresponds to the distribution of labor income in the United States in 2010):
 \begin{center}
 \begin{tabular}{p{3cm}>{\RaggedLeft\arraybackslash}p{3cm}>{\RaggedLeft\arraybackslash}p{3cm}}
 \toprule
@@ -68,7 +68,7 @@ percentile & quantile & bracket average \\ \midrule
 \end{tabular}
 \end{center}
 
-This tabulation should be read as follows: the 10% quantile is equal to 4 310, the 50% quantile is equal to 23 686, and the people between those two thresholds have an average income of 12 643. We input that tabulation into R as:
+This tabulation should be read as follows: the 10% quantile is equal to $4~310$, the 50% quantile is equal to $23~686$, and the people between those two thresholds have an average income of $12~643$. We input that tabulation into R as:
 ```{R}
 average <- 37208 # Average income
 p <- c(0.10, 0.50, 0.90, 0.99) # Fractiles between 0 an 1
@@ -185,6 +185,23 @@ top_share(distribution_us_fr, 0.99)
 # Lorenz curve and density
 plot_lorenz(distribution_us_fr, xlim = c(0, 1))
 plot_density(distribution_us_fr, xlim = c(2e4, 2e5))
+```
+
+After merging distributions, you can get a decomposition of the population by distribution of origin and fractile:
+```{R, out.width='.75\\linewidth', fig.width=6, fig.height=2.5,fig.show='hold',fig.align='center', results='hide', message=FALSE, warning=FALSE}
+# Get decomposition as a data.frame
+decomposition <- decompose_population(distribution_us_fr, p = seq(0, 0.9, 0.1))
+
+library(tidyverse)
+library(ggplot2)
+
+decomposition %>%
+    gather(country, share, -p) %>%
+    mutate(country = if_else(country == "share1", "United States", "France")) %>%
+    ggplot(aes(x = p, y = share, fill = country)) +
+    scale_x_continuous(breaks = seq(0, 0.9, 0.1)) +
+    xlab("fractile") + ylab("population share") +
+    geom_area()
 ```
 
 ### Individualization
