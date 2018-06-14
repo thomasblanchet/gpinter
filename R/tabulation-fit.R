@@ -303,7 +303,7 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
                 ") is above the first threshold (", round(threshold[1]), ")"))
         }
 
-        if (bottom_model == "dirac") {
+        if (bottom_model == "dirac" || bracketavg == 0) {
             param_bottom <- list(mu=NA, sigma=NA, xi=NA, delta=p[1])
         } else if (bottom_model == "gpd" && bracketavg > 0) {
             q1 <- qk[1]
@@ -313,16 +313,15 @@ tabulation_fit <- function(p, threshold, average=NULL, bracketshare=NULL, topsha
                 xi_bottom    = (bracketavg - q1)/(bracketavg - lower_bound),
                 delta        = NA
             )
-        } else if (bottom_model == "gpd" || bracketavg <= 0) {
+        } else if (bottom_model == "gpd" || bracketavg < 0) {
             param_bottom <- gpd_bottom_parameters(xk[1], yk[1], sk[1], ak[1], average)
             # Same thing as for the top if xi >= 1 or sigma <= 0
             if (param_bottom$sigma <= 0 || param_bottom$xi >= 1) {
-                param_bottom$mu_bottom <- qk[n]
-                param_bottom$xi_bottom <- 1 - sk[n]
-                param_bottom$sigma_bottom <- param_bottom$mu_top*param_bottom$xi_top
+                bottom_model = "hist"
             }
             param_bottom$delta <- NA
-        } else if (bottom_model == "hist") {
+        }
+        if (bottom_model == "hist") {
             use_hist <- c(TRUE, TRUE, use_hist)
             hist <- hist_interpol(0, pk_cns[1], lower_bound, qk_cns[1], bracketavg)
             fk_cns <- c(hist$f0, hist$f1, fk_cns)
