@@ -37,12 +37,12 @@ generate_tabulation.gpinter_dist_orig <- function(dist, fractiles, ...) {
 
     tab$p10_average <- tab$threshold[11]/dist$average
     tab$p50_average <- tab$threshold[51]/dist$average
-    tab$p90_average <- tab$threshold[90]/dist$average
+    tab$p90_average <- tab$threshold[91]/dist$average
     tab$p99_average <- tab$threshold[100]/dist$average
 
     tab$b10 <- tab$invpareto[11]
     tab$b50 <- tab$invpareto[51]
-    tab$b90 <- tab$invpareto[90]
+    tab$b90 <- tab$invpareto[91]
     tab$b99 <- tab$invpareto[100]
 
     return(tab)
