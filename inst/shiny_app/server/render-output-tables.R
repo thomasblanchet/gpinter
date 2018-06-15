@@ -208,7 +208,7 @@ output$dl_tables_csv <- downloadHandler(
         }
 
         # Zip the files to destination
-        zip(dest, files, flags="-r9Xj")
+        zip(dest, files, flags = "-r9Xj")
     }
 )
 
@@ -277,7 +277,6 @@ output$dl_tables_excel <- downloadHandler(
         openxlsx::addWorksheet(wb, sheet_name)
         openxlsx::writeData(wb, sheet_name, df_all_series)
 
-        counter <- 1
         for (country in data$output_countries) {
             for (component in data$output_components) {
                 for (year in data$output_years) {

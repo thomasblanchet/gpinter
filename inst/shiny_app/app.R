@@ -21,6 +21,11 @@ library(gpinter)
 # Increased max upload size to 50MB
 options(shiny.maxRequestSize=50*1024^2)
 
+# Set the zip command on Unix for shinyapps.io
+if (.Platform$OS.type == "unix") {
+    Sys.setenv(R_ZIPCMD = file.path("/", "usr", "bin", "zip"))
+}
+
 source(file.path("server", "parse-input.R"), local=TRUE)
 source(file.path("server", "plot-text.R"), local=TRUE)
 
