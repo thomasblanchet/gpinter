@@ -841,6 +841,7 @@ interpolate_and_addup <- function() {
 transform_data <- function() {
     epsilon <- isolate(input$transform_elasticity)
     target_avg <- isolate(input$transform_avg)
+    target_min <- isolate(input$transform_min)
     # Loop over all the distribution and calculate a transformed version
     # of the data
     all_years <- data$output_years
@@ -899,15 +900,32 @@ transform_data <- function() {
                     top_average(dist, p)^epsilon
                 })
 
-                # Calculate the average of the new distribution
-                new_avg <- sum(diff(c(new_tab$p, 1))*new_tab$bracket_avg)
+                # Set average and minimal value of the transformed distribution
+                n <- length(gperc)
+                flag <- 0
+                for (i in 1:n) {
+                    p <- new_tab$p[i]
+                    q <- max(new_tab$thr[i], 0)
+
+                    if (target_min > 0 && p*q + sum(diff(c(new_tab$p[i:n], 1))*new_tab$bracket_avg[i:n]) < target_avg/target_min*q) {
+                        pmin <- p
+                        flag <- 1
+                        break
+                    }
+                }
+                if (flag == 0) {
+                    pmin <- 0
+                }
+                new_tab$thr[new_tab$p < pmin] <- target_min
+                new_tab$bracket_avg[new_tab$p < pmin] <- target_min + sqrt(.Machine$double.eps)
 
                 # Rescale the distribution to match target average
-                new_tab$thr <- new_tab$thr/new_avg*target_avg
-                new_tab$bracket_avg <- new_tab$bracket_avg/new_avg*target_avg
+                new_avg_top <- sum(diff(c(new_tab$p[new_tab$p >= pmin], 1))*new_tab$bracket_avg[new_tab$p >= pmin])
+                target_avg_top <- target_avg - pmin*(target_min + sqrt(.Machine$double.eps))
+                new_tab$thr[new_tab$p >= pmin] <- new_tab$thr[new_tab$p >= pmin]/new_avg_top*target_avg_top
+                new_tab$bracket_avg[new_tab$p >= pmin] <- new_tab$bracket_avg[new_tab$p >= pmin]/new_avg_top*target_avg_top
 
                 # Regroup consecutive brackets with identical averages
-                n <- length(gperc)
                 i <- 2
                 while (i < n) {
                     p1 <- new_tab$p[i - 1]

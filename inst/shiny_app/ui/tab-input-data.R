@@ -305,7 +305,11 @@ tabPanel("Input data",
                             style = "margin-left: 20px;"
                         ),
                         tags$div(
-                            numericInput("transform_elasticity", "Elasticity parameter \\(\\varepsilon\\)", value=0.5, width="100%"),
+                            numericInput("transform_elasticity", "Elasticity \\(\\varepsilon\\)", value=0.5, min=0.0001, width="100%"),
+                            style = "margin-left: 20px;"
+                        ),
+                        tags$div(
+                            numericInput("transform_min", "Minimum of transformed data", value=10, min=0, width="100%"),
                             style = "margin-left: 20px;"
                         ),
                         class = "panel-body"
