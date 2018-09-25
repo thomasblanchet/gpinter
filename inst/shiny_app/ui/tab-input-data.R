@@ -290,6 +290,24 @@ tabPanel("Input data",
                             FALSE,
                             width = "100%"
                         ),
+                        tags$hr(),
+                        checkboxInput("transform_data",
+                            tagList(
+                                tags$h4("Transform the data", style="margin-top: 0;"),
+                                tags$p("Also calculate the following transformation of the data: \\(Y \\propto X^\\varepsilon\\)",
+                                    style="font-size: small; color: #666;")
+                            ),
+                            FALSE,
+                            width = "100%"
+                        ),
+                        tags$div(
+                            numericInput("transform_avg", "Average of transformed data", value=100, width="100%"),
+                            style = "margin-left: 20px;"
+                        ),
+                        tags$div(
+                            numericInput("transform_elasticity", "Elasticity parameter \\(\\varepsilon\\)", value=0.5, width="100%"),
+                            style = "margin-left: 20px;"
+                        ),
                         class = "panel-body"
                     ),
                     class = "panel panel-default"

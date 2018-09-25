@@ -472,9 +472,6 @@ interpolate_and_individualize <- function() {
         }
     }
 
-    set_active(FALSE)
-    show_success()
-
     # Store the results
     data$output_dist <- list_results
     data$output_tables <- list_tables
@@ -634,9 +631,6 @@ interpolate_and_merge <- function() {
             }
         }
     }
-
-    set_active(FALSE)
-    show_success()
 
     # Store the results
     data$output_dist <- list_results
@@ -833,9 +827,6 @@ interpolate_and_addup <- function() {
         }
     }
 
-    set_active(FALSE)
-    show_success()
-
     # Store the results
     data$output_dist <- list_results
     data$output_tables <- list_tables
@@ -845,6 +836,120 @@ interpolate_and_addup <- function() {
         results_components <- c(results_components, "added up")
     }
     data$output_components <- results_components
+}
+
+transform_data <- function() {
+    epsilon <- isolate(input$transform_elasticity)
+    target_avg <- isolate(input$transform_avg)
+    # Loop over all the distribution and calculate a transformed version
+    # of the data
+    all_years <- data$output_years
+    all_countries <- data$output_countries
+    all_components <- data$output_components
+    for (year in all_years) {
+        for (country in all_countries) {
+            for (component in all_components) {
+                # Skip if no matching distribution
+                if (is.null(data$output_dist[[year]][[country]][[component]])) {
+                    next
+                }
+                dist <- data$output_dist[[year]][[country]][[component]]
+
+                # Calculate a new tabulation with the transformed data
+                new_tab <- data.frame(
+                    p = gperc,
+                    thr = rep(NA, length(gperc)),
+                    bracket_avg = rep(NA, length(gperc))
+                )
+
+                for (i in 1:(length(gperc) - 1)) {
+                    p1 <- new_tab$p[i]
+                    p2 <- new_tab$p[i + 1]
+                    q1 <- fitted_quantile(dist, p1)
+                    new_tab$thr[i] <- ifelse(q1 > 0, q1^epsilon, 0)
+                    new_tab$bracket_avg[i] <- tryCatch({
+                        integrate(
+                            function(t) {
+                                q <- fitted_quantile(dist, t)
+                                return(ifelse(q > 0, q^epsilon, 0))
+                            },
+                            lower = p1,
+                            upper = p2,
+                            subdivisions = 1e5
+                        )$value/(p2 - p1)
+                    }, error = function(e) {
+                        bracket_average(dist, p1, p2)^epsilon
+                    })
+                }
+                i <- length(gperc)
+                p <- new_tab$p[i]
+                q <- fitted_quantile(dist, p)
+                new_tab$thr[i] <- ifelse(q > 0, q^epsilon, 0)
+                new_tab$bracket_avg[i] <- tryCatch({
+                    integrate(
+                        function(t) {
+                            q <- fitted_quantile(dist, t)
+                            return(ifelse(q > 0, q^epsilon, 0))
+                        },
+                        lower = p,
+                        upper = 1,
+                        subdivisions = 1e5
+                    )$value/(1 - p)
+                }, error = function(e) {
+                    top_average(dist, p)^epsilon
+                })
+
+                # Calculate the average of the new distribution
+                new_avg <- sum(diff(c(new_tab$p, 1))*new_tab$bracket_avg)
+
+                # Rescale the distribution to match target average
+                new_tab$thr <- new_tab$thr/new_avg*target_avg
+                new_tab$bracket_avg <- new_tab$bracket_avg/new_avg*target_avg
+
+                # Regroup consecutive brackets with identical averages
+                n <- length(gperc)
+                i <- 2
+                while (i < n) {
+                    p1 <- new_tab$p[i - 1]
+                    p2 <- new_tab$p[i]
+                    p3 <- new_tab$p[i + 1]
+
+                    b1 <- new_tab$bracket_avg[i - 1]
+                    b2 <- new_tab$bracket_avg[i]
+
+                    t1 <- new_tab$thr[i - 1]
+                    t2 <- new_tab$thr[i]
+
+                    if (t1 == t2 || b1 == b2) {
+                        new_tab <- rbind(
+                            new_tab[1:(i - 1), ], new_tab[(i + 1):n, ]
+                        )
+                        new_tab$bracket_avg[i - 1] <- (b1*(p2 - p1) + b2*(p3 - p2))/(p3 - p1)
+                        n <- n - 1
+                    } else {
+                        i <- i + 1
+                    }
+                }
+
+                # Interpolate tranformed distribution
+                new_dist <- tabulation_fit(
+                    p = new_tab$p,
+                    average = target_avg,
+                    bracketavg = new_tab$bracket_avg,
+                    threshold = new_tab$thr,
+                    fast = TRUE
+                )
+
+                # Add to the results
+                new_component <- paste0(component, " - transformed")
+                data$output_dist[[year]][[country]][[new_component]] <- new_dist
+                data$output_components <- c(data$output_components, new_component)
+                # Generate the tabulation
+                data$output_tables[[year]][[country]][[new_component]] <- make_tabulation(new_dist)
+
+            }
+        }
+    }
 }
 
 observeEvent(input$run, {
@@ -857,6 +962,12 @@ observeEvent(input$run, {
     } else if (input$interpolation_options == "addup") {
         interpolate_and_addup()
     }
+    if (isolate(input$transform_data)) {
+        transform_data()
+    }
+
+    set_active(FALSE)
+    show_success()
 
     # Update the interface
     updateSelectInput(session, "output_table_year", choices=data$output_years)
