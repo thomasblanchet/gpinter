@@ -473,7 +473,7 @@ natural_quintic_spline <- function(xk, yk, sk) {
     )
 
     # Solve and return solution
-    return(solve(A, b))
+    return(solve(A, b, tol = 1e-50))
 }
 
 #' @title Estimate natural quintic spline with unknown first derivatives
@@ -577,7 +577,7 @@ natural_quintic_spline_noderiv <- function(xk, yk) {
         -360*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^4
     )
 
-    v <- solve(A, b)
+    v <- solve(A, b, tol = 1e-50)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -689,7 +689,7 @@ clamped1_quintic_spline_noderiv <- function(xk, yk, an) {
         an
     )
 
-    v <- solve(A, b)
+    v <- solve(A, b, tol = 1e-50)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -806,7 +806,7 @@ clamped2_quintic_spline_noderiv <- function(xk, yk, s1, an) {
         an
     )
 
-    v <- solve(A, b)
+    v <- solve(A, b, tol = 1e-50)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -880,5 +880,5 @@ clamped_quintic_spline <- function(xk, yk, sk, an) {
     )
 
     # Solve and return solution
-    return(solve(A, b))
+    return(solve(A, b, tol = 1e-50))
 }
