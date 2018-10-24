@@ -83,7 +83,7 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
     }
 
     # Check if the estimated function satisfies the constraints: if not, adjust
-    # the estimated thresholds before passing it tabulation_fit
+    # the estimated thresholds before passing it to tabulation_fit
     constraints_ok <- TRUE
     threshold <- exp(xk - yk)*sk
     bracketavg <- -diff(c(m, 0))/diff(c(p, 1))
@@ -131,6 +131,13 @@ shares_fit <- function(p, average=NULL, bracketshare=NULL, topshare=NULL,
         binf <- bracketavg[length(bracketavg)]/threshold[length(threshold)]
     } else if ((!is.null(top_model) && top_model == "pareto") && !(is.null(binf) || is.na(binf))) {
         stop("you can either set 'binf' or 'top_model == \"pareto\"'")
+    }
+
+    # Exclude first bracket if it correspond to a Dirac in zero
+    if (pk[1] == 0 && abs(threshold[1]) <= .Machine$double.eps*2 && abs(bracketavg[1]) <= .Machine$double.eps*2) {
+        pk <- pk[-1]
+        threshold <- threshold[-1]
+        bracketavg <- bracketavg[-1]
     }
 
     # Pass the estimated thresholds to tabulation_fit

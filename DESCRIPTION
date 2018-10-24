@@ -20,7 +20,8 @@ Imports:
     gumbel (>= 1.10),
     parallel (>= 3.2.5),
     pbapply (>= 1.3),
-    shiny (>= 0.14)
+    shiny (>= 0.14),
+    MASS (>= 7.3)
 Suggests:
     testthat (>= 1.0.2),
     numDeriv (>= 2016.8-1),

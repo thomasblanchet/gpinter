@@ -419,6 +419,8 @@ tension_grad <- function(xk, yk, sk, ak) {
 #' @param sk A vector of slopes at each interpolation point.
 #'
 #' @return The vector \code{ak} of second derivatives at each knot.
+#'
+#' @importFrom MASS ginv
 
 natural_quintic_spline <- function(xk, yk, sk) {
     n <- length(xk)
@@ -473,7 +475,7 @@ natural_quintic_spline <- function(xk, yk, sk) {
     )
 
     # Solve and return solution
-    return(solve(A, b, tol = 1e-50))
+    return(as.vector(ginv(A) %*% b))
 }
 
 #' @title Estimate natural quintic spline with unknown first derivatives
@@ -493,6 +495,8 @@ natural_quintic_spline <- function(xk, yk, sk) {
 #'     \item{\code{sk}} A vector of first derivatives at each point.
 #'     \item{\code{ak}} A vector of second derivatives at each point.
 #' }
+#'
+#' @importFrom MASS ginv
 
 natural_quintic_spline_noderiv <- function(xk, yk) {
     n <- length(xk)
@@ -577,7 +581,7 @@ natural_quintic_spline_noderiv <- function(xk, yk) {
         -360*(yk[n] - yk[n - 1])/(xk[n] - xk[n - 1])^4
     )
 
-    v <- solve(A, b, tol = 1e-50)
+    v <- as.vector(ginv(A) %*% b)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -602,6 +606,8 @@ natural_quintic_spline_noderiv <- function(xk, yk) {
 #'     \item{\code{sk}} A vector of first derivatives at each point.
 #'     \item{\code{ak}} A vector of second derivatives at each point.
 #' }
+#'
+#' @importFrom MASS ginv
 
 clamped1_quintic_spline_noderiv <- function(xk, yk, an) {
     n <- length(xk)
@@ -689,7 +695,7 @@ clamped1_quintic_spline_noderiv <- function(xk, yk, an) {
         an
     )
 
-    v <- solve(A, b, tol = 1e-50)
+    v <- as.vector(ginv(A) %*% b)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -718,6 +724,8 @@ clamped1_quintic_spline_noderiv <- function(xk, yk, an) {
 #'     \item{\code{sk}} A vector of first derivatives at each point.
 #'     \item{\code{ak}} A vector of second derivatives at each point.
 #' }
+#'
+#' @importFrom MASS ginv
 
 clamped2_quintic_spline_noderiv <- function(xk, yk, s1, an) {
     n <- length(xk)
@@ -806,7 +814,7 @@ clamped2_quintic_spline_noderiv <- function(xk, yk, s1, an) {
         an
     )
 
-    v <- solve(A, b, tol = 1e-50)
+    v <- as.vector(ginv(A) %*% b)
 
     # Solve and return solution
     return(list(sk=v[1:n], ak=v[(n + 1):(2*n)]))
@@ -828,6 +836,8 @@ clamped2_quintic_spline_noderiv <- function(xk, yk, s1, an) {
 #' @param an Second derivative at the last knot.
 #'
 #' @return The vector \code{ak} of second derivatives at each knot.
+#'
+#' @importFrom MASS ginv
 
 clamped_quintic_spline <- function(xk, yk, sk, an) {
     n <- length(xk)
@@ -880,5 +890,5 @@ clamped_quintic_spline <- function(xk, yk, sk, an) {
     )
 
     # Solve and return solution
-    return(solve(A, b, tol = 1e-50))
+    return(as.vector(ginv(A) %*% b))
 }
