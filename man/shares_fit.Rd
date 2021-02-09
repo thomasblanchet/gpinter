@@ -4,10 +4,21 @@
 \alias{shares_fit}
 \title{Fit a nonparametric distribution on tabulated data without thresholds}
 \usage{
-shares_fit(p, average = NULL, bracketshare = NULL, topshare = NULL,
-  bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  last_invpareto = NULL, bottom_model = NULL, top_model = NULL,
-  lower_bound = 0, binf = NULL, fast = FALSE)
+shares_fit(
+  p,
+  average = NULL,
+  bracketshare = NULL,
+  topshare = NULL,
+  bracketavg = NULL,
+  topavg = NULL,
+  first_threshold = NULL,
+  last_invpareto = NULL,
+  bottom_model = NULL,
+  top_model = NULL,
+  lower_bound = 0,
+  binf = NULL,
+  fast = FALSE
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

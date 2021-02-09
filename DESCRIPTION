@@ -34,6 +34,6 @@ Suggests:
     knitr (>= 1.20),
     rmarkdown (>= 1.9),
     tidyverse (>= 1.2.1)
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1
 Encoding: UTF-8
 VignetteBuilder: knitr

@@ -4,9 +4,30 @@
 \alias{distance_two_points}
 \title{Distance between spline and spline perturbated by two points}
 \usage{
-distance_two_points(x0, x1, y0, y1, s0, s1, a0, a1, x_new1, y_new1, s_new1,
-  a_new1, y_ini1, s_ini1, a_ini1, x_new2, y_new2, s_new2, a_new2, y_ini2,
-  s_ini2, a_ini2)
+distance_two_points(
+  x0,
+  x1,
+  y0,
+  y1,
+  s0,
+  s1,
+  a0,
+  a1,
+  x_new1,
+  y_new1,
+  s_new1,
+  a_new1,
+  y_ini1,
+  s_ini1,
+  a_ini1,
+  x_new2,
+  y_new2,
+  s_new2,
+  a_new2,
+  y_ini2,
+  s_ini2,
+  a_ini2
+)
 }
 \arguments{
 \item{x0}{Lower bound of the interval.}

@@ -4,9 +4,18 @@
 \alias{clean_input_shares}
 \title{Clean (and check) the inputs for \code{shares_fit}}
 \usage{
-clean_input_shares(p, average, bracketshare = NULL, topshare = NULL,
-  bracketavg = NULL, topavg = NULL, first_threshold = NULL,
-  bottom_model = NULL, lower_bound = 0, top_model = NULL)
+clean_input_shares(
+  p,
+  average,
+  bracketshare = NULL,
+  topshare = NULL,
+  bracketavg = NULL,
+  topavg = NULL,
+  first_threshold = NULL,
+  bottom_model = NULL,
+  lower_bound = 0,
+  top_model = NULL
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

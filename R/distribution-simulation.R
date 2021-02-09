@@ -27,14 +27,14 @@ simulate_gpinter.gpinter_dist_orig <- function(dist, n, ...) {
 #' @export
 simulate_gpinter.gpinter_dist_merge <- function(dist, n, ...) {
     # Number of distribution that were merged
-    k <- length(dist$ndist)
+    k <- dist$ndist
 
     # Number of observations from each country
     d <- as.vector(rmultinom(1, n, prob=dist$relsize))
 
-    return(sapply(1:k, function(i) {
+    return(unlist(lapply(1:k, function(i) {
         return(simulate_gpinter(dist$parent_dist[[i]], d[i]))
-    }))
+    })))
 }
 
 #' @export

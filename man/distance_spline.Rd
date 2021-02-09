@@ -10,8 +10,22 @@
 \alias{distance_spline_deriv_a1new}
 \title{Distance between two quintic splines}
 \usage{
-distance_spline(x0, x1, y0, y1, s0, s1, a0, a1, y0new, y1new, s0new, s1new,
-  a0new, a1new)
+distance_spline(
+  x0,
+  x1,
+  y0,
+  y1,
+  s0,
+  s1,
+  a0,
+  a1,
+  y0new,
+  y1new,
+  s0new,
+  s1new,
+  a0new,
+  a1new
+)
 }
 \arguments{
 \item{x0}{Lower bound of the interval.}

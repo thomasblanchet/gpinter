@@ -4,9 +4,18 @@
 \alias{clean_input_tabulation}
 \title{Clean (and check) the inputs for \code{tabulation_fit}}
 \usage{
-clean_input_tabulation(p, threshold, average = NULL, bracketshare = NULL,
-  topshare = NULL, bracketavg = NULL, topavg = NULL, invpareto = NULL,
-  bottom_model = NULL, lower_bound = 0)
+clean_input_tabulation(
+  p,
+  threshold,
+  average = NULL,
+  bracketshare = NULL,
+  topshare = NULL,
+  bracketavg = NULL,
+  topavg = NULL,
+  invpareto = NULL,
+  bottom_model = NULL,
+  lower_bound = 0
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

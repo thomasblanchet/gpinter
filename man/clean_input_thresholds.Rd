@@ -4,9 +4,16 @@
 \alias{clean_input_thresholds}
 \title{Clean (and check) the inputs for \code{threshold_fit}}
 \usage{
-clean_input_thresholds(p, threshold, average = NULL, last_bracketavg = NULL,
-  last_invpareto = NULL, bottom_model = NULL, lower_bound = 0,
-  binf = NULL)
+clean_input_thresholds(
+  p,
+  threshold,
+  average = NULL,
+  last_bracketavg = NULL,
+  last_invpareto = NULL,
+  bottom_model = NULL,
+  lower_bound = 0,
+  binf = NULL
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

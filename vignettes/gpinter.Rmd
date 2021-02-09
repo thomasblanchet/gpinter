@@ -11,7 +11,7 @@ header-includes:
    - \usepackage{array}
    - \usepackage{ragged2e}
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Applying Generalized Pareto Interpolation with `gpinter`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -4,9 +4,20 @@
 \alias{tabulation_fit}
 \title{Fit a nonparametric distribution on tabulated data}
 \usage{
-tabulation_fit(p, threshold, average = NULL, bracketshare = NULL,
-  topshare = NULL, bracketavg = NULL, topavg = NULL, invpareto = NULL,
-  bottom_model = NULL, lower_bound = 0, binf = NULL, fast = FALSE)
+tabulation_fit(
+  p,
+  threshold,
+  average = NULL,
+  bracketshare = NULL,
+  topshare = NULL,
+  bracketavg = NULL,
+  topavg = NULL,
+  invpareto = NULL,
+  bottom_model = NULL,
+  lower_bound = 0,
+  binf = NULL,
+  fast = FALSE
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

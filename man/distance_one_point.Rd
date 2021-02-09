@@ -4,8 +4,23 @@
 \alias{distance_one_point}
 \title{Distance between spline and spline perturbated by one point}
 \usage{
-distance_one_point(x0, x1, y0, y1, s0, s1, a0, a1, x_new, y_new, s_new, a_new,
-  y_ini, s_ini, a_ini)
+distance_one_point(
+  x0,
+  x1,
+  y0,
+  y1,
+  s0,
+  s1,
+  a0,
+  a1,
+  x_new,
+  y_new,
+  s_new,
+  a_new,
+  y_ini,
+  s_ini,
+  a_ini
+)
 }
 \arguments{
 \item{x0}{Lower bound of the interval.}

@@ -4,9 +4,17 @@
 \alias{individualize_dist}
 \title{Individualize a distribution}
 \usage{
-individualize_dist(dist, p, singleshare = NULL, coupleshare = NULL,
-  singletop = NULL, coupletop = NULL, singlebracket = NULL,
-  couplebracket = NULL, ratio = NULL)
+individualize_dist(
+  dist,
+  p,
+  singleshare = NULL,
+  coupleshare = NULL,
+  singletop = NULL,
+  coupletop = NULL,
+  singlebracket = NULL,
+  couplebracket = NULL,
+  ratio = NULL
+)
 }
 \arguments{
 \item{dist}{An object of class \code{gpinter_dist_orig}.}

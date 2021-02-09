@@ -4,9 +4,18 @@
 \alias{thresholds_fit}
 \title{Fit a nonparametric distribution on tabulated data with thresholds only}
 \usage{
-thresholds_fit(p, threshold, average = NULL, last_bracketshare = NULL,
-  last_bracketavg = NULL, last_invpareto = NULL, bottom_model = NULL,
-  lower_bound = 0, binf = NULL, fast = FALSE)
+thresholds_fit(
+  p,
+  threshold,
+  average = NULL,
+  last_bracketshare = NULL,
+  last_bracketavg = NULL,
+  last_invpareto = NULL,
+  bottom_model = NULL,
+  lower_bound = 0,
+  binf = NULL,
+  fast = FALSE
+)
 }
 \arguments{
 \item{p}{A vector of values in [0, 1].}

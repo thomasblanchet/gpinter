@@ -4,8 +4,24 @@
 \alias{cns_two_points}
 \title{Monotonicity constraints with two additional points}
 \usage{
-cns_two_points(x0, x1, y0, y1, s0, s1, a0, a1, x_new1, y_new1, s_new1, a_new1,
-  x_new2, y_new2, s_new2, a_new2)
+cns_two_points(
+  x0,
+  x1,
+  y0,
+  y1,
+  s0,
+  s1,
+  a0,
+  a1,
+  x_new1,
+  y_new1,
+  s_new1,
+  a_new1,
+  x_new2,
+  y_new2,
+  s_new2,
+  a_new2
+)
 }
 \arguments{
 \item{x0}{Lower bound of the interval.}
