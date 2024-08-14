@@ -1,3 +1,18 @@
+> [!IMPORTANT]
+> 
+> Thank you for your interest in this project. However, please be aware that this repository is **no longer maintained**.
+> 
+> - No further updates or bug fixes will be made.
+> - Issues and pull requests will not be responded to.
+>   
+> For any critical needs, please consider forking the repository and making your own updates.
+>
+> Additionally, this package **should be considered soft deprecated**. It will remain available in the foreseeable future, and its use in existing codebases remains acceptable. However, **I do not recommend its usage in a new project**, for reasons that go beyond the lack of maintenance.
+>
+> Experience has shown that the methodology that the package implements **causes more problems than it solves**, especially when used by people who do not understand the underlying methodology and treat it as a black box. I emphasize that older approaches, such as the **mean-split histogram** (see e.g., [Cowell, 2012, *Measuring Inequality*, Appendix A7, p. 172](http://econdse.org/wp-content/uploads/2012/02/Cowell-measuring-inequality.pdf)), provide nearly identical results at a fraction of the cost and complexity (and to the extent that the results diverge, it almost certainly indicates a problem with the raw data that should rather be addressed directly.)
+>
+> I also discourage additional work in that area: the distribution interpolation problem should have been considered solved by the mean-split histogram method. None of the more recent attempts at improving this methodology have proven useful.
+
 # ```gpinter```: R package for generalized Pareto interpolation methods
 
 Generalized Pareto Interpolation is a method for reconstructing complete distributions based on tabulations that only contain information on a few thresholds and bracket shares. It is usually applied in the study of income and wealth, but it can also be used with other types of data.
