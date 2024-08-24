@@ -7,7 +7,7 @@
 >   
 > For any critical needs, please consider forking the repository and making your own updates.
 >
-> Additionally, this package **should be considered soft deprecated**. It will remain available in the foreseeable future, and its use in existing codebases remains acceptable. However, **I do not recommend its usage in a new project**, for reasons that go beyond the lack of maintenance.
+> Additionally, this package **should be considered softly deprecated**. It will remain available in the foreseeable future, and its use in existing codebases remains acceptable. However, **I do not recommend its usage in a new project**, for reasons that go beyond the lack of maintenance.
 >
 > Experience has shown that the methodology that the package implements **causes more problems than it solves**, especially when used by people who do not understand the underlying methodology and treat it as a black box. I emphasize that older approaches, such as the **mean-split histogram** (see e.g., [Cowell, 2012, *Measuring Inequality*, Appendix A7, p. 172](http://econdse.org/wp-content/uploads/2012/02/Cowell-measuring-inequality.pdf)), provide nearly identical results at a fraction of the cost and complexity (and to the extent that the results diverge, it almost certainly indicates a problem with the raw data that should rather be addressed directly.)
 >
